@@ -5,10 +5,16 @@
  */
 package voronoigame.model;
 
+import java.awt.Point;
+
 /**
  *
  * @author Maurice
  */
 public class StationaryCell extends Cell {
+    
+    public StationaryCell(Point point) {
+        super(point);
+    }
     
 }

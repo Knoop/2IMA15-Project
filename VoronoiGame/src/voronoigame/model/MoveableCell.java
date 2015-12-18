@@ -13,4 +13,12 @@ import java.awt.Point;
  */
 public class MoveableCell extends Cell {
 
+    public MoveableCell(Point point) {
+        super(point);
+    }
+ 
+    protected void updateLocation(Point point){
+        
+    }  
+    
 }
