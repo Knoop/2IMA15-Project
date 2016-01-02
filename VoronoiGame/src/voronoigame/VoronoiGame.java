@@ -5,6 +5,8 @@
  */
 package voronoigame;
 
+import voronoigame.view.MainView;
+
 /**
  *
  * @author Maurice
@@ -15,7 +17,8 @@ public class VoronoiGame {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
+        MainView mainView = new MainView();
+        mainView.setVisible(true);
     }
     
 }

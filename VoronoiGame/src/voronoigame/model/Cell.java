@@ -20,14 +20,24 @@ public abstract class Cell {
     protected Type type;
 
     protected Cell(Point point) {
+        this(point, Type.HEALTHY);
+    }
+    
+    protected Cell(Point point, Type type) {
         this.point = point;
         this.initArea = 0f;
         this.initCircumference = 0f;
+        this.type = type;
     }
 
-    protected final void setType(Type type) {
+    public final void setType(Type type) {
         this.type = type;
         this.onTypeChanged();
+    }
+    
+    public final Type getType()
+    {
+        return this.type;
     }
 
     /**
