@@ -16,8 +16,8 @@ import voronoigame.model.MoveableCell;
 import voronoigame.model.StationaryCell;
 
 /**
- *
- * @author Guus van Lankveld
+ * This is a dummy class only used to test if the voronoi diagram is drawn correctly and the event listeners/handlers are working correctly
+ * 
  */
 public class VoronoidiagramDummyImpl implements VoronoiDiagram
 {
