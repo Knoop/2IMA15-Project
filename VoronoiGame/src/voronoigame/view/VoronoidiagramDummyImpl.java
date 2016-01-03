@@ -143,5 +143,11 @@ public class VoronoidiagramDummyImpl implements VoronoiDiagram
         }
         return new StationaryCell(site);
     }
+
+    @Override
+    public void moveSite(Cell cell, Point newSiteLocation)
+    {
+        System.out.println("Moving cell site: " + cell.getPoint().toString() + " to new location: " + newSiteLocation.toString());
+    }
     
 }

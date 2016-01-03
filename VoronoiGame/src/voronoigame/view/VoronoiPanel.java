@@ -6,7 +6,6 @@
 
 package voronoigame.view;
 
-import com.sun.org.apache.xalan.internal.lib.ExsltDatetime;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -15,8 +14,10 @@ import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import javax.swing.JPanel;
@@ -31,12 +32,15 @@ public class VoronoiPanel extends JPanel
 {
     private static final int FRAMERATE = 60;
     
-    private static final int SITE_RADIUS = 4;
+    public static final int SITE_RADIUS = 4;
     private static final Stroke EDGE_STROKE = new BasicStroke(1);
     
     private VoronoiDiagram voronoiDiagram;
     private Boolean updateNeeded;
     private final Timer renderTimer;
+    
+    public Cell dragging;
+    public Cell hover;
     
     private final TimerTask renderStep = new TimerTask()
         {
@@ -50,13 +54,23 @@ public class VoronoiPanel extends JPanel
                 updatePanel();
             }
         };
+
+    public VoronoiDiagram getVoronoiDiagram()
+    {
+        return voronoiDiagram;
+    }
     
     public VoronoiPanel(VoronoiDiagram voronoiDiagram)
     {
         this.voronoiDiagram = voronoiDiagram;
         this.updateNeeded = true;
         this.renderTimer = new Timer();
-        renderTimer.scheduleAtFixedRate(this.renderStep, 0, 1000/FRAMERATE);
+        this.renderTimer.scheduleAtFixedRate(this.renderStep, 0, 1000/FRAMERATE);
+        this.dragging = null;
+        this.hover = null;
+        
+        this.addMouseListener(new VoronoiGameMouseListener(this));
+        this.addMouseMotionListener(new VoronoiMouseMotionListener(this));
     }
     
     public void updatePanel()
@@ -68,23 +82,6 @@ public class VoronoiPanel extends JPanel
     public void updateSize()
     {
         super.setSize(this.getParent().getSize());
-    }
-    
-    private Color getColorforCell(Cell cell)
-    {
-        if (cell.getClass() == StationaryCell.class)
-        {
-            StationaryCell stationaryCell = (StationaryCell)cell;
-            switch (stationaryCell.getType())
-            {
-                case INFECTED:
-                    return Color.RED;
-                default:
-                    return Color.GREEN;
-            }
-        }
-        
-        return Color.WHITE;
     }
     
     @Override
@@ -105,7 +102,7 @@ public class VoronoiPanel extends JPanel
                 Point vertex = face.pop();
                 polygon.addPoint(vertex.x, vertex.y);
             }
-            g2.setColor(getColorforCell(voronoiDiagram.getCellFromSite(site)));
+            g2.setColor(Util.getColorforCell(voronoiDiagram.getCellFromSite(site)));
             g2.fillPolygon(polygon);
             
             g2.setColor(Color.BLACK);

@@ -40,6 +40,11 @@ public abstract class Cell {
         return this.type;
     }
 
+    public Point getPoint()
+    {
+        return point;
+    }
+
     /**
      * Called when the type of the cell has changed. When overriding this method
      * you must call {@code super.onTypeChanged()}.

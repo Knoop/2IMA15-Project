@@ -23,4 +23,6 @@ public interface VoronoiDiagram
     
     public LinkedList<Point> getFaceFromSite(Point site);
     public Cell getCellFromSite(Point site);
+    
+    public void moveSite(Cell cell, Point newSiteLocation);
 }
