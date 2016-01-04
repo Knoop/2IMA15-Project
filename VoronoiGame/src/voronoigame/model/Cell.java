@@ -54,6 +54,6 @@ public abstract class Cell {
     }
 
     public enum Type {
-        HEALTHY, INFECTED
+        HEALTHY, INFECTED, DEAD
     }
 }

@@ -16,21 +16,31 @@ import voronoigame.model.StationaryCell;
  */
 public class Util
 {
+    public static final int COLOR_HEALTHY = 0x93ed94;
+    public static final int COLOR_INFECTED = 0xff0000;
+    public static final int COLOR_WHITE_CELL = 0xffffff;
+    public static final int COLOR_DEAD = 0x888888;
 
     public static Color getColorforCell(Cell cell)
     {
+        if (cell.getType() == Cell.Type.DEAD)
+        {
+            return new Color(COLOR_DEAD);
+        }
         if (cell.getClass() == StationaryCell.class)
         {
             StationaryCell stationaryCell = (StationaryCell) cell;
             switch (stationaryCell.getType())
             {
                 case INFECTED:
-                    return Color.RED;
+                    return new Color(COLOR_INFECTED);
                 default:
-                    return Color.GREEN;
+                    Color color = new Color(COLOR_HEALTHY);
+                    //Change color when area of cell deviates too much from initarea
+                    return color;
             }
         }
-        return Color.WHITE;
+        return new Color(COLOR_WHITE_CELL);
     }
 
     public static Boolean isInCircle(Point point, Point circleCenter, double circleRadius)
