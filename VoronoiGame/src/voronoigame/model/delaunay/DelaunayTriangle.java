@@ -5,13 +5,25 @@
  */
 package voronoigame.model.delaunay;
 
+import java.awt.Point;
+
 /**
  *
  * @author leo
  */
 public class DelaunayTriangle {
     
-    DelaunayTriangle(DelaunayPoint p1, DelaunayPoint p2, DelaunayPoint p3){
+    private DelaunayPoint[] points;
+    
+    DelaunayTriangle(DelaunayPoint[] points){
+        this.points = points;
+    }
+    
+    protected void insert(Point p){
+        
+    }
+    
+    protected void delete(Point p){
         
     }
 }
