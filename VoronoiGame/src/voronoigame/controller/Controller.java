@@ -23,9 +23,9 @@ public class Controller {
     private final MainView mainView;
     private final GameState gameState;
 
-    public Controller(Map<Point, Cell.Type> cellTypes) {
+    public Controller() {
         this.mainView = new MainView();
-        this.gameState = new GameState(cellTypes, this.makeVoronoiDiagram());
+        this.gameState = new GameState(VoronoidiagramDummyImpl.getDummyCellTypeMap(), this.makeVoronoiDiagram());
         this.mainView.setVoronoiPanel(this.makePanel());
         this.mainView.setVisible(true);
     }
