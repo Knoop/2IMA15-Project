@@ -52,6 +52,11 @@ public class DelaunayTriangle {
                     newPoint, this.points[2], this.points[0]
                     }, this.bounds);
                 
+                //Set parents
+                this.children[0].parents[0] = this;
+                this.children[1].parents[0] = this;
+                this.children[2].parents[0] = this;
+                
                 //Set children's neighbours
                 this.children[0].neighbours = new DelaunayTriangle[] {
                     this.children[1], this.children[2], 
@@ -102,6 +107,12 @@ public class DelaunayTriangle {
             
             targetNeighbour.children[0] = this.children[0];
             targetNeighbour.children[1] = this.children[1];
+            
+            this.children[0].parents[0] = this;
+            this.children[1].parents[0] = this;
+            
+            this.children[0].parents[1] = targetNeighbour;
+            this.children[1].parents[1] = targetNeighbour;
             
             //Set children's neighbours
             this.children[0].neighbours = new DelaunayTriangle[] {
