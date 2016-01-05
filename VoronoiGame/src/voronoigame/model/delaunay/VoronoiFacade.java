@@ -9,6 +9,7 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.TreeSet;
 import voronoigame.model.Cell;
 import voronoigame.view.VoronoiDiagram;
 
@@ -88,22 +89,73 @@ public class VoronoiFacade implements VoronoiDiagram {
 
     @Override
     public Collection<Point> getSites() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Collection<Point> result = new ArrayList<>();
+        result.addAll(this.stillPoints);
+        result.addAll(this.movingPoints);
+        return result;
     }
 
     @Override
     public Collection<Point> getVoronoiVertices() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        TreeSet<DelaunayTriangle> leaves = root.getLeaves();
+        ArrayList<Point> result = new ArrayList<>();
+        double[] current;
+        for(DelaunayTriangle t: leaves){
+            current = t.getVoronoiVertex();
+            Point vertex = new Point((int) current[0], (int) current[1]);
+            result.add(vertex);
+        }
+        return result;
     }
 
     @Override
     public Collection<Point[]> getVoronoiEdges() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
+        TreeSet<DelaunayTriangle> leaves = root.getLeaves();
+        ArrayList<Point[]> result = new ArrayList<>();
+        double[] current;
+        double[] currentNeighbour;
+        for(DelaunayTriangle t: leaves){
+            current = t.getVoronoiVertex();
+            Point vertex = new Point((int) current[0], (int) current[1]);
+            for(DelaunayTriangle n: t.neighbours){
+                currentNeighbour = n.getVoronoiVertex();
+                Point vertexNeighbour = new Point((int) currentNeighbour[0], (int) currentNeighbour[1]);
+                result.add(new Point[] {vertex, vertexNeighbour});
+            }
+        }
+        return result;
     }
 
     @Override
     public LinkedList<Point> getFaceFromSite(Point site) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        DelaunayTriangle base = this.root.findLeaves(site).first();
+        LinkedList result = new LinkedList<>();
+        double[] xy = base.getVoronoiVertex();
+        result.add(new Point((int) xy[0], (int) xy[1]));
+        
+        DelaunayPoint dSite = null;
+        DelaunayPoint turnPoint = null;
+        for(int i = base.points.length - 1; i <= 0; i--){
+            if(base.points[i].getX() == site.getX() && base.points[i].getY() == site.getY()){
+                dSite = base.points[i];
+                turnPoint = base.points[(i+1)%base.points.length];
+            }
+        }
+        
+        DelaunayTriangle current = base.getEdgeNeighbour(dSite, turnPoint);
+        while(!current.equals(base)){
+            
+            for(int i = current.points.length - 1; i <= 0; i--){
+                if(!current.points[i].equals(dSite) && !current.points[i].equals(turnPoint)){
+                    turnPoint = current.points[i];
+                }
+            }
+            xy = current.getVoronoiVertex();
+            result.add(new Point((int) xy[0], (int) xy[1]));
+            current = base.getEdgeNeighbour(dSite, turnPoint);
+        }
+        return result;
     }
 
     @Override
@@ -113,7 +165,10 @@ public class VoronoiFacade implements VoronoiDiagram {
 
     @Override
     public void moveSite(Cell cell, Point newSiteLocation) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        deleteMovingPoints();
+        this.movingPoints.remove(cell.getPoint());
+        this.movingPoints.add(newSiteLocation);
+        insertMovingPoints();
     }
     
 }
