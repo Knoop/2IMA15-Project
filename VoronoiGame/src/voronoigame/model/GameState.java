@@ -5,10 +5,12 @@
  */
 package voronoigame.model;
 
+import java.awt.Point;
 import java.io.Reader;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import voronoigame.view.VoronoiDiagram;
 
 /**
  *
@@ -16,10 +18,18 @@ import java.util.Collection;
  */
 public class GameState {
     
-    private final List<Cell> cells = new ArrayList<>();
+    private final Map<Point, Cell> pointCellMap;
+    private final VoronoiDiagram voronoiDiagram;
     
-    public GameState(Collection<Cell> cells){
-        this.cells.addAll(cells);
+    public GameState(Map<Point, Cell.Type> cellTypes, VoronoiDiagram voronoiDiagram){
+        this.pointCellMap = new HashMap<>();
+        this.voronoiDiagram = voronoiDiagram;
+        this.mapSitesToCells(cellTypes);
+    }
+    
+    private void mapSitesToCells(Map<Point, Cell.Type> cellTypes)
+    {
+        
     }
     
     
