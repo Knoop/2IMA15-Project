@@ -16,7 +16,7 @@ import voronoigame.view.VoronoiDiagram;
  * @author Maurice
  */
 public class GameState {
-    
+
     private final Map<Point, Cell> pointCellMap;
     private final VoronoiDiagram voronoiDiagram;
     
@@ -31,12 +31,8 @@ public class GameState {
         
     }
     
-    protected float area(Cell cell){
-        return 1f;
-    }
-    
-    protected float circumference(Cell cell){
-        return 1f;
+    public VoronoiDiagram getDiagram(){
+        return this.voronoiDiagram;
     }
     
     /**

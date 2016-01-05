@@ -12,7 +12,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import voronoigame.model.Cell;
 import voronoigame.model.MoveableCell;
-import voronoigame.view.Util;
+import voronoigame.Util;
 import voronoigame.view.VoronoiPanel;
 
 /**
