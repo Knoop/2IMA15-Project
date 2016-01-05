@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package voronoigame.controller;
 
 import java.awt.Cursor;
@@ -21,8 +20,8 @@ import voronoigame.view.VoronoiPanel;
  *
  * @author Guus van Lankveld
  */
-public class VoronoiGameMouseListener implements MouseListener, MouseMotionListener
-{
+public class VoronoiGameMouseListener implements MouseListener, MouseMotionListener {
+
     private final VoronoiPanel voronoiPanel;
 
     /**
@@ -73,10 +72,8 @@ public class VoronoiGameMouseListener implements MouseListener, MouseMotionListe
     }
 
     @Override
-    public void mouseMoved(MouseEvent me)
-    {
-        for (Point site : this.voronoiPanel.getVoronoiDiagram().getSites())
-        {
+    public void mouseMoved(MouseEvent me) {
+        for (Point site : this.voronoiPanel.getVoronoiDiagram().getSites()) {
             Point cursorLocation = me.getPoint();
             Cell cell = this.voronoiPanel.getVoronoiDiagram().getCellFromSite(site);
             if (Util.isInCircle(cursorLocation, site, VoronoiPanel.SITE_RADIUS)
@@ -89,10 +86,9 @@ public class VoronoiGameMouseListener implements MouseListener, MouseMotionListe
         this.clearFocus();
         this.voronoiPanel.setCursor(Cursor.getDefaultCursor());
     }
-    
+
     @Override
-    public void mouseClicked(MouseEvent me)
-    {
+    public void mouseClicked(MouseEvent me) {
     }
 
     @Override
@@ -108,8 +104,7 @@ public class VoronoiGameMouseListener implements MouseListener, MouseMotionListe
     }
 
     @Override
-    public void mouseEntered(MouseEvent me)
-    {
+    public void mouseEntered(MouseEvent me) {
     }
 
     @Override
@@ -119,5 +114,4 @@ public class VoronoiGameMouseListener implements MouseListener, MouseMotionListe
     private enum FocusType {
         NONE, HOVER, DRAG
     }
-    
 }
