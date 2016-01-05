@@ -32,7 +32,13 @@ public class GameState {
         
     }
     
+    protected float area(Cell cell){
+        return 1f;
+    }
     
+    protected float circumference(Cell cell){
+        return 1f;
+    }
     
     /**
      * Create a GameState from a Reader.

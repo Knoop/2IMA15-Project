@@ -7,11 +7,14 @@ import java.awt.Point;
  */
 public abstract class Cell
 {
+    
+    private final GameState gameState;
 
     protected Point point = null;
 
-    protected float initCircumference, initArea, currentArea;
-
+    protected final float initCircumference, initArea;
+    protected float currentArea;
+    
     protected Type type;
 
     public static final double MAX_SCALE_FACTOR = 2;
@@ -21,19 +24,9 @@ public abstract class Cell
         return initCircumference;
     }
 
-    public void setInitCircumference(float initCircumference)
-    {
-        this.initCircumference = initCircumference;
-    }
-
     public float getInitArea()
     {
         return initArea;
-    }
-
-    public void setInitArea(float initArea)
-    {
-        this.initArea = initArea;
     }
 
     public float getCurrentArea()
@@ -53,18 +46,22 @@ public abstract class Cell
         return maxArea / minArea;
     }
 
-    protected Cell(Point point, float initArea)
+    protected Cell(Point point, Type type, GameState gameState)
     {
-        this(point, initArea, Type.HEALTHY);
-    }
-
-    protected Cell(Point point, float initArea, Type type)
-    {
+        this.gameState = gameState;
         this.point = point;
-        this.initArea = initArea;
-        this.initCircumference = 0f;
-        this.currentArea = initArea;
         this.type = type;
+        
+        this.initArea = this.area();
+        this.initCircumference = this.circumference();
+    }
+    
+    private float area(){
+        return this.gameState.area(this);
+    }
+    
+    private float circumference(){
+        return this.gameState.circumference(this);
     }
 
     public final void setType(Type type)
@@ -87,13 +84,10 @@ public abstract class Cell
      * Called when the type of the cell has changed. When overriding this method
      * you must call {@code super.onTypeChanged()}.
      */
-    protected void onTypeChanged()
-    {
-
-    }
+    protected void onTypeChanged() { }
 
     public enum Type
     {
-        HEALTHY, INFECTED, DEAD
+        HEALTHY, INFECTED, DEAD, DEFENSE
     }
 }

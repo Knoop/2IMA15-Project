@@ -13,8 +13,8 @@ import java.awt.Point;
  */
 public class MoveableCell extends Cell {
 
-    public MoveableCell(Point point, float initArea) {
-        super(point, initArea);
+    public MoveableCell(Point point, GameState gameState) {
+        super(point, Type.DEFENSE, gameState);
     }
  
     protected void updateLocation(Point point){
