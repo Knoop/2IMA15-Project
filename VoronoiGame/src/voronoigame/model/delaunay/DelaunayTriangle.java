@@ -15,11 +15,11 @@ import java.util.TreeSet;
  */
 public class DelaunayTriangle implements Comparable{
     
-    private DelaunayPoint[] points;
+    protected DelaunayPoint[] points;
     private Point bounds;
     private DelaunayTriangle[] parents;
     private DelaunayTriangle[] children;
-    private DelaunayTriangle[] neighbours;
+    protected DelaunayTriangle[] neighbours;
     
     DelaunayTriangle(DelaunayPoint[] points, Point bounds){
         this.points = points;
@@ -131,7 +131,7 @@ public class DelaunayTriangle implements Comparable{
         }
     }
     
-    private DelaunayTriangle getEdgeNeighbour(DelaunayPoint e1, DelaunayPoint e2){
+    protected DelaunayTriangle getEdgeNeighbour(DelaunayPoint e1, DelaunayPoint e2){
         boolean has1, has2;
         for(DelaunayTriangle t: neighbours){
             if(t != null){
@@ -206,7 +206,22 @@ public class DelaunayTriangle implements Comparable{
         return result;
     }
     
-    public double[] getVoronoiVertex(Point p){
+    public TreeSet<DelaunayTriangle> getLeaves(){
+        TreeSet result = new TreeSet<>();
+        if(this.children[0] == null){
+            result.add(this);
+        }
+        else {
+            for(DelaunayTriangle t: this.children){
+                if(t != null){
+                    result.addAll(t.getLeaves());
+                }
+            }
+        }
+        return result;
+    }
+    
+    public double[] getVoronoiVertex(){
         if(isSymbolic()){
             //return new double[2];
         }
