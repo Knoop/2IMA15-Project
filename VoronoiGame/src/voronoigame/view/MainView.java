@@ -3,26 +3,63 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package voronoigame.view;
 
 /**
  *
  * @author Guus van Lankveld
  */
-public class MainView extends javax.swing.JFrame
-{
+public class MainView extends javax.swing.JFrame {
+
     private VoronoiPanel voronoiPanel;
-    
+
     /**
      * Creates new form MainView
      */
-    public MainView()
-    {
+    public MainView() {
         initComponents();
-        this.voronoiPanel = new VoronoiPanel(new VoronoidiagramDummyImpl());
+    }
+
+    /**
+     * Removes the VoronoiPanel from this frame.
+     *
+     * @return The removed VoronoiPanel, or null if there was none.
+     */
+    public VoronoiPanel removeVoronoiPanel() {
+        if (this.voronoiPanel != null) {
+            this.pnVoronoiContainer.remove(this.voronoiPanel);
+            this.voronoiPanel.removeVoronoiGameMouseListener();
+            this.voronoiPanel.setVisible(false);
+            VoronoiPanel removed = this.voronoiPanel;
+            this.voronoiPanel = null;
+            return removed;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Uses the given VoronoiPanel as the VoronoiPanel for this frame. This will
+     * remove the existing VoronoiPanel if applicable.
+     *
+     * @param voronoiPanel The VoronoiPanel to use.
+     */
+    public void setVoronoiPanel(VoronoiPanel voronoiPanel) {
+
+        // If there is an existing panel, remove it
+        this.removeVoronoiPanel();
+
+        this.voronoiPanel = voronoiPanel;
         this.pnVoronoiContainer.add(this.voronoiPanel);
         this.voronoiPanel.updateSize();
+    }
+
+    public VoronoiPanel getVoronoiPanel() {
+        return this.voronoiPanel;
+    }
+
+    public boolean hasVoronoiPanel() {
+        return this.voronoiPanel != null;
     }
 
     /**
@@ -65,52 +102,8 @@ public class MainView extends javax.swing.JFrame
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[])
-    {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try
-        {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels())
-            {
-                if ("Nimbus".equals(info.getName()))
-                {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex)
-        {
-            java.util.logging.Logger.getLogger(MainView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex)
-        {
-            java.util.logging.Logger.getLogger(MainView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex)
-        {
-            java.util.logging.Logger.getLogger(MainView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex)
-        {
-            java.util.logging.Logger.getLogger(MainView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable()
-        {
-            public void run()
-            {
-                new MainView().setVisible(true);
-            }
-        });
-    }
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel pnVoronoiContainer;
     // End of variables declaration//GEN-END:variables
+
 }
