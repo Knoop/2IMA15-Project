@@ -19,6 +19,11 @@ public class GameState {
     
     private final Map<Point, Cell> pointCellMap;
     private final VoronoiDiagram voronoiDiagram;
+
+    public Map<Point, Cell> getPointCellMap()
+    {
+        return pointCellMap;
+    }
     
     public GameState(Map<Point, Cell.Type> cellTypes, VoronoiDiagram voronoiDiagram){
         this.pointCellMap = new HashMap<>();
@@ -28,7 +33,21 @@ public class GameState {
     
     private void mapSitesToCells(Map<Point, Cell.Type> cellTypes)
     {
-        
+        for (Point site : this.voronoiDiagram.getSites())
+        {
+            Cell cell;
+            Cell.Type type = cellTypes.get(site);
+            switch (type)
+            {
+                case DEFENSE:
+                    cell = new MoveableCell(site, this);
+                    break;
+                default:
+                    cell = new StationaryCell(site, type, this);
+                    break;
+            }
+            this.pointCellMap.put(site, cell);
+        }
     }
     
     protected float area(Cell cell){
