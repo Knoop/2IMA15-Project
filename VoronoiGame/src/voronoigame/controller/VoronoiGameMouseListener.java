@@ -24,21 +24,52 @@ import voronoigame.view.VoronoiPanel;
 public class VoronoiGameMouseListener implements MouseListener, MouseMotionListener
 {
     private final VoronoiPanel voronoiPanel;
-    
-    VoronoiGameMouseListener(VoronoiPanel voronoiPanel)
-    {
+
+    /**
+     * The cell that is in focus.
+     */
+    private Cell focus;
+
+    /**
+     * The type of focus that is applied to the cell that the focus is currently
+     * on.
+     */
+    private FocusType focusType;
+
+    VoronoiGameMouseListener(VoronoiPanel voronoiPanel) {
         this.voronoiPanel = voronoiPanel;
     }
-    
-    @Override
-    public void mouseDragged(MouseEvent me)
-    {
-        if (this.voronoiPanel.dragging == null)
-        {
-            return;
+
+    /**
+     * Clears the current focus
+     */
+    private void clearFocus() {
+        this.focus = null;
+        this.focusType = FocusType.NONE;
+    }
+
+    /**
+     * Sets the current focus on the given cell as the given focus type.
+     *
+     * @param focus
+     * @param focusType
+     */
+    private void setFocus(Cell focus, FocusType focusType) {
+        if (focusType == FocusType.NONE) {
+            this.clearFocus();
+        } else {
+            System.out.println("Setting focus");
+            this.focus = focus;
+            this.focusType = focusType;
         }
-       
-        voronoiPanel.getVoronoiDiagram().moveSite(this.voronoiPanel.dragging, me.getPoint());
+
+    }
+
+    @Override
+    public void mouseDragged(MouseEvent me) {
+        if (this.focusType != FocusType.NONE) {
+            voronoiPanel.getVoronoiDiagram().moveSite(this.focus, me.getPoint());
+        }
     }
 
     @Override
@@ -49,14 +80,13 @@ public class VoronoiGameMouseListener implements MouseListener, MouseMotionListe
             Point cursorLocation = me.getPoint();
             Cell cell = this.voronoiPanel.getVoronoiDiagram().getCellFromSite(site);
             if (Util.isInCircle(cursorLocation, site, VoronoiPanel.SITE_RADIUS)
-                    && cell.getClass() == MoveableCell.class)
-            {
-                this.voronoiPanel.hover = cell;
+                    && cell instanceof MoveableCell) {
+                this.setFocus(cell, FocusType.HOVER);
                 this.voronoiPanel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
                 return;
             }
         }
-        this.voronoiPanel.hover = null;
+        this.clearFocus();
         this.voronoiPanel.setCursor(Cursor.getDefaultCursor());
     }
     
@@ -66,19 +96,15 @@ public class VoronoiGameMouseListener implements MouseListener, MouseMotionListe
     }
 
     @Override
-    public void mousePressed(MouseEvent me)
-    {
-        if (this.voronoiPanel.hover == null)
-        {
-            return;
+    public void mousePressed(MouseEvent me) {
+        if (this.focusType == FocusType.HOVER) {
+            this.setFocus(this.focus, FocusType.DRAG);
         }
-        this.voronoiPanel.dragging = this.voronoiPanel.hover;
     }
 
     @Override
-    public void mouseReleased(MouseEvent me)
-    {
-        this.voronoiPanel.dragging = null;
+    public void mouseReleased(MouseEvent me) {
+        this.clearFocus();
     }
 
     @Override
@@ -87,8 +113,11 @@ public class VoronoiGameMouseListener implements MouseListener, MouseMotionListe
     }
 
     @Override
-    public void mouseExited(MouseEvent me)
-    {
+    public void mouseExited(MouseEvent me) {
+    }
+
+    private enum FocusType {
+        NONE, HOVER, DRAG
     }
     
 }
