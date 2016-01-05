@@ -20,7 +20,7 @@ public class VoronoiFacade implements VoronoiDiagram {
     
     private ArrayList<Point> stillPoints;
     private ArrayList<Point> movingPoints;
-    private int boundX, boundY;
+    private Point bounds;
     private DelaunayTriangle root;
     
     final private int MARGIN = 1;
@@ -31,17 +31,30 @@ public class VoronoiFacade implements VoronoiDiagram {
         java.util.Collections.shuffle(this.stillPoints);
         java.util.Collections.shuffle(this.movingPoints);
         
-        this.boundX = 0;
-        this.boundY = 0;
+        this.bounds = new Point(0,0);
         
         for(Point p: this.stillPoints){
-            this.boundX = (int) Math.max(p.getX(), boundX);
-            this.boundY = (int) Math.max(p.getY(), boundY);
+            this.bounds.x = (int) Math.max(p.getX(), this.bounds.x);
+            this.bounds.y = (int) Math.max(p.getY(), this.bounds.y);
         }
         for(Point p: this.movingPoints){
-            this.boundX = (int) Math.max(p.getX(), boundX);
-            this.boundY = (int) Math.max(p.getY(), boundY);
+            this.bounds.x = (int) Math.max(p.getX(), this.bounds.x);
+            this.bounds.y = (int) Math.max(p.getY(), this.bounds.y);
         }
+        this.bounds.x += 10;
+        this.bounds.y += 10;
+        
+        initializeDelaunay();
+        insertMovingPoints();
+    }
+    
+    VoronoiFacade(ArrayList<Point> stillPoints, ArrayList<Point> movingPoints, Point bounds){
+        this.stillPoints = stillPoints;
+        this.movingPoints = movingPoints;
+        java.util.Collections.shuffle(this.stillPoints);
+        java.util.Collections.shuffle(this.movingPoints);
+        
+        this.bounds = bounds;
         
         initializeDelaunay();
         insertMovingPoints();
@@ -49,10 +62,10 @@ public class VoronoiFacade implements VoronoiDiagram {
     
     private void initializeDelaunay(){
         
-        DelaunayPoint[] rootpoints = {new DelaunayPoint(-boundX-MARGIN, -MARGIN, true), 
-                new DelaunayPoint(boundX/2, 2*(boundY+2*MARGIN), true), 
-                new DelaunayPoint(2*boundX+MARGIN, -MARGIN, true)};
-        this.root = new DelaunayTriangle(rootpoints);
+        DelaunayPoint[] rootpoints = {new DelaunayPoint(-this.bounds.x-MARGIN, -MARGIN, true), 
+                new DelaunayPoint(this.bounds.x/2, 2*(this.bounds.y+2*MARGIN), true), 
+                new DelaunayPoint(2*this.bounds.x+MARGIN, -MARGIN, true)};
+        this.root = new DelaunayTriangle(rootpoints, this.bounds);
         
         for(Point p: this.stillPoints){
             this.root.insert(p);
