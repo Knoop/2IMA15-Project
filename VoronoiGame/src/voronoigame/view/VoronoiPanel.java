@@ -14,15 +14,11 @@ import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import java.util.LinkedList;
 import java.util.Timer;
 import java.util.TimerTask;
 import javax.swing.JPanel;
 import voronoigame.model.Cell;
-import voronoigame.model.StationaryCell;
 
 /**
  *

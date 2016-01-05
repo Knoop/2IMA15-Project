@@ -16,16 +16,16 @@ import voronoigame.model.StationaryCell;
  */
 public class Util
 {
-    public static final int COLOR_HEALTHY = 0x93ed94;
-    public static final int COLOR_INFECTED = 0xff0000;
-    public static final int COLOR_WHITE_CELL = 0xffffff;
-    public static final int COLOR_DEAD = 0x888888;
+    public static final Color COLOR_HEALTHY = new Color(0x93ed94);
+    public static final Color COLOR_INFECTED = new Color(0xff0000);
+    public static final Color COLOR_WHITE_CELL = new Color(0xffffff);
+    public static final Color COLOR_DEAD = new Color(0x888888);
 
     public static Color getColorforCell(Cell cell)
     {
         if (cell.getType() == Cell.Type.DEAD)
         {
-            return new Color(COLOR_DEAD);
+            return COLOR_DEAD;
         }
         if (cell.getClass() == StationaryCell.class)
         {
@@ -33,14 +33,30 @@ public class Util
             switch (stationaryCell.getType())
             {
                 case INFECTED:
-                    return new Color(COLOR_INFECTED);
+                    return COLOR_INFECTED;
                 default:
-                    Color color = new Color(COLOR_HEALTHY);
-                    //Change color when area of cell deviates too much from initarea
-                    return color;
+                    Color color = COLOR_HEALTHY;
+                    double currentRatio = cell.getCurrentAreaRatio();
+                    currentRatio = currentRatio < Cell.MAX_SCALE_FACTOR ? currentRatio : Cell.MAX_SCALE_FACTOR;
+                    
+                    double colorChangeFactor = (currentRatio - 1) / (Cell.MAX_SCALE_FACTOR - 1);
+                    
+                    int r = color.getRed();
+                    int g = color.getGreen();
+                    int b = color.getBlue();
+                    
+                    int rDiffMax = COLOR_DEAD.getRed() - r;
+                    int gDiffMax = COLOR_DEAD.getGreen() - g;
+                    int bDiffMax = COLOR_DEAD.getBlue() - b;
+                    
+                    r += (int)((double)rDiffMax * colorChangeFactor);
+                    g += (int)((double)gDiffMax * colorChangeFactor);
+                    b += (int)((double)bDiffMax * colorChangeFactor);
+                    
+                    return new Color(r, g, b);
             }
         }
-        return new Color(COLOR_WHITE_CELL);
+        return COLOR_WHITE_CELL;
     }
 
     public static Boolean isInCircle(Point point, Point circleCenter, double circleRadius)
