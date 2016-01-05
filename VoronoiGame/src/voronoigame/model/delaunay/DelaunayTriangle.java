@@ -13,7 +13,7 @@ import java.util.TreeSet;
  *
  * @author leo
  */
-public class DelaunayTriangle {
+public class DelaunayTriangle implements Comparable{
     
     private DelaunayPoint[] points;
     private Point bounds;
@@ -286,6 +286,33 @@ public class DelaunayTriangle {
     public double radius(){
         double[] center = circumCenter();
         return points[0].distance(center[0], center[1]);
+    }
+
+    @Override
+    public int compareTo(Object t) {
+        int totalX1 = 0, totalY1 = 0;
+        for(DelaunayPoint p: this.points){
+            totalX1 += (int) p.getX();
+            totalY1 += (int) p.getY();
+        }
+        if((t instanceof DelaunayTriangle)){
+            DelaunayTriangle triangle = (DelaunayTriangle) t;
+            int totalX2 = 0, totalY2 = 0;
+            for(DelaunayPoint p: triangle.points){
+                totalX2 += (int) p.getX();
+                totalY2 += (int) p.getY();
+            }
+            if(totalX1 == totalX2){
+                if(totalY1 == totalY2){
+                    return 0;
+                } else {
+                    return totalY1 - totalY2;
+                }
+            } else {
+                return totalX1 - totalX2;
+            }
+        }
+        return -1;
     }
     
 }
