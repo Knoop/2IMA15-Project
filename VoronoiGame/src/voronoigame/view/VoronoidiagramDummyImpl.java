@@ -10,8 +10,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Set;
 import voronoigame.model.Cell;
+import voronoigame.model.GameState;
 import voronoigame.model.MoveableCell;
 import voronoigame.model.StationaryCell;
 
@@ -22,24 +24,26 @@ import voronoigame.model.StationaryCell;
 public class VoronoidiagramDummyImpl implements VoronoiDiagram
 {
     
-    Point s1 = new Point(174, 188);
-    Point s2 = new Point(317, 261);
-    Point s3 = new Point(495, 118);
-    Point s4 = new Point(480, 296);
-    Point s5 = new Point(150, 371);
+    static Point s1 = new Point(174, 188);
+    static Point s2 = new Point(317, 261);
+    static Point s3 = new Point(495, 118);
+    static Point s4 = new Point(480, 296);
+    static Point s5 = new Point(150, 371);
     
-    HashMap<Point, Cell> siteCellMap;
+    public static Map<Point, Cell.Type> getDummyCellTypeMap()
+    {
+        Map<Point, Cell.Type> cellTypes = new HashMap<>();
+        cellTypes.put(s1, Cell.Type.DEFENSE);
+        cellTypes.put(s2, Cell.Type.HEALTHY);
+        cellTypes.put(s3, Cell.Type.HEALTHY);
+        cellTypes.put(s4, Cell.Type.INFECTED);
+        cellTypes.put(s5, Cell.Type.HEALTHY);
+        
+        return cellTypes;
+    }
 
     public VoronoidiagramDummyImpl()
     {
-        siteCellMap = new HashMap<>();
-        siteCellMap.put(s1, new MoveableCell(s1, 1f));
-        siteCellMap.put(s2, new StationaryCell(s2, 1f));
-        siteCellMap.put(s3, new StationaryCell(s3, 1f));
-        siteCellMap.put(s4, new StationaryCell(s4, 1f));
-        siteCellMap.put(s5, new StationaryCell(s5, 1f));
-        
-        siteCellMap.get(s4).setType(Cell.Type.INFECTED);
     }
     
     @Override
@@ -145,7 +149,7 @@ public class VoronoidiagramDummyImpl implements VoronoiDiagram
     @Override
     public Cell getCellFromSite(Point site)
     {
-        return siteCellMap.get(site);
+        return null;
     }
 
     @Override

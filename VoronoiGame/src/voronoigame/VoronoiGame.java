@@ -5,8 +5,13 @@
  */
 package voronoigame;
 
+import java.awt.Point;
+import java.util.HashMap;
+import java.util.Map;
 import voronoigame.controller.Controller;
+import voronoigame.model.Cell;
 import voronoigame.view.MainView;
+import voronoigame.view.VoronoidiagramDummyImpl;
 
 /**
  *
@@ -17,7 +22,9 @@ public class VoronoiGame {
     private Controller controller;
     
     private VoronoiGame(){
-        this.controller = new Controller();
+        
+        
+        this.controller = new Controller(VoronoidiagramDummyImpl.getDummyCellTypeMap());
     }
     
     

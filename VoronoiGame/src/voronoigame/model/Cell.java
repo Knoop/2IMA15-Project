@@ -63,8 +63,8 @@ public abstract class Cell
         this.type = type;
         
         double[] properties = Util.calculateProperties(this.point, this.gameState);
-        this.initArea = properties[Util.INDEX_AREA];
-        this.initCircumference = properties[Util.INDEX_CIRCUMFERENCE];
+        this.currentArea = this.initArea = properties[Util.INDEX_AREA];
+        this.currentCircumference = this.initCircumference = properties[Util.INDEX_CIRCUMFERENCE];
     }
     
     protected void invalidate(){

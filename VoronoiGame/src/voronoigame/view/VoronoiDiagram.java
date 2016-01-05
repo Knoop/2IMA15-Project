@@ -53,6 +53,7 @@ public interface VoronoiDiagram
      * @param site
      * @return 
      */
+    @Deprecated
     public Cell getCellFromSite(Point site);
     
     /**

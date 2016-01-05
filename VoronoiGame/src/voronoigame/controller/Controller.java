@@ -5,6 +5,10 @@
  */
 package voronoigame.controller;
 
+import java.awt.Point;
+import java.util.Map;
+import voronoigame.model.Cell;
+import voronoigame.model.GameState;
 import voronoigame.view.MainView;
 import voronoigame.view.VoronoiDiagram;
 import voronoigame.view.VoronoiPanel;
@@ -17,10 +21,12 @@ import voronoigame.view.VoronoidiagramDummyImpl;
 public class Controller {
 
     private final MainView mainView;
+    private final GameState gameState;
 
-    public Controller() {
+    public Controller(Map<Point, Cell.Type> cellTypes) {
         this.mainView = new MainView();
-        this.mainView.setVoronoiPanel(this.makePanel(this.makeVoronoiDiagram()));
+        this.gameState = new GameState(cellTypes, this.makeVoronoiDiagram());
+        this.mainView.setVoronoiPanel(this.makePanel());
         this.mainView.setVisible(true);
     }
 
@@ -31,9 +37,9 @@ public class Controller {
      * created
      * @return The created panel.
      */
-    private VoronoiPanel makePanel(VoronoiDiagram voronoiDiagram) {
-        VoronoiPanel panel = new VoronoiPanel(voronoiDiagram);
-        VoronoiGameMouseListener mouseListener = new VoronoiGameMouseListener(panel);
+    private VoronoiPanel makePanel() {
+        VoronoiPanel panel = new VoronoiPanel(this.gameState);
+        VoronoiGameMouseListener mouseListener = new VoronoiGameMouseListener(this.gameState, panel);
         panel.addMouseListener(mouseListener);
         panel.addMouseMotionListener(mouseListener);
         return panel;
