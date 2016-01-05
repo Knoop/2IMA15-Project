@@ -7,13 +7,13 @@ package voronoigame.controller;
 
 import java.awt.Cursor;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import voronoigame.model.Cell;
 import voronoigame.model.MoveableCell;
-import voronoigame.view.Util;
+import voronoigame.Util;
+import voronoigame.model.GameState;
 import voronoigame.view.VoronoiPanel;
 
 /**
@@ -22,6 +22,7 @@ import voronoigame.view.VoronoiPanel;
  */
 public class VoronoiGameMouseListener implements MouseListener, MouseMotionListener {
 
+    private final GameState gameState;
     private final VoronoiPanel voronoiPanel;
 
     /**
@@ -35,7 +36,8 @@ public class VoronoiGameMouseListener implements MouseListener, MouseMotionListe
      */
     private FocusType focusType;
 
-    VoronoiGameMouseListener(VoronoiPanel voronoiPanel) {
+    VoronoiGameMouseListener(GameState gameState, VoronoiPanel voronoiPanel) {
+        this.gameState = gameState;
         this.voronoiPanel = voronoiPanel;
     }
 
@@ -67,15 +69,15 @@ public class VoronoiGameMouseListener implements MouseListener, MouseMotionListe
     @Override
     public void mouseDragged(MouseEvent me) {
         if (this.focusType != FocusType.NONE) {
-            voronoiPanel.getVoronoiDiagram().moveSite(this.focus, me.getPoint());
+            this.gameState.getDiagram().moveSite(this.focus, me.getPoint());
         }
     }
 
     @Override
     public void mouseMoved(MouseEvent me) {
-        for (Point site : this.voronoiPanel.getVoronoiDiagram().getSites()) {
+        for (Point site : this.gameState.getDiagram().getSites()) {
             Point cursorLocation = me.getPoint();
-            Cell cell = this.voronoiPanel.getVoronoiDiagram().getCellFromSite(site);
+            Cell cell = this.gameState.getPointCellMap().get(site);
             if (Util.isInCircle(cursorLocation, site, VoronoiPanel.SITE_RADIUS)
                     && cell instanceof MoveableCell) {
                 this.setFocus(cell, FocusType.HOVER);

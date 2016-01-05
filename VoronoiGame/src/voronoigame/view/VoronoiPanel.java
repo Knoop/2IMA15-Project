@@ -5,6 +5,7 @@
  */
 package voronoigame.view;
 
+import voronoigame.Util;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -16,6 +17,7 @@ import java.awt.Stroke;
 import java.util.LinkedList;
 import javax.swing.JPanel;
 import voronoigame.controller.VoronoiGameMouseListener;
+import voronoigame.model.GameState;
 
 /**
  *
@@ -25,16 +27,12 @@ public class VoronoiPanel extends JPanel {
 
     public static final int SITE_RADIUS = 4;
     private static final Stroke EDGE_STROKE = new BasicStroke(1);
-
-    private VoronoiDiagram voronoiDiagram;
     private VoronoiGameMouseListener voronoiGameMouseListener;
+    
+    private final GameState gameState;
 
-    public VoronoiDiagram getVoronoiDiagram() {
-        return voronoiDiagram;
-    }
-
-    public VoronoiPanel(VoronoiDiagram voronoiDiagram) {
-        this.voronoiDiagram = voronoiDiagram;
+    public VoronoiPanel(GameState gameState) {
+        this.gameState = gameState;
     }
 
     public void setVoronoiGameMouseListener(VoronoiGameMouseListener listener) {
@@ -67,21 +65,21 @@ public class VoronoiPanel extends JPanel {
         g2.setColor(Color.WHITE);
         g2.fillRect(0, 0, this.getWidth(), this.getHeight());
 
-        for (Point site : this.voronoiDiagram.getSites()) {
-            LinkedList<Point> face = this.voronoiDiagram.getFaceFromSite(site);
+        for (Point site : this.gameState.getDiagram().getSites()) {
+            LinkedList<Point> face = this.gameState.getDiagram().getFaceFromSite(site);
             Polygon polygon = new Polygon();
             while (!face.isEmpty()) {
                 Point vertex = face.pop();
                 polygon.addPoint(vertex.x, vertex.y);
             }
-            g2.setColor(Util.getColorforCell(voronoiDiagram.getCellFromSite(site)));
+            g2.setColor(Util.getColorforCell(this.gameState.getPointCellMap().get(site)));
             g2.fillPolygon(polygon);
 
             g2.setColor(Color.BLACK);
             g2.fillOval(site.x - SITE_RADIUS, site.y - SITE_RADIUS, SITE_RADIUS * 2, SITE_RADIUS * 2);
         }
 
-        for (Point[] edge : voronoiDiagram.getVoronoiEdges()) {
+        for (Point[] edge : this.gameState.getDiagram().getVoronoiEdges()) {
             g2.setColor(Color.BLACK);
             g2.setStroke(EDGE_STROKE);
             g2.drawLine(edge[0].x, edge[0].y, edge[1].x, edge[1].y);
