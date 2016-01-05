@@ -5,31 +5,23 @@
  */
 package voronoigame.model.delaunay;
 
-import java.awt.geom.Point2D;
+import java.awt.Point;
 
 /**
  *
  * @author leo
  */
-public class DelaunayPoint extends Point2D{
+public class DelaunayPoint extends Point {
 
-    DelaunayPoint(double x, double y){
-        this.setLocation(x, y);
+    private boolean symbolic;
+    
+    DelaunayPoint(int x, int y, boolean sym){
+        super(x,y);
+        this.symbolic = sym;
     }
     
-    @Override
-    public double getX() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public double getY() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void setLocation(double d, double d1) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public boolean isSymbolic(){
+        return this.symbolic;
     }
     
 }
