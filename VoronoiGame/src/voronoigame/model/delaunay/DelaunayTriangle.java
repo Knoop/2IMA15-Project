@@ -7,6 +7,7 @@ package voronoigame.model.delaunay;
 
 import java.awt.Point;
 import java.awt.geom.Point2D;
+import java.util.TreeSet;
 
 /**
  *
@@ -15,25 +16,199 @@ import java.awt.geom.Point2D;
 public class DelaunayTriangle {
     
     private DelaunayPoint[] points;
+    private Point bounds;
+    private DelaunayTriangle[] parents;
+    private DelaunayTriangle[] children;
+    private DelaunayTriangle[] neighbours;
     
-    DelaunayTriangle(DelaunayPoint[] points){
+    DelaunayTriangle(DelaunayPoint[] points, Point bounds){
         this.points = points;
+        this.bounds = bounds;
+        this.parents = new DelaunayTriangle[2];
+        this.children = new DelaunayTriangle[3];
+        this.neighbours = new DelaunayTriangle[3];
     }
     
     protected void insert(Point p){
+        boolean hasPoint = false;
+        for(DelaunayPoint d: this.points){
+            hasPoint = hasPoint || (p.getX() == d.getX() && p.getY() == d.getY());
+        }
+        if(hasPoint){
+            return;
+        }
         
+        if(contains(p)){
+            if(this.children[0] == null){
+                //Set new children
+                DelaunayPoint newPoint = new DelaunayPoint((int) p.getX(), (int) p.getY(), false);
+                this.children[0] = new DelaunayTriangle(new DelaunayPoint[] {
+                    newPoint, this.points[0], this.points[1]
+                    }, this.bounds);
+                this.children[1] = new DelaunayTriangle(new DelaunayPoint[] {
+                    newPoint, this.points[1], this.points[2]
+                    }, this.bounds);
+                this.children[2] = new DelaunayTriangle(new DelaunayPoint[] {
+                    newPoint, this.points[2], this.points[0]
+                    }, this.bounds);
+                
+                //Set children's neighbours
+                this.children[0].neighbours = new DelaunayTriangle[] {
+                    this.children[1], this.children[2], 
+                    getEdgeNeighbour(this.points[0], this.points[1])
+                };
+                this.children[1].neighbours = new DelaunayTriangle[] {
+                    this.children[0], this.children[2], 
+                    getEdgeNeighbour(this.points[1], this.points[2])
+                };
+                this.children[2].neighbours = new DelaunayTriangle[] {
+                    this.children[0], this.children[1], 
+                    getEdgeNeighbour(this.points[2], this.points[0])
+                };
+                
+                //Legalize
+                for(DelaunayTriangle t: this.children){
+                    t.legalizeEdge(t.points[0], t.points[1], t.points[2]);
+                }
+            }
+            else {
+                for(DelaunayTriangle t: this.children){
+                    if(t != null){
+                        t.insert(p);
+                    }
+                }
+            }
+        }
+    }
+    
+    private void legalizeEdge(DelaunayPoint p, DelaunayPoint e1, DelaunayPoint e2){
+        DelaunayTriangle targetNeighbour = getEdgeNeighbour(e1, e2);
+        DelaunayPoint targetPoint = null;
+        for(DelaunayPoint d: targetNeighbour.points){
+            if(!d.equals(e1) && !d.equals(e2)){
+                targetPoint = d;
+            }
+        }
+        double[] c = circumCenter();
+        double r = radius();
+        if(targetPoint.distance(c[0], c[1]) < r){
+            
+            this.children[0] = new DelaunayTriangle(new DelaunayPoint[] {
+                p, e1, targetPoint
+                }, this.bounds);
+            this.children[1] = new DelaunayTriangle(new DelaunayPoint[] {
+                p, e2, targetPoint
+                }, this.bounds);
+            
+            targetNeighbour.children[0] = this.children[0];
+            targetNeighbour.children[1] = this.children[1];
+            
+            //Set children's neighbours
+            this.children[0].neighbours = new DelaunayTriangle[] {
+                this.children[1], 
+                this.getEdgeNeighbour(e1, targetPoint), 
+                this.getEdgeNeighbour(p, e2)
+            };
+            this.children[1].neighbours = new DelaunayTriangle[] {
+                this.children[0], 
+                this.getEdgeNeighbour(e2, targetPoint), 
+                this.getEdgeNeighbour(p, e2)
+            };
+            
+            this.children[0].legalizeEdge(p, targetPoint, e1);
+            this.children[1].legalizeEdge(p, targetPoint, e2);
+        }
+    }
+    
+    private DelaunayTriangle getEdgeNeighbour(DelaunayPoint e1, DelaunayPoint e2){
+        boolean has1, has2;
+        for(DelaunayTriangle t: neighbours){
+            if(t != null){
+                has1 = false;
+                has2 = false;
+                for(DelaunayPoint p: t.points){
+                    if(p.equals(e1)){
+                        has1 = true;
+                    }
+                    if(p.equals(e2)){
+                        has2 = true;
+                    }
+                }
+                if(has1 && has2){
+                    return t;
+                }
+            }
+        }
+        return null;
     }
     
     protected void delete(Point p){
-        
+        boolean hasPoint = false;
+        for(DelaunayPoint d: this.points){
+            hasPoint = hasPoint || (p.getX() == d.getX() && p.getY() == d.getY());
+        }
+        if(hasPoint){
+            if(this.children[0] == null){
+                for(DelaunayTriangle t: this.parents){
+                    if(t != null){
+                        t.children = new DelaunayTriangle[3];
+                    }
+                }
+            }
+            else {
+                for(DelaunayTriangle t: this.children){
+                    if(t != null){
+                        t.delete(p);
+                    }
+                }
+            }
+        }
     }
     
-    protected void findAll(Point p){
-        
+    public TreeSet<DelaunayTriangle> findAll(Point p){
+        TreeSet result = new TreeSet<>();
+        if(contains(p)){
+            result.add(this);
+            for(DelaunayTriangle t: this.children){
+                    if(t != null){
+                        result.addAll(t.findAll(p));
+                    }
+            }
+        }
+        return result;
     }
     
-    protected void findLeaf(Point p){
-        
+    public TreeSet<DelaunayTriangle> findLeaves(Point p){
+        TreeSet result = new TreeSet<>();
+        if(contains(p)){
+            if(this.children[0] == null){
+                result.add(this);
+            }
+            else {
+                for(DelaunayTriangle t: this.children){
+                    if(t != null){
+                        result.addAll(t.findLeaves(p));
+                    }
+                }
+            }
+        }
+        return result;
+    }
+    
+    public double[] getVoronoiVertex(Point p){
+        if(isSymbolic()){
+            //return new double[2];
+        }
+        return circumCenter();
+    }
+    
+    public boolean isSymbolic(){
+        for(DelaunayPoint p: this.points){
+            if(p.isSymbolic()){
+                return true;
+            }
+        }
+        return false;
     }
     
     protected boolean contains(Point p){
@@ -44,10 +219,10 @@ public class DelaunayTriangle {
         Point opposite;
         double px, py, ox, oy;
         for(int i = numPoints - 1; i <= 0; i--){
-            base = points[i];
-            edge = new Point((int) points[i].getX() - (int) points[(i+1)%numPoints].getX(), 
-                (int) points[i].getY() - (int) points[(i+1)%numPoints].getY());
-            opposite = points[(i+2)%numPoints];
+            base = this.points[i];
+            edge = new Point((int) this.points[i].getX() - (int) this.points[(i+1)%numPoints].getX(), 
+                (int) this.points[i].getY() - (int) this.points[(i+1)%numPoints].getY());
+            opposite = this.points[(i+2)%numPoints];
             
             px = p.getX() - base.getX();
             py = p.getY() - base.getY();
@@ -77,10 +252,10 @@ public class DelaunayTriangle {
         p2y = (this.points[1].getY() + this.points[2].getY())/2;
         
         double d1x, d1y, d2x, d2y; //Direction vectors
-        d1x = points[1].getX() - p1x;
-        d1y = p1y - points[1].getY();
-        d2x = points[1].getX() - p2x;
-        d2y = p2y - points[1].getY();
+        d1x = this.points[1].getX() - p1x;
+        d1y = p1y - this.points[1].getY();
+        d2x = this.points[1].getX() - p2x;
+        d2y = p2y - this.points[1].getY();
         
         double a1, b1, a2, b2; //Values for functions yi = ai*x + bi
         a1 = d1y/d1x;
