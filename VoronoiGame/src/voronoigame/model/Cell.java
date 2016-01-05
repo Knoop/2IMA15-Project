@@ -1,6 +1,7 @@
 package voronoigame.model;
 
 import java.awt.Point;
+import voronoigame.Util;
 
 /**
  * @author Maurice
@@ -12,32 +13,41 @@ public abstract class Cell
 
     protected Point point = null;
 
-    protected final float initCircumference, initArea;
-    protected float currentArea;
+    protected final double initCircumference, initArea;
+    protected double currentCircumference, currentArea;
     
     protected Type type;
 
     public static final double MAX_SCALE_FACTOR = 2;
 
-    public float getInitCircumference()
+    public double getInitCircumference()
     {
         return initCircumference;
     }
 
-    public float getInitArea()
+    public double getInitArea()
     {
         return initArea;
     }
 
-    public float getCurrentArea()
-    {
+    private void updateProperties(){
+        double[] properties = Util.calculateProperties(this.point, this.gameState);
+        this.currentArea = properties[Util.INDEX_AREA];
+        this.currentCircumference = properties[Util.INDEX_CIRCUMFERENCE];
+    }
+    
+    public double getCurrentArea() {
+        if(this.currentArea < 0)
+            this.updateProperties();
         return currentArea;
     }
 
-    public void setCurrentArea(float currentArea)
-    {
-        this.currentArea = currentArea;
+    public double getCurrentCircumference(){
+        if(this.currentCircumference < 0)
+            this.updateProperties();
+        return currentCircumference;
     }
+    
 
     public double getCurrentAreaRatio()
     {   
@@ -52,18 +62,16 @@ public abstract class Cell
         this.point = point;
         this.type = type;
         
-        this.initArea = this.area();
-        this.initCircumference = this.circumference();
+        double[] properties = Util.calculateProperties(this.point, this.gameState);
+        this.initArea = properties[Util.INDEX_AREA];
+        this.initCircumference = properties[Util.INDEX_CIRCUMFERENCE];
     }
     
-    private float area(){
-        return this.gameState.area(this);
+    protected void invalidate(){
+        this.currentArea = -1d;
+        this.currentCircumference = -1d;
     }
     
-    private float circumference(){
-        return this.gameState.circumference(this);
-    }
-
     public final void setType(Type type)
     {
         this.type = type;
