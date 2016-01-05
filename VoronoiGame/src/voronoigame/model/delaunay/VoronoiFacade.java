@@ -48,6 +48,18 @@ public class VoronoiFacade implements VoronoiDiagram {
         insertMovingPoints();
     }
     
+    VoronoiFacade(ArrayList<Point> stillPoints, ArrayList<Point> movingPoints, Point bounds){
+        this.stillPoints = stillPoints;
+        this.movingPoints = movingPoints;
+        java.util.Collections.shuffle(this.stillPoints);
+        java.util.Collections.shuffle(this.movingPoints);
+        
+        this.bounds = bounds;
+        
+        initializeDelaunay();
+        insertMovingPoints();
+    }
+    
     private void initializeDelaunay(){
         
         DelaunayPoint[] rootpoints = {new DelaunayPoint(-this.bounds.x-MARGIN, -MARGIN, true), 
