@@ -8,7 +8,6 @@ package voronoigame.model;
 import java.awt.Point;
 import java.io.Reader;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import voronoigame.view.VoronoiDiagram;
 
