@@ -25,7 +25,7 @@ public class VoronoiFacade implements VoronoiDiagram {
     
     final private int MARGIN = 1;
     
-    VoronoiFacade(ArrayList<Point> stillPoints, ArrayList<Point> movingPoints){
+    public VoronoiFacade(ArrayList<Point> stillPoints, ArrayList<Point> movingPoints){
         this.stillPoints = stillPoints;
         this.movingPoints = movingPoints;
         java.util.Collections.shuffle(this.stillPoints);
