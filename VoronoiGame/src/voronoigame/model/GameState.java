@@ -15,22 +15,19 @@ import voronoigame.view.VoronoiDiagram;
  *
  * @author Maurice
  */
-public class GameState {
+public class GameState
+{
 
     private final Map<Point, Cell> pointCellMap;
     private final VoronoiDiagram voronoiDiagram;
 
-    public Map<Point, Cell> getPointCellMap()
+    public GameState(Map<Point, Cell.Type> cellTypes, VoronoiDiagram voronoiDiagram)
     {
-        return pointCellMap;
-    }
-    
-    public GameState(Map<Point, Cell.Type> cellTypes, VoronoiDiagram voronoiDiagram){
         this.pointCellMap = new HashMap<>();
         this.voronoiDiagram = voronoiDiagram;
         this.mapSitesToCells(cellTypes);
     }
-    
+
     private void mapSitesToCells(Map<Point, Cell.Type> cellTypes)
     {
         for (Point site : this.voronoiDiagram.getSites())
@@ -49,19 +46,26 @@ public class GameState {
             this.pointCellMap.put(site, cell);
         }
     }
-    
-    public VoronoiDiagram getDiagram(){
+
+    public VoronoiDiagram getDiagram()
+    {
         return this.voronoiDiagram;
     }
-    
+
+    public Map<Point, Cell> getPointCellMap()
+    {
+        return pointCellMap;
+    }
+
     /**
      * Create a GameState from a Reader.
+     *
      * @param reader
-     * @return 
+     * @return
      */
-    public static GameState from(Reader reader){
+    public static GameState from(Reader reader)
+    {
         return null;
     }
-    
-    
+
 }
