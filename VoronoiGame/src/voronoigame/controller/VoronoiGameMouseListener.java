@@ -4,24 +4,28 @@
  * and open the template in the editor.
  */
 
-package voronoigame.view;
+package voronoigame.controller;
 
 import java.awt.Cursor;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import voronoigame.model.Cell;
 import voronoigame.model.MoveableCell;
+import voronoigame.view.Util;
+import voronoigame.view.VoronoiPanel;
 
 /**
  *
  * @author Guus van Lankveld
  */
-public class VoronoiMouseMotionListener implements MouseMotionListener
+public class VoronoiGameMouseListener implements MouseListener, MouseMotionListener
 {
     private final VoronoiPanel voronoiPanel;
     
-    public VoronoiMouseMotionListener(VoronoiPanel voronoiPanel)
+    VoronoiGameMouseListener(VoronoiPanel voronoiPanel)
     {
         this.voronoiPanel = voronoiPanel;
     }
@@ -54,6 +58,37 @@ public class VoronoiMouseMotionListener implements MouseMotionListener
         }
         this.voronoiPanel.hover = null;
         this.voronoiPanel.setCursor(Cursor.getDefaultCursor());
+    }
+    
+    @Override
+    public void mouseClicked(MouseEvent me)
+    {
+    }
+
+    @Override
+    public void mousePressed(MouseEvent me)
+    {
+        if (this.voronoiPanel.hover == null)
+        {
+            return;
+        }
+        this.voronoiPanel.dragging = this.voronoiPanel.hover;
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent me)
+    {
+        this.voronoiPanel.dragging = null;
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent me)
+    {
+    }
+
+    @Override
+    public void mouseExited(MouseEvent me)
+    {
     }
     
 }
