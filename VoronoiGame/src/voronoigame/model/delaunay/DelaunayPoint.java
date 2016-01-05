@@ -11,7 +11,7 @@ import java.awt.Point;
  *
  * @author leo
  */
-public class DelaunayPoint extends Point {
+public class DelaunayPoint extends Point implements Comparable{
 
     private boolean symbolic;
     
@@ -22,6 +22,23 @@ public class DelaunayPoint extends Point {
     
     public boolean isSymbolic(){
         return this.symbolic;
+    }
+
+    @Override
+    public int compareTo(Object t) {
+        if(t instanceof DelaunayPoint){
+            DelaunayPoint p = (DelaunayPoint) t;
+            if(x == p.x){
+                if(y == p.y){
+                    return 0;
+                } else {
+                    return y - p.y;
+                }
+            } else {
+                return x - p.x;
+            }
+        }
+        return -1;
     }
     
 }
