@@ -13,8 +13,8 @@ import java.awt.Point;
  */
 public class StationaryCell extends Cell {
     
-    public StationaryCell(Point point) {
-        super(point);
+    public StationaryCell(Point point, float initArea) {
+        super(point, initArea);
     }
     
 }
