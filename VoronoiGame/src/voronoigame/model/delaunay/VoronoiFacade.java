@@ -69,6 +69,7 @@ public class VoronoiFacade implements VoronoiDiagram {
         this.root = new DelaunayTriangle(rootpoints, this.bounds);
         
         for(Point p: this.stillPoints){
+            System.out.println("inserting " + p);
             this.root.insert(p);
         }
     }
@@ -82,7 +83,7 @@ public class VoronoiFacade implements VoronoiDiagram {
     
     private void deleteMovingPoints(){
         
-        for(int i = this.movingPoints.size() - 1; i <= 0; i--){
+        for(int i = this.movingPoints.size() - 1; i >= 0; i--){
             this.root.delete(this.movingPoints.get(i));
         }
     }
@@ -129,32 +130,49 @@ public class VoronoiFacade implements VoronoiDiagram {
 
     @Override
     public LinkedList<Point> getFaceFromSite(Point site) {
-        DelaunayTriangle base = this.root.findLeaves(site).first();
+        TreeSet<DelaunayTriangle> leaves = this.root.findLeaves(site);
         LinkedList result = new LinkedList<>();
+        if(leaves.size() < 1){
+            result.add(root.points[0]);
+            result.add(root.points[1]);
+            result.add(root.points[2]);
+            return result;
+        }
+        DelaunayTriangle base = leaves.first();
         double[] xy = base.getVoronoiVertex();
         result.add(new Point((int) xy[0], (int) xy[1]));
         
         DelaunayPoint dSite = null;
         DelaunayPoint turnPoint = null;
-        for(int i = base.points.length - 1; i <= 0; i--){
+        for(int i = base.points.length - 1; i >= 0; i--){
             if(base.points[i].getX() == site.getX() && base.points[i].getY() == site.getY()){
                 dSite = base.points[i];
                 turnPoint = base.points[(i+1)%base.points.length];
+                break;
             }
         }
-        
+        if(dSite == null){
+            result.add(root.points[0]);
+            result.add(root.points[1]);
+            result.add(root.points[2]);
+            return result;
+        }
         DelaunayTriangle current = base.getEdgeNeighbour(dSite, turnPoint);
+        
         while(!current.equals(base)){
-            
-            for(int i = current.points.length - 1; i <= 0; i--){
+
+            for(int i = current.points.length - 1; i >= 0; i--){
                 if(!current.points[i].equals(dSite) && !current.points[i].equals(turnPoint)){
                     turnPoint = current.points[i];
+                    break;
                 }
             }
+            
             xy = current.getVoronoiVertex();
             result.add(new Point((int) xy[0], (int) xy[1]));
-            current = base.getEdgeNeighbour(dSite, turnPoint);
+            current = current.getEdgeNeighbour(dSite, turnPoint);
         }
+        
         return result;
     }
 

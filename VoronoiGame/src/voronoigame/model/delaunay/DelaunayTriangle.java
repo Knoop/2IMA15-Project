@@ -30,15 +30,12 @@ public class DelaunayTriangle implements Comparable{
     }
     
     protected void insert(Point p){
-        boolean hasPoint = false;
-        for(DelaunayPoint d: this.points){
-            hasPoint = hasPoint || (p.getX() == d.getX() && p.getY() == d.getY());
-        }
-        if(hasPoint){
+        if(hasPoint(p)){
             return;
         }
         
         if(contains(p)){
+            
             if(this.children[0] == null){
                 //Set new children
                 DelaunayPoint newPoint = new DelaunayPoint((int) p.getX(), (int) p.getY(), false);
@@ -58,18 +55,21 @@ public class DelaunayTriangle implements Comparable{
                 this.children[2].parents[0] = this;
                 
                 //Set children's neighbours
-                this.children[0].neighbours = new DelaunayTriangle[] {
-                    this.children[1], this.children[2], 
-                    getEdgeNeighbour(this.points[0], this.points[1])
-                };
-                this.children[1].neighbours = new DelaunayTriangle[] {
-                    this.children[0], this.children[2], 
-                    getEdgeNeighbour(this.points[1], this.points[2])
-                };
-                this.children[2].neighbours = new DelaunayTriangle[] {
-                    this.children[0], this.children[1], 
-                    getEdgeNeighbour(this.points[2], this.points[0])
-                };
+                DelaunayTriangle currentNeighbour = null;
+                int oldNeighbourIndex;
+                int numNeigh = 3;
+                for(int i = 0; i < numNeigh; i++){
+                    currentNeighbour = getEdgeNeighbour(this.points[i], this.points[(i+1)%numNeigh]);
+                    if(currentNeighbour != null){
+                        oldNeighbourIndex = currentNeighbour.getEdgeNeighbourIndex(
+                                        this.points[i], this.points[(i+1)%numNeigh]);
+                        currentNeighbour.neighbours[oldNeighbourIndex] = this.children[i];
+                    }
+                    this.children[i].neighbours = new DelaunayTriangle[] {
+                        this.children[(i+1)%numNeigh], this.children[(i+2)%numNeigh], 
+                        currentNeighbour
+                    };
+                }                
                 
                 //Legalize
                 for(DelaunayTriangle t: this.children){
@@ -88,6 +88,9 @@ public class DelaunayTriangle implements Comparable{
     
     private void legalizeEdge(DelaunayPoint p, DelaunayPoint e1, DelaunayPoint e2){
         DelaunayTriangle targetNeighbour = getEdgeNeighbour(e1, e2);
+        if(targetNeighbour == null || p.getX() > 0){
+            return;
+        }
         DelaunayPoint targetPoint = null;
         for(DelaunayPoint d: targetNeighbour.points){
             if(!d.equals(e1) && !d.equals(e2)){
@@ -98,46 +101,73 @@ public class DelaunayTriangle implements Comparable{
         double r = radius();
         if(targetPoint.distance(c[0], c[1]) < r){
             
-            this.children[0] = new DelaunayTriangle(new DelaunayPoint[] {
-                p, e1, targetPoint
-                }, this.bounds);
-            this.children[1] = new DelaunayTriangle(new DelaunayPoint[] {
-                p, e2, targetPoint
-                }, this.bounds);
+            int numChild = 2;
+            DelaunayPoint[] edge = new DelaunayPoint[] {e1, e2};
             
-            targetNeighbour.children[0] = this.children[0];
-            targetNeighbour.children[1] = this.children[1];
+            for(int i = 0; i < numChild; i++){
+                
+                this.children[i] = new DelaunayTriangle(new DelaunayPoint[] {
+                    p, edge[i], targetPoint
+                    }, this.bounds);
+                
+            }
             
-            this.children[0].parents[0] = this;
-            this.children[1].parents[0] = this;
+            DelaunayTriangle pNeigh;
+            DelaunayTriangle tNeigh;
+            for(int i = 0; i < numChild; i++){
+                
+                targetNeighbour.children[i] = this.children[i]; 
+                
+                this.children[i].parents[0] = this;   
+                this.children[i].parents[1] = targetNeighbour;   
+                
+                //Set children's neighbours
+                tNeigh = targetNeighbour.getEdgeNeighbour(edge[i], targetPoint);
+                pNeigh = this.getEdgeNeighbour(p, edge[i]);
+                this.children[i].neighbours = new DelaunayTriangle[] {
+                    this.children[(i+1)%numChild], 
+                    tNeigh, 
+                    pNeigh
+                };
+                if(tNeigh != null){
+                    tNeigh.neighbours[tNeigh.getEdgeNeighbourIndex(edge[i], targetPoint)] = this.children[i];
+                }
+                if(pNeigh !=null){
+                    pNeigh.neighbours[pNeigh.getEdgeNeighbourIndex(p, edge[i])] = this.children[i];
+                }
+            }
             
-            this.children[0].parents[1] = targetNeighbour;
-            this.children[1].parents[1] = targetNeighbour;
             
-            //Set children's neighbours
-            this.children[0].neighbours = new DelaunayTriangle[] {
-                this.children[1], 
-                this.getEdgeNeighbour(e1, targetPoint), 
-                this.getEdgeNeighbour(p, e2)
-            };
-            this.children[1].neighbours = new DelaunayTriangle[] {
-                this.children[0], 
-                this.getEdgeNeighbour(e2, targetPoint), 
-                this.getEdgeNeighbour(p, e2)
-            };
+            for(int i = 0; i < numChild; i++){
+                
+                this.children[i].legalizeEdge(p, targetPoint, edge[i]);
+            }
             
-            this.children[0].legalizeEdge(p, targetPoint, e1);
-            this.children[1].legalizeEdge(p, targetPoint, e2);
         }
     }
     
     protected DelaunayTriangle getEdgeNeighbour(DelaunayPoint e1, DelaunayPoint e2){
+        int i = getEdgeNeighbourIndex(e1,e2);
+        if(i == -1){
+            return null;
+        }
+        return this.neighbours[i];
+    }
+    
+    protected int getEdgeNeighbourIndex(DelaunayPoint e1, DelaunayPoint e2){
+        //System.out.println("this: " + this.points[0] + " " + this.points[1] + " " + this.points[2]);
+        for(int i = 0; i < 3; i++){
+            if(this.neighbours[i] !=null) {
+            //System.out.println("neighbour" + i + ": " + this.neighbours[i].points[0] + " " + this.neighbours[i].points[1] + " " + this.neighbours[i].points[2]);
+        }}
+        
         boolean has1, has2;
-        for(DelaunayTriangle t: neighbours){
-            if(t != null){
+        int nullIndex = -1;
+        for(int i = 0; i < this.neighbours.length; i++){
+            if(this.neighbours[i] != null){
                 has1 = false;
                 has2 = false;
-                for(DelaunayPoint p: t.points){
+                for(DelaunayPoint p: this.neighbours[i].points){
                     if(p.equals(e1)){
                         has1 = true;
                     }
@@ -146,11 +176,11 @@ public class DelaunayTriangle implements Comparable{
                     }
                 }
                 if(has1 && has2){
-                    return t;
+                    return i;
                 }
-            }
+            } else nullIndex = i;
         }
-        return null;
+        return nullIndex;
     }
     
     protected void delete(Point p){
@@ -237,31 +267,47 @@ public class DelaunayTriangle implements Comparable{
         return false;
     }
     
+    public boolean hasPoint(Point p){
+        
+        boolean hasPoint = false;
+        for(DelaunayPoint d: this.points){
+            hasPoint = hasPoint || (p.getX() == d.getX() && p.getY() == d.getY());
+        }
+        return hasPoint;
+    }
+    
     protected boolean contains(Point p){
+        if(hasPoint(p)){
+            return true;
+        }
         boolean result = true;
         int numPoints = this.points.length; //Should be 3
         Point base;
         Point edge;
         Point opposite;
         double px, py, ox, oy;
-        for(int i = numPoints - 1; i <= 0; i--){
+        double a, b;
+        for(int i = numPoints - 1; i >= 0; i--){
             base = this.points[i];
             edge = new Point((int) this.points[i].getX() - (int) this.points[(i+1)%numPoints].getX(), 
                 (int) this.points[i].getY() - (int) this.points[(i+1)%numPoints].getY());
             opposite = this.points[(i+2)%numPoints];
             
-            px = p.getX() - base.getX();
+            a = edge.getY()/edge.getX();
+            b = base.getY() - edge.getY()*(base.getX()/edge.getX());
+            
+            py = p.getY() - (b + a*p.getX());
+            oy = opposite.getY() - (b + a*opposite.getX());
+            
+            /*px = p.getX() - base.getX();
             py = p.getY() - base.getY();
             ox = opposite.getX() - base.getX();
             oy = opposite.getY() - base.getY();
             
             py = py + edge.getY() * (px/edge.getX());
-            oy = oy + edge.getY() * (ox/edge.getX());     
+            oy = oy + edge.getY() * (ox/edge.getX()); */    
                     
-            if(py == 0){
-                return true;
-            }
-            if(Math.signum(py) != Math.signum(oy)){
+            if(Math.signum(py) != Math.signum(oy) && py != 0){
                 result = false;
             }
         }
