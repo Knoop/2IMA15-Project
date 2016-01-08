@@ -5,20 +5,15 @@
  */
 package voronoigame;
 
-import java.awt.Point;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import voronoigame.controller.Controller;
-import voronoigame.model.Cell;
 import voronoigame.model.GameState;
 import voronoigame.view.MainView;
-import voronoigame.view.VoronoidiagramDummyImpl;
 
 /**
  *
@@ -29,20 +24,6 @@ public class VoronoiGame {
     private Controller controller;
     
     private VoronoiGame(){
-        try
-        {
-            Reader reader = new FileReader("levels/level0.lvl");
-            GameState.from(reader);
-        }
-        catch (FileNotFoundException ex)
-        {
-            Logger.getLogger(VoronoiGame.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        catch (IOException ex)
-        {
-            Logger.getLogger(VoronoiGame.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
         this.controller = new Controller();
     }
     
