@@ -6,6 +6,10 @@
 package voronoigame.controller;
 
 import java.awt.Point;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Map;
 import voronoigame.model.Cell;
 import voronoigame.model.GameState;
@@ -23,9 +27,9 @@ public class Controller {
     private final MainView mainView;
     private final GameState gameState;
 
-    public Controller() {
+    public Controller() throws IOException {
         this.mainView = new MainView();
-        this.gameState = new GameState(VoronoidiagramDummyImpl.getDummyCellTypeMap(), this.makeVoronoiDiagram());
+        this.gameState = GameState.from(new InputStreamReader(new FileInputStream(new File("levels/test.lvl"))));//new GameState(VoronoidiagramDummyImpl.getDummyCellTypeMap(), this.makeVoronoiDiagram());
         this.mainView.setVoronoiPanel(this.makePanel());
         this.mainView.setVisible(true);
     }
