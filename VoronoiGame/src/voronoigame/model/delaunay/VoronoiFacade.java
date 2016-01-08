@@ -120,9 +120,11 @@ public class VoronoiFacade implements VoronoiDiagram {
             current = t.getVoronoiVertex();
             Point vertex = new Point((int) current[0], (int) current[1]);
             for(DelaunayTriangle n: t.neighbours){
-                currentNeighbour = n.getVoronoiVertex();
-                Point vertexNeighbour = new Point((int) currentNeighbour[0], (int) currentNeighbour[1]);
-                result.add(new Point[] {vertex, vertexNeighbour});
+                if(n != null){
+                    currentNeighbour = n.getVoronoiVertex();
+                    Point vertexNeighbour = new Point((int) currentNeighbour[0], (int) currentNeighbour[1]);
+                    result.add(new Point[] {vertex, vertexNeighbour});
+                }
             }
         }
         return result;
