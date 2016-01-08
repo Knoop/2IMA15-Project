@@ -184,25 +184,40 @@ public class DelaunayTriangle implements Comparable{
     }
     
     protected void delete(Point p){
-        boolean hasPoint = false;
-        for(DelaunayPoint d: this.points){
-            hasPoint = hasPoint || (p.getX() == d.getX() && p.getY() == d.getY());
-        }
-        if(hasPoint){
-            if(this.children[0] == null){
-                for(DelaunayTriangle t: this.parents){
-                    if(t != null){
-                        t.children = new DelaunayTriangle[3];
+        if(hasPoint(p)){
+            
+            for(DelaunayTriangle t: this.children){
+                if(t != null){
+                    t.delete(p);
+                }
+            }
+            
+            for(DelaunayTriangle t: this.parents){
+                if(t != null){
+                    //Reset parent children, fix later for middle deletes
+                    t.children = new DelaunayTriangle[3];
+                
+                    //Correct parent neighbours
+                    DelaunayPoint[] sharedEdge = new DelaunayPoint[2];
+                    DelaunayTriangle sharedNeighbour;
+                    int edgeIndex = 0;
+                    for(DelaunayPoint d: this.points){
+                        if(t.hasPoint(d)){
+                            sharedEdge[edgeIndex] = d;
+                            edgeIndex = 1;
+                        }
+                    }
+                    sharedNeighbour = this.getEdgeNeighbour(sharedEdge[0], sharedEdge[1]);
+                    t.neighbours[t.getEdgeNeighbourIndex(sharedEdge[0], sharedEdge[1])] = sharedNeighbour;
+                    
+                    //Correct neighbour neighbours
+                    int sNeighIndex = sharedNeighbour.getEdgeNeighbourIndex(sharedEdge[0], sharedEdge[1]);
+                    if(sharedNeighbour.neighbours[sNeighIndex].equals(this)){
+                        sharedNeighbour.neighbours[sNeighIndex] = t;
                     }
                 }
             }
-            else {
-                for(DelaunayTriangle t: this.children){
-                    if(t != null){
-                        t.delete(p);
-                    }
-                }
-            }
+            
         }
     }
     
