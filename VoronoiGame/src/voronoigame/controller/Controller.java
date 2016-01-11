@@ -43,9 +43,9 @@ public class Controller {
      */
     private VoronoiPanel makePanel() {
         VoronoiPanel panel = new VoronoiPanel(this.gameState);
-        VoronoiGameMouseListener mouseListener = new VoronoiGameMouseListener(this.gameState, panel);
-        panel.addMouseListener(mouseListener);
-        panel.addMouseMotionListener(mouseListener);
+        GameController gameController = new GameController(this.gameState, panel);
+        panel.addMouseListener(gameController);
+        panel.addMouseMotionListener(gameController);
         return panel;
     }
 

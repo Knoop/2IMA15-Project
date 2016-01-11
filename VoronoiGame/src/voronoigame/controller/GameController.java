@@ -20,7 +20,7 @@ import voronoigame.view.VoronoiPanel;
  *
  * @author Guus van Lankveld
  */
-public class VoronoiGameMouseListener implements MouseListener, MouseMotionListener {
+public class GameController implements MouseListener, MouseMotionListener {
 
     private final GameState gameState;
     private final VoronoiPanel voronoiPanel;
@@ -36,7 +36,7 @@ public class VoronoiGameMouseListener implements MouseListener, MouseMotionListe
      */
     private FocusType focusType;
 
-    VoronoiGameMouseListener(GameState gameState, VoronoiPanel voronoiPanel) {
+    GameController(GameState gameState, VoronoiPanel voronoiPanel) {
         this.gameState = gameState;
         this.voronoiPanel = voronoiPanel;
     }

@@ -16,7 +16,7 @@ import java.awt.RenderingHints;
 import java.awt.Stroke;
 import java.util.LinkedList;
 import javax.swing.JPanel;
-import voronoigame.controller.VoronoiGameMouseListener;
+import voronoigame.controller.GameController;
 import voronoigame.model.GameState;
 
 /**
@@ -27,7 +27,7 @@ public class VoronoiPanel extends JPanel {
 
     public static final int SITE_RADIUS = 4;
     private static final Stroke EDGE_STROKE = new BasicStroke(1);
-    private VoronoiGameMouseListener voronoiGameMouseListener;
+    private GameController voronoiGameMouseListener;
     
     private final GameState gameState;
 
@@ -35,7 +35,7 @@ public class VoronoiPanel extends JPanel {
         this.gameState = gameState;
     }
 
-    public void setVoronoiGameMouseListener(VoronoiGameMouseListener listener) {
+    public void setVoronoiGameMouseListener(GameController listener) {
         this.removeVoronoiGameMouseListener();
         this.voronoiGameMouseListener = listener;
         this.addMouseListener(listener);
