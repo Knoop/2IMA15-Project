@@ -63,6 +63,29 @@ public class GameState
     {
         return pointCellMap;
     }
+    
+    
+    /**
+     * Moves the given cell to the given location
+     * @param cell The cell to move
+     * @param newLocation The location to move the given cell to.
+     */
+    public void move(Cell cell, Point newLocation){
+        this.getDiagram().moveSite(cell, newLocation);
+    } 
+    
+    /**
+     * Get the cell that is located at the given site
+     * @param site The site for which Cell must be located. 
+     *         This location must exactly equal the location stored for a cell. 
+     *         A point that is within the region of a cell will yield a null value.
+     * @return The cell that is located at the given point, 
+     *          or null if no such cell exists.
+     */
+    public Cell getCell(Point site) {
+        return this.pointCellMap.get(site);
+    }
+
 
     /**
      * Create a GameState from a Reader.
@@ -113,4 +136,5 @@ public class GameState
         return new GameState(pointTypeMap, diagram);
     }
 
+   
 }

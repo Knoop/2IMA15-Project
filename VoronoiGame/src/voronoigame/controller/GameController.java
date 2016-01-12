@@ -69,7 +69,7 @@ public class GameController implements MouseListener, MouseMotionListener {
     @Override
     public void mouseDragged(MouseEvent me) {
         if (this.focusType != FocusType.NONE) {
-            this.gameState.getDiagram().moveSite(this.focus, me.getPoint());
+            this.gameState.move(this.focus, me.getPoint());
         }
     }
 
@@ -77,7 +77,7 @@ public class GameController implements MouseListener, MouseMotionListener {
     public void mouseMoved(MouseEvent me) {
         for (Point site : this.gameState.getDiagram().getSites()) {
             Point cursorLocation = me.getPoint();
-            Cell cell = this.gameState.getPointCellMap().get(site);
+            Cell cell = this.gameState.getCell(site);
             if (Util.isInCircle(cursorLocation, site, VoronoiPanel.SITE_RADIUS)
                     && cell instanceof MoveableCell) {
                 this.setFocus(cell, FocusType.HOVER);
