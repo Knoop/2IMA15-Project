@@ -36,7 +36,7 @@ public class GameController implements MouseListener, MouseMotionListener {
      */
     private FocusType focusType;
 
-    GameController(GameState gameState, VoronoiPanel voronoiPanel) {
+    public GameController(GameState gameState, VoronoiPanel voronoiPanel) {
         this.gameState = gameState;
         this.voronoiPanel = voronoiPanel;
     }

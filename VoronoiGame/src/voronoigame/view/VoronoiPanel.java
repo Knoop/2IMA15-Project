@@ -33,22 +33,11 @@ public class VoronoiPanel extends JPanel {
 
     public VoronoiPanel(GameState gameState) {
         this.gameState = gameState;
+        this.gameController = new GameController(gameState, this);
+        this.addMouseListener(gameController);
+        this.addMouseMotionListener(gameController);
     }
-
-    public void setGameController(GameController listener) {
-        this.removeGameController();
-        this.gameController = listener;
-        this.addMouseListener(listener);
-        this.addMouseMotionListener(listener);
-    }
-
-    public void removeGameController() {
-        if (this.gameController != null) {
-            this.removeMouseListener(gameController);
-            this.removeMouseMotionListener(gameController);
-        }
-    }
-
+    
     public void updatePanel() {
         repaint();
     }
