@@ -27,7 +27,7 @@ public class VoronoiPanel extends JPanel {
 
     public static final int SITE_RADIUS = 4;
     private static final Stroke EDGE_STROKE = new BasicStroke(1);
-    private GameController voronoiGameMouseListener;
+    private GameController gameController;
     
     private final GameState gameState;
 
@@ -35,17 +35,17 @@ public class VoronoiPanel extends JPanel {
         this.gameState = gameState;
     }
 
-    public void setVoronoiGameMouseListener(GameController listener) {
-        this.removeVoronoiGameMouseListener();
-        this.voronoiGameMouseListener = listener;
+    public void setGameController(GameController listener) {
+        this.removeGameController();
+        this.gameController = listener;
         this.addMouseListener(listener);
         this.addMouseMotionListener(listener);
     }
 
-    public void removeVoronoiGameMouseListener() {
-        if (this.voronoiGameMouseListener != null) {
-            this.removeMouseListener(voronoiGameMouseListener);
-            this.removeMouseMotionListener(voronoiGameMouseListener);
+    public void removeGameController() {
+        if (this.gameController != null) {
+            this.removeMouseListener(gameController);
+            this.removeMouseMotionListener(gameController);
         }
     }
 

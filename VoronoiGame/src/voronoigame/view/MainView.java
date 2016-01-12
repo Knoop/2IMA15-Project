@@ -28,7 +28,7 @@ public class MainView extends javax.swing.JFrame {
     public VoronoiPanel removeVoronoiPanel() {
         if (this.voronoiPanel != null) {
             this.pnVoronoiContainer.remove(this.voronoiPanel);
-            this.voronoiPanel.removeVoronoiGameMouseListener();
+            this.voronoiPanel.removeGameController();
             this.voronoiPanel.setVisible(false);
             VoronoiPanel removed = this.voronoiPanel;
             this.voronoiPanel = null;
