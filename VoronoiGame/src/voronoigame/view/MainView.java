@@ -5,60 +5,79 @@
  */
 package voronoigame.view;
 
+import java.io.File;
+import voronoigame.controller.Controller;
+import voronoigame.model.GameState;
+
 /**
  *
  * @author Guus van Lankveld
  */
 public class MainView extends javax.swing.JFrame {
-
-    private VoronoiPanel voronoiPanel;
+    
+    private ContentPanel contentPanel;
+    private final Controller controller;
 
     /**
      * Creates new form MainView
+     * @param controller The controller that tells this view what to do. This Controller must be notified in case certain events occur.
      */
-    public MainView() {
+    public MainView(Controller controller) {
         initComponents();
+        this.controller = controller;
     }
 
-    /**
-     * Removes the VoronoiPanel from this frame.
+     /**
+     * Removes the current ContentPanel from this frame.
      *
-     * @return The removed VoronoiPanel, or null if there was none.
+     * @return The removed ContentPanel, or null if there was none.
      */
-    public VoronoiPanel removeVoronoiPanel() {
-        if (this.voronoiPanel != null) {
-            this.pnVoronoiContainer.remove(this.voronoiPanel);
-            this.voronoiPanel.setVisible(false);
-            VoronoiPanel removed = this.voronoiPanel;
-            this.voronoiPanel = null;
+    public ContentPanel removeContent() {
+        if (this.contentPanel != null) {
+            this.pmContentContainer.remove(this.contentPanel);
+            this.contentPanel.notifyPanelRemoved();
+            this.contentPanel.setVisible(false);
+            ContentPanel removed = this.contentPanel;
+            this.contentPanel = null;
             return removed;
         } else {
             return null;
         }
     }
-
-    /**
-     * Uses the given VoronoiPanel as the VoronoiPanel for this frame. This will
-     * remove the existing VoronoiPanel if applicable.
-     *
-     * @param voronoiPanel The VoronoiPanel to use.
-     */
-    public void setVoronoiPanel(VoronoiPanel voronoiPanel) {
-
+    
+    private void setContent(ContentPanel panel){
         // If there is an existing panel, remove it
-        this.removeVoronoiPanel();
+        this.removeContent();
 
-        this.voronoiPanel = voronoiPanel;
-        this.pnVoronoiContainer.add(this.voronoiPanel);
-        this.voronoiPanel.updateSize();
+        this.contentPanel = panel;
+        this.pmContentContainer.add(this.contentPanel);
+        this.contentPanel.notifyPanelAdded();
+    }
+    
+    public ContentPanel getContent() {
+        return this.contentPanel;
     }
 
-    public VoronoiPanel getVoronoiPanel() {
-        return this.voronoiPanel;
+    
+    void onLevelSelected(File level){
+        System.out.println("A level was selected: "+level.getName());
+        this.controller.onLevelSelected(level);
+    }
+    
+    public void showSelectLevel() {
+        System.out.println("Showing level selection");
+        this.setContent(new LevelSelectionPanel(this));
     }
 
-    public boolean hasVoronoiPanel() {
-        return this.voronoiPanel != null;
+    public void showLevel(GameState gameState) {
+        System.out.println("Showing level");
+        this.setContent(new VoronoiPanel(gameState, this));
+    }
+
+    public void showFailedToLoadLevel(File level, int exceptionToCause) {
+        System.out.println("Showing level loading failure");
+        this.showSelectLevel();
+        // Also create dialog
     }
 
     /**
@@ -68,22 +87,21 @@ public class MainView extends javax.swing.JFrame {
      */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents()
-    {
+    private void initComponents() {
 
-        pnVoronoiContainer = new javax.swing.JPanel();
+        pmContentContainer = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
 
-        javax.swing.GroupLayout pnVoronoiContainerLayout = new javax.swing.GroupLayout(pnVoronoiContainer);
-        pnVoronoiContainer.setLayout(pnVoronoiContainerLayout);
-        pnVoronoiContainerLayout.setHorizontalGroup(
-            pnVoronoiContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout pmContentContainerLayout = new javax.swing.GroupLayout(pmContentContainer);
+        pmContentContainer.setLayout(pmContentContainerLayout);
+        pmContentContainerLayout.setHorizontalGroup(
+            pmContentContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 700, Short.MAX_VALUE)
         );
-        pnVoronoiContainerLayout.setVerticalGroup(
-            pnVoronoiContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        pmContentContainerLayout.setVerticalGroup(
+            pmContentContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 525, Short.MAX_VALUE)
         );
 
@@ -91,18 +109,20 @@ public class MainView extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(pnVoronoiContainer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(pmContentContainer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(pnVoronoiContainer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(pmContentContainer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel pnVoronoiContainer;
+    private javax.swing.JPanel pmContentContainer;
     // End of variables declaration//GEN-END:variables
+
+    
 
 }
