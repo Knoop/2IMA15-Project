@@ -89,7 +89,7 @@ public class DelaunayTriangle implements Comparable{
     //To be fixed
     private void legalizeEdge(DelaunayPoint p, DelaunayPoint e1, DelaunayPoint e2){
         DelaunayTriangle targetNeighbour = getEdgeNeighbour(e1, e2);
-        if(targetNeighbour == null || p.getX() > 0){
+        if(targetNeighbour == null){
             return;
         }
         DelaunayPoint targetPoint = null;
@@ -334,30 +334,45 @@ public class DelaunayTriangle implements Comparable{
     public double[] circumCenter(){
         double[] result = new double[2];
         
-        double p1x, p1y, p2x, p2y; //Position vectors
-        p1x = (this.points[0].getX() + this.points[1].getX())/2;
-        p1y = (this.points[0].getY() + this.points[1].getY())/2;
-        p2x = (this.points[1].getX() + this.points[2].getX())/2;
-        p2y = (this.points[1].getY() + this.points[2].getY())/2;
+        double[] px = new double[2]; //Position vectors
+        double[] py = new double[2]; //Position vectors
+        px[0] = (this.points[0].getX() + this.points[1].getX())/2;
+        py[0] = (this.points[0].getY() + this.points[1].getY())/2;
+        px[1] = (this.points[1].getX() + this.points[2].getX())/2;
+        py[1] = (this.points[1].getY() + this.points[2].getY())/2;
         
-        double d1x, d1y, d2x, d2y; //Direction vectors
-        d1y = this.points[1].getX() - p1x;
-        d1x = p1y - this.points[1].getY();
-        d2y = this.points[1].getX() - p2x;
-        d2x = p2y - this.points[1].getY();
+        double[] dx = new double[2]; //Direction vectors
+        double[] dy = new double[2]; //Direction vectors
+        dy[0] = this.points[1].getX() - px[0];
+        dx[0] = py[0] - this.points[1].getY();
+        dy[1] = this.points[1].getX() - px[1];
+        dx[1] = py[1] - this.points[1].getY();
         
-        double a1, b1, a2, b2; //Values for functions yi = ai*x + bi
-        a1 = d1y/d1x;
-        b1 = p1y - p1x*a1;
-        a2 = d2y/d2x;
-        b2 = p2y - p2x*a2;
+        if(dx[0] != 0 && dx[1] != 0){
+            double a1, b1, a2, b2; //Values for functions yi = ai*x + bi
+            a1 = dy[0]/dx[0];
+            b1 = py[0] - px[0]*a1;
+            a2 = dy[1]/dx[1];
+            b2 = py[1] - px[1]*a2;
         
-        double af, bf; //Values for the combined function
-        af = a1-a2;
-        bf = b1-b2;
-        result[0] = -af/bf;
-        result[1] = b1 + a1*result[0];
-        System.out.println(result[0] + ", " + result[1]);
+            double af, bf; //Values for the combined function
+            af = a1-a2;
+            bf = b1-b2;
+            result[0] = -bf/af;
+            result[1] = b1 + a1*result[0];
+        } else{
+            int z = -1;
+            for(int i = 0; i < 2; i++){
+                if(dx[i] == 0){
+                    z = i;
+                }
+            }
+            double af, bf;
+            af = dy[(z+1)%2]/dx[(z+1)%2];
+            bf = py[(z+1)%2] - px[(z+1)%2]*af;
+            result[0] = px[z];
+            result[1] = bf + af*result[0];
+        }
         return result;
     }
     

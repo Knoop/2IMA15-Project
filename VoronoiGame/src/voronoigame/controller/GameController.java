@@ -10,6 +10,8 @@ import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.util.Observable;
+import java.util.Observer;
 import voronoigame.model.Cell;
 import voronoigame.model.MoveableCell;
 import voronoigame.Util;
@@ -21,7 +23,7 @@ import voronoigame.view.VoronoiPanel;
  *
  * @author Guus van Lankveld
  */
-public class GameController implements MouseListener, MouseMotionListener {
+public class GameController implements MouseListener, MouseMotionListener, Observer {
 
     private final GameState gameState;
     private final VoronoiPanel voronoiPanel;
@@ -34,6 +36,7 @@ public class GameController implements MouseListener, MouseMotionListener {
     public GameController(GameState gameState, VoronoiPanel voronoiPanel) {
         this.gameState = gameState;
         this.voronoiPanel = voronoiPanel;
+        this.gameState.addObserver(this);
     }
 
     /**
@@ -109,5 +112,10 @@ public class GameController implements MouseListener, MouseMotionListener {
 
     @Override
     public void mouseExited(MouseEvent me) {
+    }
+
+    @Override
+    public void update(Observable o, Object o1) {
+        voronoiPanel.repaint();
     }
 }
