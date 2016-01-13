@@ -71,7 +71,7 @@ public class GameState
      * @param newLocation The location to move the given cell to.
      */
     public void move(Cell cell, Point newLocation){
-        this.getDiagram().moveSite(cell, newLocation);
+        this.getDiagram().moveSite(cell.getPoint(), newLocation);
     } 
     
     /**

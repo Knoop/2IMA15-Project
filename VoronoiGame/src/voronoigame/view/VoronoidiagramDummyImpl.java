@@ -153,8 +153,8 @@ public class VoronoidiagramDummyImpl implements VoronoiDiagram
     }
 
     @Override
-    public void moveSite(Cell cell, Point newSiteLocation)
+    public void moveSite(Point oldSiteLocation, Point newSiteLocation)
     {
-        System.out.println("Moving cell site: " + cell.getPoint().toString() + " to new location: " + newSiteLocation.toString());
+        System.out.println("Moving cell site: " + oldSiteLocation.toString() + " to new location: " + newSiteLocation.toString());
     }
 }
