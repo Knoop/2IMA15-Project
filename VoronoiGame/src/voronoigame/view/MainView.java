@@ -27,18 +27,19 @@ public class MainView extends javax.swing.JFrame {
         this.controller = controller;
     }
 
-     /**
+    /**
      * Removes the current ContentPanel from this frame.
      *
      * @return The removed ContentPanel, or null if there was none.
      */
     public ContentPanel removeContent() {
+        
+        this.pmContentContainer.setVisible(false);
         if (this.contentPanel != null) {
             this.pmContentContainer.remove(this.contentPanel);
-            this.contentPanel.notifyPanelRemoved();
-            this.contentPanel.setVisible(false);
             ContentPanel removed = this.contentPanel;
             this.contentPanel = null;
+            removed.notifyPanelRemoved();
             return removed;
         } else {
             return null;
@@ -52,6 +53,7 @@ public class MainView extends javax.swing.JFrame {
         this.contentPanel = panel;
         this.pmContentContainer.add(this.contentPanel);
         this.contentPanel.notifyPanelAdded();
+        this.pmContentContainer.setVisible(true);
     }
     
     public ContentPanel getContent() {
