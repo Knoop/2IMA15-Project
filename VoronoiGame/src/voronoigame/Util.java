@@ -27,6 +27,7 @@ public class Util
 
     public static Color getColorforCell(Cell cell)
     {
+        Color returnColor = COLOR_WHITE_CELL;
         if (cell.getType() == Cell.Type.DEAD)
         {
             return COLOR_DEAD;
@@ -57,10 +58,16 @@ public class Util
                     g += (int)((double)gDiffMax * colorChangeFactor);
                     b += (int)((double)bDiffMax * colorChangeFactor);
                     
-                    return new Color(r, g, b);
+                    returnColor = new Color(r, g, b);
             }
         }
-        return COLOR_WHITE_CELL;
+        
+        if (cell.isFocussed())
+        {
+            returnColor = returnColor.brighter();
+        }
+        
+        return returnColor;
     }
 
     public static Boolean isInCircle(Point point, Point circleCenter, double circleRadius)

@@ -14,7 +14,7 @@ import java.awt.Point;
 public class MoveableCell extends Cell {
 
     public MoveableCell(Point point, GameState gameState) {
-        super(point, Type.DEFENSE, gameState);
+        super(point, Type.DEFENSE, gameState, true);
     }
  
     protected void updateLocation(Point point){
