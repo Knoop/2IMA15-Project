@@ -68,6 +68,7 @@ public class MainView extends javax.swing.JFrame {
     
     public void showLoading(){
         System.out.println("Showing loading");
+        this.setContent(new LoadingPanel(this));
     }
     
     public void showSelectLevel() {
