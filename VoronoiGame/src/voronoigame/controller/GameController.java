@@ -20,7 +20,7 @@ import voronoigame.view.VoronoiPanel;
  *
  * @author Guus van Lankveld
  */
-public class VoronoiGameMouseListener implements MouseListener, MouseMotionListener {
+public class GameController implements MouseListener, MouseMotionListener {
 
     private final GameState gameState;
     private final VoronoiPanel voronoiPanel;
@@ -36,7 +36,7 @@ public class VoronoiGameMouseListener implements MouseListener, MouseMotionListe
      */
     private FocusType focusType;
 
-    VoronoiGameMouseListener(GameState gameState, VoronoiPanel voronoiPanel) {
+    public GameController(GameState gameState, VoronoiPanel voronoiPanel) {
         this.gameState = gameState;
         this.voronoiPanel = voronoiPanel;
     }
@@ -69,7 +69,7 @@ public class VoronoiGameMouseListener implements MouseListener, MouseMotionListe
     @Override
     public void mouseDragged(MouseEvent me) {
         if (this.focusType != FocusType.NONE) {
-            this.gameState.getDiagram().moveSite(this.focus.getPoint(), me.getPoint());
+            this.gameState.move(this.focus, me.getPoint());
         }
     }
 
@@ -77,7 +77,7 @@ public class VoronoiGameMouseListener implements MouseListener, MouseMotionListe
     public void mouseMoved(MouseEvent me) {
         for (Point site : this.gameState.getDiagram().getSites()) {
             Point cursorLocation = me.getPoint();
-            Cell cell = this.gameState.getPointCellMap().get(site);
+            Cell cell = this.gameState.getCell(site);
             if (Util.isInCircle(cursorLocation, site, VoronoiPanel.SITE_RADIUS)
                     && cell instanceof MoveableCell) {
                 this.setFocus(cell, FocusType.HOVER);

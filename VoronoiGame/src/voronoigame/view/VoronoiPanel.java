@@ -15,47 +15,36 @@ import java.awt.Polygon;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
 import java.util.LinkedList;
-import javax.swing.JPanel;
-import voronoigame.controller.VoronoiGameMouseListener;
+import voronoigame.controller.GameController;
 import voronoigame.model.GameState;
 
 /**
  *
  * @author Guus van Lankveld
  */
-public class VoronoiPanel extends JPanel {
+public class VoronoiPanel extends ContentPanel {
 
     public static final int SITE_RADIUS = 4;
     private static final Stroke EDGE_STROKE = new BasicStroke(1);
-    private VoronoiGameMouseListener voronoiGameMouseListener;
+    private GameController gameController;
     
     private final GameState gameState;
 
-    public VoronoiPanel(GameState gameState) {
+    public VoronoiPanel(GameState gameState, MainView parent) {
+        super(parent);
         this.gameState = gameState;
+        this.useGameController(new GameController(gameState, this));
     }
-
-    public void setVoronoiGameMouseListener(VoronoiGameMouseListener listener) {
-        this.removeVoronoiGameMouseListener();
-        this.voronoiGameMouseListener = listener;
-        this.addMouseListener(listener);
-        this.addMouseMotionListener(listener);
+    
+    private void useGameController(GameController gameController) {
+        this.gameController = new GameController(gameState, this);
+        this.addMouseListener(gameController);
+        this.addMouseMotionListener(gameController);
     }
-
-    public void removeVoronoiGameMouseListener() {
-        if (this.voronoiGameMouseListener != null) {
-            this.removeMouseListener(voronoiGameMouseListener);
-            this.removeMouseMotionListener(voronoiGameMouseListener);
-        }
-    }
-
+    
     public void updatePanel() {
         repaint();
-    }
-
-    public void updateSize() {
-        super.setSize(this.getParent().getSize());
-    }
+    }    
 
     @Override
     public void paintComponent(Graphics g) {
@@ -85,5 +74,12 @@ public class VoronoiPanel extends JPanel {
             g2.drawLine(edge[0].x, edge[0].y, edge[1].x, edge[1].y);
         }
     }
+
+
+    @Override
+    protected void onPanelAdded() { }
+
+    @Override
+    protected void onPanelRemoved() { }
 
 }
