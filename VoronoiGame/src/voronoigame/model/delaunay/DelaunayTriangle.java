@@ -86,6 +86,7 @@ public class DelaunayTriangle implements Comparable{
         }
     }
     
+    //To be fixed
     private void legalizeEdge(DelaunayPoint p, DelaunayPoint e1, DelaunayPoint e2){
         DelaunayTriangle targetNeighbour = getEdgeNeighbour(e1, e2);
         if(targetNeighbour == null || p.getX() > 0){
@@ -183,6 +184,7 @@ public class DelaunayTriangle implements Comparable{
         return nullIndex;
     }
     
+    //To be expanded for more cases
     protected void delete(Point p){
         if(hasPoint(p)){
             
@@ -339,23 +341,23 @@ public class DelaunayTriangle implements Comparable{
         p2y = (this.points[1].getY() + this.points[2].getY())/2;
         
         double d1x, d1y, d2x, d2y; //Direction vectors
-        d1x = this.points[1].getX() - p1x;
-        d1y = p1y - this.points[1].getY();
-        d2x = this.points[1].getX() - p2x;
-        d2y = p2y - this.points[1].getY();
+        d1y = this.points[1].getX() - p1x;
+        d1x = p1y - this.points[1].getY();
+        d2y = this.points[1].getX() - p2x;
+        d2x = p2y - this.points[1].getY();
         
         double a1, b1, a2, b2; //Values for functions yi = ai*x + bi
         a1 = d1y/d1x;
-        b1 = p1y - d1y*(p1x/d1x);
+        b1 = p1y - p1x*a1;
         a2 = d2y/d2x;
-        b2 = p2y - d2y*(p2x/d2x);
+        b2 = p2y - p2x*a2;
         
         double af, bf; //Values for the combined function
         af = a1-a2;
         bf = b1-b2;
         result[0] = -af/bf;
         result[1] = b1 + a1*result[0];
-        
+        System.out.println(result[0] + ", " + result[1]);
         return result;
     }
     
