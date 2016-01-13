@@ -6,6 +6,7 @@
 package voronoigame;
 
 import java.awt.Point;
+import java.io.File;
 import java.util.Iterator;
 import java.util.List;
 import voronoigame.model.GameState;
@@ -97,5 +98,7 @@ public class Util
         return properties;    
     }
     
+    public static File LEVEL_FOLDER = new File("levels");
+
     public static int INDEX_AREA = 0, INDEX_CIRCUMFERENCE = 1;
 }

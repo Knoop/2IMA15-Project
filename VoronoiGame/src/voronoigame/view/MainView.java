@@ -74,7 +74,7 @@ public class MainView extends javax.swing.JFrame {
     public void showSelectLevel() {
         this.showLoading();
         System.out.println("Showing level selection");
-        this.setContent(new LevelSelectionPanel(this));
+        this.setContent(new LevelSelectionPanel(this, this.controller.getLevels()));
     }
 
     public void showLevel(GameState gameState) {

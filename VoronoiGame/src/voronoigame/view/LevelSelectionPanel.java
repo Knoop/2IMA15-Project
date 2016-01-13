@@ -6,6 +6,9 @@
 package voronoigame.view;
 
 import java.io.File;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 /**
  *
@@ -14,18 +17,68 @@ import java.io.File;
 public class LevelSelectionPanel extends ContentPanel {
 
     /**
-     * Creates new form LevelSelectionPanel
+     * The possible files to choose from
      */
-    public LevelSelectionPanel(MainView parent) {
+    private File[] levels;
+
+    /**
+     * The index of the selected level
+     */
+    private int selected = 0;
+
+    /**
+     * Creates new form LevelSelectionPanel
+     *
+     * @param parent The parent that has created this panel
+     * @param levels The levels from which the user can choose, represented as
+     * files.
+     */
+    public LevelSelectionPanel(MainView parent, File[] levels) {
         super(parent);
+        this.levels = levels;
         initComponents();
+        this.levelList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        this.levelList.setListData(this.getLevelNames());
+        this.levelList.setSelectedIndex(this.selected);
+        this.levelList.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                LevelSelectionPanel.this.selected = e.getFirstIndex();
+            }
+        });
     }
-    
-    @Override
-    protected void onPanelAdded() { }
+
+    private String[] getLevelNames() {
+        String[] levelNames = new String[levels.length];
+        for (int i = 0; i < levels.length; ++i) {
+            levelNames[i] = getDisplayName(levels[i]);
+        }
+        return levelNames;
+    }
+
+    /**
+     * Determines the display name of a level file. The display name is the name
+     * of the file without the extension of the file. F.I. level0.lvl becomes
+     * level0.
+     *
+     * @param level The level file for which to obtain the display name
+     * @return The display name of the given level file.
+     */
+    private String getDisplayName(File level) {
+        return level.getName().substring(0, level.getName().lastIndexOf('.'));
+    }
 
     @Override
-    protected void onPanelRemoved() { }
+    protected void onPanelAdded() {
+    }
+
+    @Override
+    protected void onPanelRemoved() {
+    }
+
+    private File getSelectedLevel() {
+        return levels[this.selected];
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -36,77 +89,74 @@ public class LevelSelectionPanel extends ContentPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        previewContainer = new javax.swing.JPanel();
+        start = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        levelList = new javax.swing.JList<>();
 
-        jButton1.setText("Level0");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        javax.swing.GroupLayout previewContainerLayout = new javax.swing.GroupLayout(previewContainer);
+        previewContainer.setLayout(previewContainerLayout);
+        previewContainerLayout.setHorizontalGroup(
+            previewContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 249, Short.MAX_VALUE)
+        );
+        previewContainerLayout.setVerticalGroup(
+            previewContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 202, Short.MAX_VALUE)
+        );
+
+        start.setText("Start");
+        start.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                startActionPerformed(evt);
             }
         });
 
-        jButton2.setText("Test");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
-            }
+        levelList.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
         });
-
-        jButton3.setText("jButton3");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
-            }
-        });
+        jScrollPane2.setViewportView(levelList);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(163, 163, 163)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                .addContainerGap(174, Short.MAX_VALUE))
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(previewContainer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(start, javax.swing.GroupLayout.Alignment.TRAILING))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(135, 135, 135)
-                .addComponent(jButton1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton3)
-                .addContainerGap(84, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(previewContainer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 64, Short.MAX_VALUE)
+                        .addComponent(start))
+                    .addComponent(jScrollPane2))
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        if(this.currentlyActive())
-            parent.onLevelSelected(new File("levels/level0.lvl"));
 
-    }//GEN-LAST:event_jButton1ActionPerformed
-
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        if(this.currentlyActive())
-            parent.onLevelSelected(new File("levels/test.lvl"));
-    }//GEN-LAST:event_jButton2ActionPerformed
-
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        if(this.currentlyActive())
-            parent.onLevelSelected(new File("levels/non_existing_level.lvl"));
-    }//GEN-LAST:event_jButton3ActionPerformed
+    private void startActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startActionPerformed
+        if (this.currentlyActive()) {
+            parent.onLevelSelected(this.getSelectedLevel());
+        }
+    }//GEN-LAST:event_startActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JList<String> levelList;
+    private javax.swing.JPanel previewContainer;
+    private javax.swing.JButton start;
     // End of variables declaration//GEN-END:variables
-    
+
 }
