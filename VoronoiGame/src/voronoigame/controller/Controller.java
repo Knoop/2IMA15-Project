@@ -5,18 +5,13 @@
  */
 package voronoigame.controller;
 
-import java.awt.Point;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Map;
-import voronoigame.model.Cell;
 import voronoigame.model.GameState;
 import voronoigame.view.MainView;
-import voronoigame.view.VoronoiDiagram;
-import voronoigame.view.VoronoiPanel;
-import voronoigame.view.VoronoidiagramDummyImpl;
 
 /**
  *
@@ -25,31 +20,49 @@ import voronoigame.view.VoronoidiagramDummyImpl;
 public class Controller {
 
     private final MainView mainView;
-    private final GameState gameState;
+    private GameState gameState;
 
-    public Controller() throws IOException {
-        this.mainView = new MainView();
-        this.gameState = GameState.from(new InputStreamReader(new FileInputStream(new File("levels/test.lvl"))));//new GameState(VoronoidiagramDummyImpl.getDummyCellTypeMap(), this.makeVoronoiDiagram());
-        this.mainView.setVoronoiPanel(this.makePanel());
+    public Controller() {
+        this.mainView = new MainView(this);
+        this.mainView.showSelectLevel();
         this.mainView.setVisible(true);
+        
     }
-
-    /**
-     * Creates a new VoronoiPanel using the given VoronoiDiagram.
-     *
-     * @param voronoiDiagram The VoronoiDiagram for which a panel should be
-     * created
-     * @return The created panel.
-     */
-    private VoronoiPanel makePanel() {
-        VoronoiPanel panel = new VoronoiPanel(this.gameState);
-        VoronoiGameMouseListener mouseListener = new VoronoiGameMouseListener(this.gameState, panel);
-        panel.addMouseListener(mouseListener);
-        panel.addMouseMotionListener(mouseListener);
-        return panel;
+    
+    public void onLevelSelected(File level){
+        
+        try{
+            this.readLevel(level);
+            this.mainView.showLevel(this.gameState);
+        }catch(Exception e){
+            this.mainView.showFailedToLoadLevel(level, Controller.exceptionToCause(e));
+            e.printStackTrace();
+        }
     }
-
-    private VoronoiDiagram makeVoronoiDiagram() {
-        return new VoronoidiagramDummyImpl();
+    
+    private void readLevel(File level) throws IOException{
+        
+        this.gameState = null;
+        this.gameState = GameState.from(new InputStreamReader(new FileInputStream(level)));
+    }
+    
+    public static final int CAUSE_NON_EXISTING_FILE = 1, 
+                            CAUSE_FILE_COULD_NOT_BE_OPENED = 2, 
+                            CAUSE_FILE_CONTAINS_ERRORS = 3, 
+                            CAUSE_UNKNOWN = 4;
+    
+    private static int exceptionToCause(Exception e){
+        
+        if(e instanceof FileNotFoundException)
+            return Controller.CAUSE_NON_EXISTING_FILE;
+        if(e instanceof IOException)
+            return Controller.CAUSE_FILE_COULD_NOT_BE_OPENED;
+        if(e instanceof NullPointerException)
+            return Controller.CAUSE_FILE_CONTAINS_ERRORS;
+        
+        return Controller.CAUSE_UNKNOWN;
+        
+        
+        
     }
 }

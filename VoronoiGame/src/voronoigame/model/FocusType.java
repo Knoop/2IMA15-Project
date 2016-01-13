@@ -5,16 +5,11 @@
  */
 package voronoigame.model;
 
-import java.awt.Point;
-
 /**
  *
- * @author Maurice
+ * @author Guus
  */
-public class StationaryCell extends Cell {
-    
-    public StationaryCell(Point point, Type type, GameState gameState) {
-        super(point, type, gameState, false);
-    }
-    
+public enum FocusType
+{
+     NONE, HOVER, DRAG
 }
