@@ -64,17 +64,24 @@ public class MainView extends javax.swing.JFrame {
         this.controller.onLevelSelected(level);
     }
     
+    public void showLoading(){
+        System.out.println("Showing loading");
+    }
+    
     public void showSelectLevel() {
+        this.showLoading();
         System.out.println("Showing level selection");
         this.setContent(new LevelSelectionPanel(this));
     }
 
     public void showLevel(GameState gameState) {
+        this.showLoading();
         System.out.println("Showing level");
         this.setContent(new VoronoiPanel(gameState, this));
     }
 
     public void showFailedToLoadLevel(File level, int exceptionToCause) {
+        this.showLoading();
         System.out.println("Showing level loading failure");
         this.showSelectLevel();
         // Also create dialog
