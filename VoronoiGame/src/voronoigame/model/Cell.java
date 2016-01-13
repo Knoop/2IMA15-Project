@@ -111,6 +111,10 @@ public abstract class Cell {
         return point;
     }
 
+    public void setPoint(Point point) {
+        this.point = point;
+    }
+
     public boolean isFocussable()
     {
         return focussable;

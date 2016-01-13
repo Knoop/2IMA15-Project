@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Observable;
 import voronoigame.model.delaunay.VoronoiFacade;
 import voronoigame.view.VoronoiDiagram;
 
@@ -22,7 +23,7 @@ import voronoigame.view.VoronoiDiagram;
  *
  * @author Maurice
  */
-public class GameState
+public class GameState extends Observable
 {
 
     private final Map<Point, Cell> pointCellMap;
@@ -72,6 +73,11 @@ public class GameState
      */
     public void move(Cell cell, Point newLocation){
         this.getDiagram().moveSite(cell.getPoint(), newLocation);
+        this.pointCellMap.remove(cell.getPoint());
+        cell.setPoint(newLocation);
+        this.pointCellMap.put(cell.getPoint(), cell);
+        this.setChanged();
+        this.notifyObservers();
     } 
     
     /**
