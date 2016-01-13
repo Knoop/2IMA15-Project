@@ -57,10 +57,10 @@ public interface VoronoiDiagram
     public Cell getCellFromSite(Point site);
     
     /**
-     * Updates the gamestate. The specified Cell is assigned a new site location.
+     * Updates the gamestate. The specified old site is assigned a new site location.
      * Afterwards, the voronoi diagram needs to be computed again.
-     * @param cell
+     * @param oldSiteLocation
      * @param newSiteLocation 
      */
-    public void moveSite(Cell cell, Point newSiteLocation);
+    public void moveSite(Point oldSiteLocation, Point newSiteLocation);
 }

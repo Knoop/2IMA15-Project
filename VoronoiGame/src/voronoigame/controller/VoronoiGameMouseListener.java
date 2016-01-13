@@ -69,7 +69,7 @@ public class VoronoiGameMouseListener implements MouseListener, MouseMotionListe
     @Override
     public void mouseDragged(MouseEvent me) {
         if (this.focusType != FocusType.NONE) {
-            this.gameState.getDiagram().moveSite(this.focus, me.getPoint());
+            this.gameState.getDiagram().moveSite(this.focus.getPoint(), me.getPoint());
         }
     }
 

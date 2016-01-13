@@ -184,9 +184,9 @@ public class VoronoiFacade implements VoronoiDiagram {
     }
 
     @Override
-    public void moveSite(Cell cell, Point newSiteLocation) {
+    public void moveSite(Point oldSiteLocation, Point newSiteLocation) {
         deleteMovingPoints();
-        this.movingPoints.remove(cell.getPoint());
+        this.movingPoints.remove(oldSiteLocation);
         this.movingPoints.add(newSiteLocation);
         insertMovingPoints();
     }
