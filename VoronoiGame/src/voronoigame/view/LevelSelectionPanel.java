@@ -89,21 +89,12 @@ public class LevelSelectionPanel extends ContentPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        previewContainer = new javax.swing.JPanel();
         start = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         levelList = new javax.swing.JList<>();
+        previewContainer = new javax.swing.JPanel();
 
-        javax.swing.GroupLayout previewContainerLayout = new javax.swing.GroupLayout(previewContainer);
-        previewContainer.setLayout(previewContainerLayout);
-        previewContainerLayout.setHorizontalGroup(
-            previewContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 249, Short.MAX_VALUE)
-        );
-        previewContainerLayout.setVerticalGroup(
-            previewContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 202, Short.MAX_VALUE)
-        );
+        setLayout(new java.awt.BorderLayout());
 
         start.setText("Start");
         start.addActionListener(new java.awt.event.ActionListener() {
@@ -111,37 +102,32 @@ public class LevelSelectionPanel extends ContentPanel {
                 startActionPerformed(evt);
             }
         });
+        add(start, java.awt.BorderLayout.PAGE_END);
 
         levelList.setModel(new javax.swing.AbstractListModel<String>() {
             String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
+        levelList.setMaximumSize(new java.awt.Dimension(100, 80));
+        levelList.setMinimumSize(new java.awt.Dimension(100, 80));
+        levelList.setPreferredSize(new java.awt.Dimension(100, 80));
         jScrollPane2.setViewportView(levelList);
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(previewContainer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(start, javax.swing.GroupLayout.Alignment.TRAILING))
-                .addContainerGap())
+        add(jScrollPane2, java.awt.BorderLayout.LINE_START);
+
+        javax.swing.GroupLayout previewContainerLayout = new javax.swing.GroupLayout(previewContainer);
+        previewContainer.setLayout(previewContainerLayout);
+        previewContainerLayout.setHorizontalGroup(
+            previewContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 298, Short.MAX_VALUE)
         );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(previewContainer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 64, Short.MAX_VALUE)
-                        .addComponent(start))
-                    .addComponent(jScrollPane2))
-                .addContainerGap())
+        previewContainerLayout.setVerticalGroup(
+            previewContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 277, Short.MAX_VALUE)
         );
+
+        add(previewContainer, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
 
