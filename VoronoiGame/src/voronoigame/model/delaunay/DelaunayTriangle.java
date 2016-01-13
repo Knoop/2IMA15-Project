@@ -355,14 +355,16 @@ public class DelaunayTriangle implements Comparable{
         double af, bf; //Values for the combined function
         af = a1-a2;
         bf = b1-b2;
-        result[0] = -af/bf;
+        result[0] = -bf/af;
         result[1] = b1 + a1*result[0];
-        System.out.println(result[0] + ", " + result[1]);
+        System.out.println(this.points[0] + " " + this.points[1] + " " + this.points[2]);
+        System.out.println(result[0] +  ", " + result[1]);
         return result;
     }
     
     public double radius(){
         double[] center = circumCenter();
+        System.out.println(points[0].distance(center[0], center[1]));
         return points[0].distance(center[0], center[1]);
     }
 
