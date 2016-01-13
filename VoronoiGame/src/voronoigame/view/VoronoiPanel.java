@@ -17,6 +17,7 @@ import java.awt.Stroke;
 import java.util.LinkedList;
 import voronoigame.controller.GameController;
 import voronoigame.model.GameState;
+import voronoigame.model.delaunay.Edge;
 
 /**
  *
@@ -68,10 +69,10 @@ public class VoronoiPanel extends ContentPanel {
             g2.fillOval(site.x - SITE_RADIUS, site.y - SITE_RADIUS, SITE_RADIUS * 2, SITE_RADIUS * 2);
         }
 
-        for (Point[] edge : this.gameState.getDiagram().getVoronoiEdges()) {
+        for (Edge edge : this.gameState.getDiagram().getVoronoiEdges()) {
             g2.setColor(Color.BLACK);
             g2.setStroke(EDGE_STROKE);
-            g2.drawLine(edge[0].x, edge[0].y, edge[1].x, edge[1].y);
+            g2.drawLine(edge.getPoint1().x, edge.getPoint1().y, edge.getPoint2().x, edge.getPoint2().y);
         }
     }
 
