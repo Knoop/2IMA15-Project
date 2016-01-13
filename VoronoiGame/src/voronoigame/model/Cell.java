@@ -22,6 +22,9 @@ public abstract class Cell {
     protected Type type;
 
     public static final double MAX_SCALE_FACTOR = 2;
+    
+    private boolean focussable;
+    private FocusType focusType;
 
     public double getInitCircumference() {
         return initCircumference;
@@ -73,11 +76,13 @@ public abstract class Cell {
         return maxArea / minArea;
     }
 
-    protected Cell(Point point, Type type, GameState gameState) {
+    protected Cell(Point point, Type type, GameState gameState, boolean focussable) {
         this.listeners = new HashSet<>();
         this.gameState = gameState;
         this.point = point;
         this.type = type;
+        this.focussable = focussable;
+        this.focusType = FocusType.NONE;
 
         double[] properties = Util.calculateProperties(this.point, this.gameState);
         this.currentArea = this.initArea = properties[Util.INDEX_AREA];
@@ -104,6 +109,35 @@ public abstract class Cell {
 
     public Point getPoint() {
         return point;
+    }
+
+    public void setPoint(Point point) {
+        this.point = point;
+    }
+
+    public boolean isFocussable()
+    {
+        return focussable;
+    }
+
+    public void setFocussable(boolean focussable)
+    {
+        this.focussable = focussable;
+    }
+
+    public FocusType getFocusType()
+    {
+        return focusType;
+    }
+
+    public void setFocusType(FocusType focusType)
+    {
+        if (!this.focussable)
+        {
+           this.focusType = FocusType.NONE;
+           return; 
+        }
+        this.focusType = focusType;
     }
 
     /**

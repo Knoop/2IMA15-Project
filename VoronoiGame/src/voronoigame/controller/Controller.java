@@ -6,10 +6,12 @@
 package voronoigame.controller;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import voronoigame.Util;
 import voronoigame.model.GameState;
 import voronoigame.view.MainView;
 
@@ -64,5 +66,15 @@ public class Controller {
         
         
         
+    }
+
+    public File[] getLevels() {
+        return Util.LEVEL_FOLDER.listFiles(new FileFilter(){
+            @Override
+            public boolean accept(File pathname) {
+                String name = pathname.getName();
+                return name.contains(".") && name.substring(name.lastIndexOf('.')).equalsIgnoreCase(".lvl");
+            }
+        });
     }
 }

@@ -110,10 +110,10 @@ public class VoronoiFacade implements VoronoiDiagram {
     }
 
     @Override
-    public Collection<Point[]> getVoronoiEdges() {
+    public Collection<Edge> getVoronoiEdges() {
         
         TreeSet<DelaunayTriangle> leaves = root.getLeaves();
-        ArrayList<Point[]> result = new ArrayList<>();
+        ArrayList<Edge> result = new ArrayList<>();
         double[] current;
         double[] currentNeighbour;
         for(DelaunayTriangle t: leaves){
@@ -123,7 +123,7 @@ public class VoronoiFacade implements VoronoiDiagram {
                 if(n != null){
                     currentNeighbour = n.getVoronoiVertex();
                     Point vertexNeighbour = new Point((int) currentNeighbour[0], (int) currentNeighbour[1]);
-                    result.add(new Point[] {vertex, vertexNeighbour});
+                    result.add(Edge.create(vertex, vertexNeighbour));
                 }
             }
         }

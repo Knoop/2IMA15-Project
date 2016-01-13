@@ -10,9 +10,12 @@ import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.util.Observable;
+import java.util.Observer;
 import voronoigame.model.Cell;
 import voronoigame.model.MoveableCell;
 import voronoigame.Util;
+import voronoigame.model.FocusType;
 import voronoigame.model.GameState;
 import voronoigame.view.VoronoiPanel;
 
@@ -20,7 +23,7 @@ import voronoigame.view.VoronoiPanel;
  *
  * @author Guus van Lankveld
  */
-public class GameController implements MouseListener, MouseMotionListener {
+public class GameController implements MouseListener, MouseMotionListener, Observer {
 
     private final GameState gameState;
     private final VoronoiPanel voronoiPanel;
@@ -30,23 +33,21 @@ public class GameController implements MouseListener, MouseMotionListener {
      */
     private Cell focus;
 
-    /**
-     * The type of focus that is applied to the cell that the focus is currently
-     * on.
-     */
-    private FocusType focusType;
-
     public GameController(GameState gameState, VoronoiPanel voronoiPanel) {
         this.gameState = gameState;
         this.voronoiPanel = voronoiPanel;
+        this.gameState.addObserver(this);
     }
 
     /**
      * Clears the current focus
      */
     private void clearFocus() {
+        if(this.focus == null)
+            return;
+
+        this.focus.setFocusType(FocusType.NONE);
         this.focus = null;
-        this.focusType = FocusType.NONE;
     }
 
     /**
@@ -61,14 +62,14 @@ public class GameController implements MouseListener, MouseMotionListener {
         } else {
             System.out.println("Setting focus");
             this.focus = focus;
-            this.focusType = focusType;
+            this.focus.setFocusType(focusType);
         }
 
     }
 
     @Override
     public void mouseDragged(MouseEvent me) {
-        if (this.focusType != FocusType.NONE) {
+        if (this.focus != null && this.focus.getFocusType() != FocusType.NONE) {
             this.gameState.move(this.focus, me.getPoint());
         }
     }
@@ -95,7 +96,7 @@ public class GameController implements MouseListener, MouseMotionListener {
 
     @Override
     public void mousePressed(MouseEvent me) {
-        if (this.focusType == FocusType.HOVER) {
+        if (this.focus != null && this.focus.getFocusType() == FocusType.HOVER) {
             this.setFocus(this.focus, FocusType.DRAG);
         }
     }
@@ -113,7 +114,8 @@ public class GameController implements MouseListener, MouseMotionListener {
     public void mouseExited(MouseEvent me) {
     }
 
-    private enum FocusType {
-        NONE, HOVER, DRAG
+    @Override
+    public void update(Observable o, Object o1) {
+        voronoiPanel.repaint();
     }
 }

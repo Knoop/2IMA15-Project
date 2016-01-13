@@ -7,7 +7,6 @@ package voronoigame.model.delaunay;
 
 import java.awt.Point;
 import java.util.Objects;
-import jdk.nashorn.internal.parser.TokenType;
 
 /**
  *
