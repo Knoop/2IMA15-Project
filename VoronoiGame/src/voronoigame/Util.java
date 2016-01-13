@@ -8,9 +8,9 @@ package voronoigame;
 import java.awt.Color;
 import java.awt.Point;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import voronoigame.model.Cell;
+import voronoigame.model.FocusType;
 import voronoigame.model.GameState;
 import voronoigame.model.StationaryCell;
 
@@ -62,7 +62,7 @@ public class Util
             }
         }
         
-        if (cell.isFocussed())
+        if (cell.getFocusType() == FocusType.HOVER || cell.getFocusType() == FocusType.DRAG)
         {
             returnColor = returnColor.brighter();
         }
