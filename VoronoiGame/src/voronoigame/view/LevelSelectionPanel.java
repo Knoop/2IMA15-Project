@@ -6,9 +6,17 @@
 package voronoigame.view;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JList;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import voronoigame.model.GameState;
+import voronoigame.view.voronoi.VoronoiPanel;
 
 /**
  *
@@ -20,6 +28,8 @@ public class LevelSelectionPanel extends ContentPanel {
      * The possible files to choose from
      */
     private File[] levels;
+
+    private GameState[] gameStateCache;
 
     /**
      * The index of the selected level
@@ -36,16 +46,49 @@ public class LevelSelectionPanel extends ContentPanel {
     public LevelSelectionPanel(MainView parent, File[] levels) {
         super(parent);
         this.levels = levels;
+        this.gameStateCache = new GameState[this.levels.length];
         initComponents();
+
+        // Set the levels
         this.levelList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         this.levelList.setListData(this.getLevelNames());
         this.levelList.setSelectedIndex(this.selected);
         this.levelList.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
-                LevelSelectionPanel.this.selected = e.getFirstIndex();
+                if (e.getValueIsAdjusting()) {
+                    LevelSelectionPanel.this.onLevelSelectionChanged(((JList) e.getSource()).getSelectedIndex());
+                }
             }
         });
+
+    }
+
+    /**
+     * Called when the selected level has changed. This will show a preview for
+     * the selected level.
+     *
+     * @param selectedIndex The index from the list of levels that has been
+     * selected. This corresponds directly to the indices in the {@code levels}
+     * array.
+     */
+    protected void onLevelSelectionChanged(int selectedIndex) {
+        System.out.println("Selected level " + selectedIndex);
+        this.selected = selectedIndex;
+        // If it ain't cached, try to cache it
+        if (this.gameStateCache[this.selected] == null) {
+            try {
+                this.gameStateCache[this.selected] = GameState.from(new InputStreamReader(new FileInputStream(levels[this.selected])));
+            } catch (Exception e) {
+            }
+        }
+
+        this.setPreview(this.gameStateCache[this.selected]);
+    }
+
+    private void setPreview(GameState gameState) {
+        System.out.println("Updating preview. Showing level: " + (gameState != null));
+        this.voronoiPreview.setGameState(gameState);
     }
 
     private String[] getLevelNames() {
@@ -89,21 +132,11 @@ public class LevelSelectionPanel extends ContentPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        previewContainer = new javax.swing.JPanel();
         start = new javax.swing.JButton();
-        jScrollPane2 = new javax.swing.JScrollPane();
         levelList = new javax.swing.JList<>();
+        voronoiPreview = new voronoigame.view.voronoi.VoronoiPanel();
 
-        javax.swing.GroupLayout previewContainerLayout = new javax.swing.GroupLayout(previewContainer);
-        previewContainer.setLayout(previewContainerLayout);
-        previewContainerLayout.setHorizontalGroup(
-            previewContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 249, Short.MAX_VALUE)
-        );
-        previewContainerLayout.setVerticalGroup(
-            previewContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 202, Short.MAX_VALUE)
-        );
+        setLayout(new java.awt.BorderLayout());
 
         start.setText("Start");
         start.addActionListener(new java.awt.event.ActionListener() {
@@ -111,37 +144,27 @@ public class LevelSelectionPanel extends ContentPanel {
                 startActionPerformed(evt);
             }
         });
+        add(start, java.awt.BorderLayout.PAGE_END);
 
         levelList.setModel(new javax.swing.AbstractListModel<String>() {
             String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
-        jScrollPane2.setViewportView(levelList);
+        add(levelList, java.awt.BorderLayout.LINE_START);
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(previewContainer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(start, javax.swing.GroupLayout.Alignment.TRAILING))
-                .addContainerGap())
+        javax.swing.GroupLayout voronoiPreviewLayout = new javax.swing.GroupLayout(voronoiPreview);
+        voronoiPreview.setLayout(voronoiPreviewLayout);
+        voronoiPreviewLayout.setHorizontalGroup(
+            voronoiPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 407, Short.MAX_VALUE)
         );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(previewContainer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 64, Short.MAX_VALUE)
-                        .addComponent(start))
-                    .addComponent(jScrollPane2))
-                .addContainerGap())
+        voronoiPreviewLayout.setVerticalGroup(
+            voronoiPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 277, Short.MAX_VALUE)
         );
+
+        add(voronoiPreview, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
 
@@ -153,10 +176,9 @@ public class LevelSelectionPanel extends ContentPanel {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JList<String> levelList;
-    private javax.swing.JPanel previewContainer;
     private javax.swing.JButton start;
+    private voronoigame.view.voronoi.VoronoiPanel voronoiPreview;
     // End of variables declaration//GEN-END:variables
 
 }
