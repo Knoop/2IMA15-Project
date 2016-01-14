@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import voronoigame.model.delaunay.VoronoiFacade;
-import voronoigame.view.VoronoiDiagram;
+import voronoigame.view.voronoi.VoronoiDiagram;
 
 /**
  *

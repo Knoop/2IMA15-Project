@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package voronoigame.view;
+package voronoigame.view.voronoi;
 
 import java.awt.Point;
 import java.util.Collection;
