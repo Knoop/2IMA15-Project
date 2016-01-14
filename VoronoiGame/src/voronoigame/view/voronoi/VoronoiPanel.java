@@ -31,10 +31,6 @@ public class VoronoiPanel extends JPanel {
         this.repaint();
     }
 
-    public void updatePanel() {
-        repaint();
-    }
-
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);

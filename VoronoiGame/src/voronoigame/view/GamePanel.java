@@ -5,6 +5,10 @@
  */
 package voronoigame.view;
 
+import java.util.Observable;
+import java.util.Observer;
+import java.util.Timer;
+import java.util.TimerTask;
 import voronoigame.controller.GameController;
 import voronoigame.model.GameState;
 
@@ -12,10 +16,39 @@ import voronoigame.model.GameState;
  *
  * @author Maurice
  */
-public class GamePanel extends ContentPanel {
-    
+public class GamePanel extends ContentPanel implements Observer {
+
+    /**
+     * The refresh rate of the gamepanel expressed in Hz. The actual refresh
+     * rate should be as close as possible to this value.
+     */
+    public static final int REFRESH_RATE = 60;
+
+    /**
+     * The minimum amount of time in milliseconds between every rendition. The
+     * value is equal to 1000 milliseconds divided by the refresh rate defined
+     * by {@code REFRESH_RATE}. The actual amount of time between renditions
+     * should be as close to this as possible.
+     */
+    private static final long REFRESH_INTERVAL = 1000l / REFRESH_RATE;
+
     private GameController gameController;
-    
+
+    /**
+     *
+     */
+    private Timer renderTimer;
+    /**
+     * Indicates whether the gamestate has changed since the previous rendition
+     */
+    private boolean changed;
+
+    /**
+     * Indicates whether the rendering is paused. At the start the rendering
+     * must be started, and therefore is seen as being paused.
+     */
+    private boolean pauseRendering = true;
+
     GamePanel(GameState gameState, MainView parent) {
         super(parent);
         initComponents();
@@ -23,11 +56,47 @@ public class GamePanel extends ContentPanel {
     }
 
     private void setupGame(GameState gameState) {
+        gameState.addObserver(this);
         this.voronoiPanel.setGameState(gameState);
         this.gameController = new GameController(gameState);
         this.voronoiPanel.addMouseListener(this.gameController);
         this.voronoiPanel.addMouseMotionListener(this.gameController);
+        this.voronoiPanel.repaint();
+        this.start();
     }
+
+    /**
+     * Stop rendering
+     */
+    public void pause() {
+        this.pauseRendering = true;
+        this.renderTimer.cancel();
+    }
+
+    /**
+     * Start rendering
+     */
+    public void start() {
+        if (!this.pauseRendering) {
+            return;
+        }
+
+        this.pauseRendering = false;
+        this.renderTimer = new Timer();
+        this.renderTimer.schedule(new RenderTimerTask(), REFRESH_INTERVAL);
+    }
+
+    /**
+     * Resume rendering
+     */
+    public void resume() {
+        this.start();
+    }
+
+    private void updatePanel() {
+        this.voronoiPanel.repaint();
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -76,14 +145,16 @@ public class GamePanel extends ContentPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void nextButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nextButtonActionPerformed
-        
+
     }//GEN-LAST:event_nextButtonActionPerformed
 
     @Override
-    protected void onPanelAdded() { }
+    protected void onPanelAdded() {
+    }
 
     @Override
-    protected void onPanelRemoved() { }
+    protected void onPanelRemoved() {
+    }
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -93,5 +164,27 @@ public class GamePanel extends ContentPanel {
     private voronoigame.view.voronoi.VoronoiPanel voronoiPanel;
     // End of variables declaration//GEN-END:variables
 
-    
+    @Override
+    public void update(Observable o, Object arg) {
+        this.changed = true;
+    }
+
+    private class RenderTimerTask extends TimerTask {
+
+        @Override
+        public void run() {
+            long start = System.currentTimeMillis();
+            if (GamePanel.this.changed) {
+                GamePanel.this.changed = false;
+                GamePanel.this.updatePanel();
+            }
+
+            if (!GamePanel.this.pauseRendering) {
+                GamePanel.this.renderTimer.schedule(new RenderTimerTask(), GamePanel.REFRESH_INTERVAL - (System.currentTimeMillis() - start));
+            }
+
+        }
+
+    }
+
 }
