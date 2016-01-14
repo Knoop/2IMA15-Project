@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package voronoigame.view;
+package voronoigame.view.voronoi;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -19,7 +19,7 @@ import voronoigame.model.Cell;
 import voronoigame.model.FocusType;
 import voronoigame.model.GameState;
 import voronoigame.model.StationaryCell;
-import static voronoigame.view.VoronoiPanel.SITE_RADIUS;
+import static voronoigame.view.voronoi.VoronoiPanel.SITE_RADIUS;
 
 /**
  *

@@ -14,7 +14,7 @@ import voronoigame.model.MoveableCell;
 import voronoigame.Util;
 import voronoigame.model.FocusType;
 import voronoigame.model.GameState;
-import voronoigame.view.VoronoiPanel;
+import voronoigame.view.voronoi.VoronoiPanel;
 
 /**
  *

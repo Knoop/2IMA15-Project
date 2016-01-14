@@ -11,7 +11,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.TreeSet;
 import voronoigame.model.Cell;
-import voronoigame.view.VoronoiDiagram;
+import voronoigame.view.voronoi.VoronoiDiagram;
 
 /**
  *
