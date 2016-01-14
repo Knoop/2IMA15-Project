@@ -5,13 +5,10 @@
  */
 package voronoigame.controller;
 
-import java.awt.Cursor;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.util.Observable;
-import java.util.Observer;
 import voronoigame.model.Cell;
 import voronoigame.model.MoveableCell;
 import voronoigame.Util;
@@ -23,20 +20,17 @@ import voronoigame.view.VoronoiPanel;
  *
  * @author Guus van Lankveld
  */
-public class GameController implements MouseListener, MouseMotionListener, Observer {
+public class GameController implements MouseListener, MouseMotionListener {
 
     private final GameState gameState;
-    private final VoronoiPanel voronoiPanel;
 
     /**
      * The cell that is in focus.
      */
     private Cell focus;
 
-    public GameController(GameState gameState, VoronoiPanel voronoiPanel) {
+    public GameController(GameState gameState) {
         this.gameState = gameState;
-        this.voronoiPanel = voronoiPanel;
-        this.gameState.addObserver(this);
     }
 
     /**
@@ -82,12 +76,10 @@ public class GameController implements MouseListener, MouseMotionListener, Obser
             if (Util.isInCircle(cursorLocation, site, VoronoiPanel.SITE_RADIUS)
                     && cell instanceof MoveableCell) {
                 this.setFocus(cell, FocusType.HOVER);
-                this.voronoiPanel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
                 return;
             }
         }
         this.clearFocus();
-        this.voronoiPanel.setCursor(Cursor.getDefaultCursor());
     }
 
     @Override
@@ -114,8 +106,4 @@ public class GameController implements MouseListener, MouseMotionListener, Obser
     public void mouseExited(MouseEvent me) {
     }
 
-    @Override
-    public void update(Observable o, Object o1) {
-        voronoiPanel.repaint();
-    }
 }
