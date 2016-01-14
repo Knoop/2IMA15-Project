@@ -80,7 +80,7 @@ public class MainView extends javax.swing.JFrame {
     public void showLevel(GameState gameState) {
         this.showLoading();
         System.out.println("Showing level");
-        this.setContent(new VoronoiPanel(gameState, this));
+        this.setContent(new GamePanel(gameState, this));
     }
 
     public void showFailedToLoadLevel(File level, int exceptionToCause) {
