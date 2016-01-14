@@ -7,32 +7,24 @@ package voronoigame.view;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import voronoigame.controller.GameController;
+import javax.swing.JPanel;
 import voronoigame.model.GameState;
 
 /**
  *
  * @author Guus van Lankveld
  */
-public class VoronoiPanel extends ContentPanel {
+public class VoronoiPanel extends JPanel {
 
     public static final int SITE_RADIUS = 4;
-    private GameController gameController;
     private final VoronoiPainter painter;
     private final GameState gameState;
 
-    public VoronoiPanel(GameState gameState, MainView parent) {
-        super(parent);
+    public VoronoiPanel(GameState gameState) {
         this.painter = new VoronoiPainter();
         this.gameState = gameState;
-        this.useGameController(new GameController(gameState, this));
     }
     
-    private void useGameController(GameController gameController) {
-        this.gameController = new GameController(gameState, this);
-        this.addMouseListener(gameController);
-        this.addMouseMotionListener(gameController);
-    }
     
     public void updatePanel() {
         repaint();
@@ -43,12 +35,4 @@ public class VoronoiPanel extends ContentPanel {
         super.paintComponent(g);
         this.painter.paint((Graphics2D)g, this.gameState, WIDTH, HEIGHT);
     }
-
-
-    @Override
-    protected void onPanelAdded() { }
-
-    @Override
-    protected void onPanelRemoved() { }
-
 }
