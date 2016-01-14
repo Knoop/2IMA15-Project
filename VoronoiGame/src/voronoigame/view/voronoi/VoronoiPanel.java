@@ -18,21 +18,28 @@ public class VoronoiPanel extends JPanel {
 
     public static final int SITE_RADIUS = 4;
     private final VoronoiPainter painter;
-    private final GameState gameState;
+    private GameState gameState;
 
-    public VoronoiPanel(GameState gameState) {
+    public VoronoiPanel() {
+        System.out.println("New VoronoiPanel created");
         this.painter = new VoronoiPainter();
-        this.gameState = gameState;
+
     }
-    
-    
+
+    public void setGameState(GameState gameState) {
+        this.gameState = gameState;
+        this.repaint();
+    }
+
     public void updatePanel() {
         repaint();
-    }    
+    }
 
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        this.painter.paint((Graphics2D)g, this.gameState, WIDTH, HEIGHT);
+        if (this.gameState != null) {
+            this.painter.paint((Graphics2D) g, this.gameState, WIDTH, HEIGHT);
+        }
     }
 }
