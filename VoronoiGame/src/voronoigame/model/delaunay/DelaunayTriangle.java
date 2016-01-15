@@ -31,7 +31,7 @@ public class DelaunayTriangle implements Comparable{
     
     protected void insert(Point p){
         if(hasPoint(p)){
-            return;
+            throw new IllegalArgumentException("Point already contained in diagram: " + p);
         }
         
         if(contains(p)){

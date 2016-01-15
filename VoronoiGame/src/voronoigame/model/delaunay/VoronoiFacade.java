@@ -185,6 +185,11 @@ public class VoronoiFacade implements VoronoiDiagram {
 
     @Override
     public void moveSite(Point oldSiteLocation, Point newSiteLocation) {
+        if(newSiteLocation.getX() < 0 || newSiteLocation.getY() < 0 ||
+                newSiteLocation.getX() > this.bounds.getX() || 
+                newSiteLocation.getY() > this.bounds.getY()){
+            throw new IllegalArgumentException("Point out of bounds: " + newSiteLocation);
+        }
         deleteMovingPoints();
         this.movingPoints.remove(oldSiteLocation);
         this.movingPoints.add(newSiteLocation);
