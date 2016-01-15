@@ -35,10 +35,10 @@ public class Edge
     
     public static Edge create(Point a, Point b)
     {
-        if (a.equals(b))
+        /*if (a.equals(b))
         {
             throw new IllegalArgumentException("Two points in an edge cannot be equal");
-        }
+        }*/
         
         Point first;
         Point second;
