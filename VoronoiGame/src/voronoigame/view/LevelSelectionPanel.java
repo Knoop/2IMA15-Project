@@ -48,7 +48,6 @@ public class LevelSelectionPanel extends ContentPanel {
         // Set the levels
         this.levelList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         this.levelList.setListData(this.getLevelNames());
-        this.levelList.setSelectedIndex(this.selected);
         this.levelList.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
@@ -57,6 +56,10 @@ public class LevelSelectionPanel extends ContentPanel {
                 }
             }
         });
+
+        // Force preview update
+        this.levelList.setSelectedIndex(this.selected);
+        this.onLevelSelectionChanged(this.selected);
 
     }
 
