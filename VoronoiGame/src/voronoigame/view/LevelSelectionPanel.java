@@ -7,16 +7,12 @@ package voronoigame.view;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JList;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import voronoigame.model.GameState;
-import voronoigame.view.voronoi.VoronoiPanel;
 
 /**
  *
@@ -27,9 +23,9 @@ public class LevelSelectionPanel extends ContentPanel {
     /**
      * The possible files to choose from
      */
-    private File[] levels;
+    private final File[] levels;
 
-    private GameState[] gameStateCache;
+    private final GameState[] gameStateCache;
 
     /**
      * The index of the selected level
