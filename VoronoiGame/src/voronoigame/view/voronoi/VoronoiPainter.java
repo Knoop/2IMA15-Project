@@ -33,7 +33,7 @@ public class VoronoiPainter implements Painter {
      * <li>CORE 0x67e669</li>
      * </ol>
      */
-    public static final Color[] COLOR_HEALTHY = {new Color(0x93ed94), new Color(0x67e669)};
+    public static final Color[] COLOR_HEALTHY = {new Color(0x2ddc2f), new Color(0x20c222)};
     /**
      * Infected cell colors are the following:
      * <ol start=0>
@@ -41,7 +41,7 @@ public class VoronoiPainter implements Painter {
      * <li>CORE 0xcc0000</li>
      * </ol>
      */
-    public static final Color[] COLOR_INFECTED = {new Color(0xff0000), new Color(0xcc0000),};
+    public static final Color[] COLOR_INFECTED = {new Color(0xd32523), new Color(0xb11f1d),};
     /**
      * White cell colors are the following:
      * <ol start=0>
@@ -49,7 +49,7 @@ public class VoronoiPainter implements Painter {
      * <li>CORE 0xe6e6e6</li>
      * </ol>
      */
-    public static final Color[] COLOR_WHITE_CELL = {new Color(0xffffff), new Color(0xe6e6e6)};
+    public static final Color[] COLOR_WHITE_CELL = {new Color(0xffffff), new Color(0xd9d9d9)};
     /**
      * Dead cell colors are the following:
      * <ol start=0>
