@@ -114,9 +114,14 @@ public class GamePanel extends ContentPanel implements Observer {
         setLayout(new java.awt.BorderLayout());
 
         menuContainer.setMaximumSize(new java.awt.Dimension(32767, 100));
-        menuContainer.setLayout(new java.awt.GridLayout());
+        menuContainer.setLayout(new java.awt.GridLayout(1, 0));
 
         stopButton.setText("stop");
+        stopButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                stopButtonActionPerformed(evt);
+            }
+        });
         menuContainer.add(stopButton);
 
         nextButton.setText("next");
@@ -147,6 +152,10 @@ public class GamePanel extends ContentPanel implements Observer {
     private void nextButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nextButtonActionPerformed
 
     }//GEN-LAST:event_nextButtonActionPerformed
+
+    private void stopButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stopButtonActionPerformed
+        this.parent.endLevel();
+    }//GEN-LAST:event_stopButtonActionPerformed
 
     @Override
     protected void onPanelAdded() {
