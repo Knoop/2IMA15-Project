@@ -89,6 +89,15 @@ public class MainView extends javax.swing.JFrame {
         this.showSelectLevel();
         // Also create dialog
     }
+    
+    void endLevel() {
+        this.controller.endLevel();
+    }
+
+    void nextLevel() {
+        this.controller.nextLevel();
+    }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -133,6 +142,6 @@ public class MainView extends javax.swing.JFrame {
     private javax.swing.JPanel pmContentContainer;
     // End of variables declaration//GEN-END:variables
 
-    
+
 
 }
