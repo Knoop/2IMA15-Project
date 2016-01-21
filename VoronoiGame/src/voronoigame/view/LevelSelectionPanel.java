@@ -118,6 +118,9 @@ public class LevelSelectionPanel extends ContentPanel {
     protected void onPanelRemoved() {
     }
 
+    private int getSelectedLevelIndex(){
+        return this.selected;
+    }
     private File getSelectedLevel() {
         return levels[this.selected];
     }
@@ -169,7 +172,7 @@ public class LevelSelectionPanel extends ContentPanel {
 
     private void startActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startActionPerformed
         if (this.currentlyActive()) {
-            parent.onLevelSelected(this.getSelectedLevel());
+            parent.onLevelSelected(this.getSelectedLevelIndex());
         }
     }//GEN-LAST:event_startActionPerformed
 

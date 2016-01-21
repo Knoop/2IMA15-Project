@@ -61,8 +61,8 @@ public class MainView extends javax.swing.JFrame {
     }
 
     
-    void onLevelSelected(File level){
-        System.out.println("A level was selected: "+level.getName());
+    void onLevelSelected(int level){
+        System.out.println("A level was selected: ");
         this.controller.onLevelSelected(level);
     }
     
@@ -90,6 +90,10 @@ public class MainView extends javax.swing.JFrame {
         // Also create dialog
     }
     
+    public void showNoMoreLevels() {
+        System.out.println("Showing that no more levels exist");
+    }
+
     void endLevel() {
         this.controller.endLevel();
     }
