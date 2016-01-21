@@ -142,5 +142,29 @@ public class GameState extends Observable
         return new GameState(pointTypeMap, diagram);
     }
 
+    /**
+     * Indicates whether this GameState has finished. This should not 
+     * distinguish between whether the player has won or lost, only that the 
+     * player should not be allowed to play further.
+     * @return true if the game has finished and the player is not allowed to do
+     * any more moves, false otherwise.
+     */
+    public boolean isFinished() {
+        // TODO actually implement something that will return true sometimes. 
+        return false;
+    }
+
+    /**
+     * Indicates whether the player has won in the current state. A value of 
+     * true should indicate that the player has won. This does not mean that a 
+     * value of false indicates that the user has lost.
+     * @return true if the player has won in the current state, 
+     * false otherwise. This includes situations in which the game is not finished!
+     */
+    public boolean hasWon() {
+        // TODO actually implement something that indicates that the user has won.
+        return false && this.isFinished();
+    }
+
    
 }
