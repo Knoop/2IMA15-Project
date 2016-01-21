@@ -23,21 +23,29 @@ public class Controller {
 
     private final MainView mainView;
     private GameState gameState;
+    
+    private int currentLevel = -1;
+    private File[] levels;
 
     public Controller() {
+        this.levels = this.determinePossibleLevels();
         this.mainView = new MainView(this);
         this.mainView.showSelectLevel();
         this.mainView.setVisible(true);
         
     }
     
-    public void onLevelSelected(File level){
-        
+    public void onLevelSelected(int levelIndex) {
+        this.loadLevel(levelIndex);
+    }
+    
+    private void loadLevel(int levelIndex){
+        this.currentLevel = levelIndex;
         try{
-            this.readLevel(level);
+            this.readLevel(levels[levelIndex]);
             this.mainView.showLevel(this.gameState);
         }catch(Exception e){
-            this.mainView.showFailedToLoadLevel(level, Controller.exceptionToCause(e));
+            this.mainView.showFailedToLoadLevel(levels[levelIndex], Controller.exceptionToCause(e));
             e.printStackTrace();
         }
     }
@@ -68,7 +76,19 @@ public class Controller {
         
     }
 
-    public File[] getLevels() {
+    /**
+     * Gets all levels that have previously been found to be available to play. The current level forms an index to this array.
+     * @return An array of files that contains all files defining playable levels, in order. 
+     */
+    public File[] getLevels(){
+        return this.levels;
+    }
+    
+    /**
+     * Determines all possible levels to play. This is done by finding all files in the level folder that have the .lvl extension. 
+     * @return The possible levels
+     */
+    private File[] determinePossibleLevels() {
         return Util.LEVEL_FOLDER.listFiles(new FileFilter(){
             @Override
             public boolean accept(File pathname) {
@@ -77,4 +97,17 @@ public class Controller {
             }
         });
     }
+
+    public void endLevel() {
+        this.gameState = null;
+        this.mainView.showSelectLevel();
+    }
+
+    public void nextLevel() {
+        if(this.currentLevel + 1 < this.levels.length)
+            this.loadLevel(++this.currentLevel);
+        else
+            this.mainView.showNoMoreLevels();
+    }
+
 }
