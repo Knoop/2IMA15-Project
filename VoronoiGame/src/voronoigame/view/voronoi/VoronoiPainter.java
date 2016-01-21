@@ -134,10 +134,10 @@ public class VoronoiPainter implements Painter {
                 Point vertex = face.pop();
                 polygon.addPoint(vertex.x, vertex.y);
             }
-            g2.setColor(VoronoiPainter.getColorforCell(gameState.getPointCellMap().get(site), PaintType.CELL));
+            g2.setColor(VoronoiPainter.getColorforCell(gameState.getCell(site), PaintType.CELL));
             g2.fillPolygon(polygon);
 
-            g2.setColor(VoronoiPainter.getColorforCell(gameState.getPointCellMap().get(site), PaintType.CORE));
+            g2.setColor(VoronoiPainter.getColorforCell(gameState.getCell(site), PaintType.CORE));
             g2.fillOval(site.x - SITE_RADIUS, site.y - SITE_RADIUS, SITE_RADIUS * 2, SITE_RADIUS * 2);
         }
 
