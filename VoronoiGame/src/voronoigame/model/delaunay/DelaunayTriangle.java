@@ -31,7 +31,7 @@ public class DelaunayTriangle implements Comparable{
     
     protected void insert(Point p){
         if(hasPoint(p)){
-            return;
+            throw new IllegalArgumentException("Point already contained in diagram: " + p);
         }
         
         if(contains(p)){
@@ -156,11 +156,6 @@ public class DelaunayTriangle implements Comparable{
     }
     
     protected int getEdgeNeighbourIndex(DelaunayPoint e1, DelaunayPoint e2){
-        //System.out.println("this: " + this.points[0] + " " + this.points[1] + " " + this.points[2]);
-        for(int i = 0; i < 3; i++){
-            if(this.neighbours[i] !=null) {
-            //System.out.println("neighbour" + i + ": " + this.neighbours[i].points[0] + " " + this.neighbours[i].points[1] + " " + this.neighbours[i].points[2]);
-        }}
         
         boolean has1, has2;
         int nullIndex = -1;
@@ -186,7 +181,7 @@ public class DelaunayTriangle implements Comparable{
     
     //To be expanded for more cases
     protected void delete(Point p){
-        if(hasPoint(p)){
+        if(contains(p)){
             
             for(DelaunayTriangle t: this.children){
                 if(t != null){
@@ -194,32 +189,41 @@ public class DelaunayTriangle implements Comparable{
                 }
             }
             
-            for(DelaunayTriangle t: this.parents){
-                if(t != null){
-                    //Reset parent children, fix later for middle deletes
-                    t.children = new DelaunayTriangle[3];
-                
-                    //Correct parent neighbours
-                    DelaunayPoint[] sharedEdge = new DelaunayPoint[2];
-                    DelaunayTriangle sharedNeighbour;
-                    int edgeIndex = 0;
-                    for(DelaunayPoint d: this.points){
-                        if(t.hasPoint(d)){
-                            sharedEdge[edgeIndex] = d;
-                            edgeIndex = 1;
+            if(hasPoint(p)){
+                for(DelaunayTriangle t: this.parents){
+                    if(t != null){
+                        //Reset parent children, fix later for middle deletes
+                        for(int i = 0; i < t.children.length; i++){
+                            if(t.children[i] != null){
+                                if(t.children[i].equals(this)){
+                                    t.children[i] = null;
+                                }
+                            }
                         }
-                    }
-                    sharedNeighbour = this.getEdgeNeighbour(sharedEdge[0], sharedEdge[1]);
-                    t.neighbours[t.getEdgeNeighbourIndex(sharedEdge[0], sharedEdge[1])] = sharedNeighbour;
+                
+                        //Correct parent neighbours
+                        DelaunayPoint[] sharedEdge = new DelaunayPoint[2];
+                        DelaunayTriangle sharedNeighbour;
+                        int edgeIndex = 0;
+                        for(DelaunayPoint d: this.points){
+                            if(t.hasPoint(d)){
+                                sharedEdge[edgeIndex] = d;
+                                edgeIndex = 1;
+                            }
+                        }
+                        sharedNeighbour = this.getEdgeNeighbour(sharedEdge[0], sharedEdge[1]);
+                        t.neighbours[t.getEdgeNeighbourIndex(sharedEdge[0], sharedEdge[1])] = sharedNeighbour;
                     
-                    //Correct neighbour neighbours
-                    int sNeighIndex = sharedNeighbour.getEdgeNeighbourIndex(sharedEdge[0], sharedEdge[1]);
-                    if(sharedNeighbour.neighbours[sNeighIndex].equals(this)){
-                        sharedNeighbour.neighbours[sNeighIndex] = t;
+                        //Correct neighbour neighbours
+                        if(sharedNeighbour != null){
+                            int sNeighIndex = sharedNeighbour.getEdgeNeighbourIndex(sharedEdge[0], sharedEdge[1]);
+                            if(sharedNeighbour.neighbours[sNeighIndex].equals(this)){
+                                sharedNeighbour.neighbours[sNeighIndex] = t;
+                            }
+                        }
                     }
                 }
             }
-            
         }
     }
     
@@ -302,7 +306,7 @@ public class DelaunayTriangle implements Comparable{
         Point base;
         Point edge;
         Point opposite;
-        double px, py, ox, oy;
+        double py, oy;
         double a, b;
         for(int i = numPoints - 1; i >= 0; i--){
             base = this.points[i];
@@ -314,15 +318,7 @@ public class DelaunayTriangle implements Comparable{
             b = base.getY() - edge.getY()*(base.getX()/edge.getX());
             
             py = p.getY() - (b + a*p.getX());
-            oy = opposite.getY() - (b + a*opposite.getX());
-            
-            /*px = p.getX() - base.getX();
-            py = p.getY() - base.getY();
-            ox = opposite.getX() - base.getX();
-            oy = opposite.getY() - base.getY();
-            
-            py = py + edge.getY() * (px/edge.getX());
-            oy = oy + edge.getY() * (ox/edge.getX()); */    
+            oy = opposite.getY() - (b + a*opposite.getX());   
                     
             if(Math.signum(py) != Math.signum(oy) && py != 0){
                 result = false;

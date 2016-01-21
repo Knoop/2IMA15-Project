@@ -19,7 +19,9 @@ import voronoigame.model.Cell;
 import voronoigame.model.FocusType;
 import voronoigame.model.GameState;
 import voronoigame.model.StationaryCell;
+import voronoigame.model.delaunay.Edge;
 import static voronoigame.view.voronoi.VoronoiPanel.SITE_RADIUS;
+
 
 /**
  *
@@ -141,10 +143,10 @@ public class VoronoiPainter implements Painter {
             g2.fillOval(site.x - SITE_RADIUS, site.y - SITE_RADIUS, SITE_RADIUS * 2, SITE_RADIUS * 2);
         }
 
-        for (Point[] edge : gameState.getDiagram().getVoronoiEdges()) {
+        for (Edge edge : gameState.getDiagram().getVoronoiEdges()) {
             g2.setColor(Color.BLACK);
             g2.setStroke(EDGE_STROKE);
-            g2.drawLine(edge[0].x, edge[0].y, edge[1].x, edge[1].y);
+            g2.drawLine(edge.getPoint1().x, edge.getPoint1().y, edge.getPoint2().x, edge.getPoint2().y);
         }
     }
 
