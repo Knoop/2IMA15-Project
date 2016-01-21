@@ -125,7 +125,7 @@ public class GamePanel extends ContentPanel implements Observer {
         menuContainer.add(stopButton);
 
         nextButton.setText("next");
-        nextButton.setActionCommand("next");
+        nextButton.setEnabled(false);
         nextButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 nextButtonActionPerformed(evt);
@@ -176,6 +176,8 @@ public class GamePanel extends ContentPanel implements Observer {
     @Override
     public void update(Observable o, Object arg) {
         this.changed = true;
+        if(((GameState) o).hasWon())
+            this.nextButton.setEnabled(true);
     }
 
     private class RenderTimerTask extends TimerTask {
