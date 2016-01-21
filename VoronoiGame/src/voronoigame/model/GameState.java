@@ -14,9 +14,11 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Observable;
+import java.util.Set;
 import voronoigame.model.delaunay.VoronoiFacade;
 import voronoigame.view.voronoi.VoronoiDiagram;
 
@@ -30,6 +32,7 @@ public class GameState extends Observable
     private static final float CASUALTIES_RATIO = 0.3f;
 
     private final Map<Point, Cell> pointCellMap;
+    private final Set<Cell> infectedCells;
     private final VoronoiDiagram voronoiDiagram;
     private final int maxCasualties;
     private int currentCasualties;
@@ -38,12 +41,17 @@ public class GameState extends Observable
     {
         this.pointCellMap = new HashMap<>();
         this.voronoiDiagram = voronoiDiagram;
-        this.mapSitesToCells(cellTypes);
+        this.infectedCells = new HashSet<>();
+        this.prepareCells(cellTypes);
         this.maxCasualties = Math.round(CASUALTIES_RATIO * cellTypes.size());
         this.currentCasualties = 0;
     }
 
-    private void mapSitesToCells(Map<Point, Cell.Type> cellTypes)
+    /**
+     * Maps sites to cells and determines the evil cells and also reference them in a special set
+     * @param cellTypes 
+     */
+    private void prepareCells(Map<Point, Cell.Type> cellTypes)
     {
         for (Point site : this.voronoiDiagram.getSites())
         {
@@ -59,6 +67,10 @@ public class GameState extends Observable
                     break;
             }
             this.pointCellMap.put(site, cell);
+            if (cell.getType() == Cell.Type.INFECTED)
+            {
+                this.infectedCells.add(cell);
+            }
         }
     }
 
@@ -164,6 +176,20 @@ public class GameState extends Observable
     public void incrementCasualties() {
         this.currentCasualties++;
     }
+    
+    public Set<Cell> getLivingInfectedCells()
+    {
+        Set<Cell> cells = new HashSet<>();
+        for(Cell cell : this.infectedCells)
+        {
+            if (cell.type == Cell.Type.DEAD)
+            {
+                continue;
+            }
+            cells.add(cell);
+        }
+        return cells;
+    }
 
     /**
      * Indicates whether this GameState has finished. This should not 
@@ -173,8 +199,7 @@ public class GameState extends Observable
      * any more moves, false otherwise.
      */
     public boolean isFinished() {
-        
-        return false;
+        return this.currentCasualties > this.maxCasualties || this.getLivingInfectedCells().isEmpty();
     }
 
     /**
@@ -185,7 +210,8 @@ public class GameState extends Observable
      * false otherwise. This includes situations in which the game is not finished!
      */
     public boolean hasWon() {
-        return this.isFinished() && this.currentCasualties <= this.maxCasualties;
+        return this.isFinished() && this.currentCasualties <= this.maxCasualties 
+                && this.getLivingInfectedCells().isEmpty();
     }
 
    
