@@ -34,11 +34,8 @@ public abstract class Cell {
         return initArea;
     }
 
-    private void updateProperties() {
+    public void updateProperties() {
 
-        if (this.currentArea >= 0 && this.currentCircumference >= 0) {
-            return;
-        }
 
         double[] properties = Util.calculateProperties(this.point, this.gameState);
         this.currentArea = properties[Util.INDEX_AREA];
@@ -52,7 +49,12 @@ public abstract class Cell {
     }
 
     private void kill() {
+        if (this.type == Type.DEAD)
+        {
+            return;
+        }
         this.setType(Type.DEAD);
+        this.gameState.incrementCasualties();
         this.notifyCellKilled();
     }
 

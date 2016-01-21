@@ -8,6 +8,7 @@ package voronoigame.model;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Window;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -25,15 +26,21 @@ import voronoigame.view.voronoi.VoronoiDiagram;
  */
 public class GameState extends Observable
 {
+    
+    private static final float CASUALTIES_RATIO = 0.3f;
 
     private final Map<Point, Cell> pointCellMap;
     private final VoronoiDiagram voronoiDiagram;
+    private final int maxCasualties;
+    private int currentCasualties;
 
     public GameState(Map<Point, Cell.Type> cellTypes, VoronoiDiagram voronoiDiagram)
     {
         this.pointCellMap = new HashMap<>();
         this.voronoiDiagram = voronoiDiagram;
         this.mapSitesToCells(cellTypes);
+        this.maxCasualties = Math.round(CASUALTIES_RATIO * cellTypes.size());
+        this.currentCasualties = 0;
     }
 
     private void mapSitesToCells(Map<Point, Cell.Type> cellTypes)
@@ -77,6 +84,8 @@ public class GameState extends Observable
         cell.setPoint(newLocation);
         this.pointCellMap.put(cell.getPoint(), cell);
         this.setChanged();
+        this.updateCellStates();
+        
         this.notifyObservers();
     } 
     
@@ -141,6 +150,20 @@ public class GameState extends Observable
         VoronoiDiagram diagram = new VoronoiFacade(stationaryPoints, movingPoints);
         return new GameState(pointTypeMap, diagram);
     }
+    
+    private void updateCellStates() {
+        for (Cell cell : this.pointCellMap.values())
+        {
+            if (!(cell instanceof MoveableCell))
+            {
+                cell.updateProperties();
+            }
+        }
+    }
+    
+    public void incrementCasualties() {
+        this.currentCasualties++;
+    }
 
     /**
      * Indicates whether this GameState has finished. This should not 
@@ -150,7 +173,7 @@ public class GameState extends Observable
      * any more moves, false otherwise.
      */
     public boolean isFinished() {
-        // TODO actually implement something that will return true sometimes. 
+        
         return false;
     }
 
@@ -162,8 +185,7 @@ public class GameState extends Observable
      * false otherwise. This includes situations in which the game is not finished!
      */
     public boolean hasWon() {
-        // TODO actually implement something that indicates that the user has won.
-        return false && this.isFinished();
+        return this.isFinished() && this.currentCasualties <= this.maxCasualties;
     }
 
    
