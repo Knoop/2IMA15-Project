@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Observable;
 import voronoigame.model.delaunay.VoronoiFacade;
 import voronoigame.view.VoronoiDiagram;
 
@@ -22,7 +23,7 @@ import voronoigame.view.VoronoiDiagram;
  *
  * @author Maurice
  */
-public class GameState
+public class GameState extends Observable
 {
 
     private final Map<Point, Cell> pointCellMap;
@@ -63,6 +64,34 @@ public class GameState
     {
         return pointCellMap;
     }
+    
+    
+    /**
+     * Moves the given cell to the given location
+     * @param cell The cell to move
+     * @param newLocation The location to move the given cell to.
+     */
+    public void move(Cell cell, Point newLocation){
+        this.getDiagram().moveSite(cell.getPoint(), newLocation);
+        this.pointCellMap.remove(cell.getPoint());
+        cell.setPoint(newLocation);
+        this.pointCellMap.put(cell.getPoint(), cell);
+        this.setChanged();
+        this.notifyObservers();
+    } 
+    
+    /**
+     * Get the cell that is located at the given site
+     * @param site The site for which Cell must be located. 
+     *         This location must exactly equal the location stored for a cell. 
+     *         A point that is within the region of a cell will yield a null value.
+     * @return The cell that is located at the given point, 
+     *          or null if no such cell exists.
+     */
+    public Cell getCell(Point site) {
+        return this.pointCellMap.get(site);
+    }
+
 
     /**
      * Create a GameState from a Reader.
@@ -113,4 +142,5 @@ public class GameState
         return new GameState(pointTypeMap, diagram);
     }
 
+   
 }

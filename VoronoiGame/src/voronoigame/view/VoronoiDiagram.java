@@ -10,6 +10,7 @@ import java.awt.Point;
 import java.util.Collection;
 import java.util.LinkedList;
 import voronoigame.model.Cell;
+import voronoigame.model.delaunay.Edge;
 
 /**
  * Represents a voronoi diagram. This interface is used by the GUI to draw the 
@@ -34,7 +35,7 @@ public interface VoronoiDiagram
      * Gets all edges in the voronoi diagram.
      * @return A set of point pairs (array of points with size 2)
      */
-    public Collection<Point[]> getVoronoiEdges();
+    public Collection<Edge> getVoronoiEdges();
     
     /**
      * Given a site for a voronoi cell, returns its correesponding face.
@@ -57,10 +58,10 @@ public interface VoronoiDiagram
     public Cell getCellFromSite(Point site);
     
     /**
-     * Updates the gamestate. The specified Cell is assigned a new site location.
+     * Updates the gamestate. The specified old site is assigned a new site location.
      * Afterwards, the voronoi diagram needs to be computed again.
-     * @param cell
+     * @param oldSiteLocation
      * @param newSiteLocation 
      */
-    public void moveSite(Cell cell, Point newSiteLocation);
+    public void moveSite(Point oldSiteLocation, Point newSiteLocation);
 }

@@ -16,6 +16,7 @@ import voronoigame.model.Cell;
 import voronoigame.model.GameState;
 import voronoigame.model.MoveableCell;
 import voronoigame.model.StationaryCell;
+import voronoigame.model.delaunay.Edge;
 
 /**
  * This is a dummy class only used to test if the voronoi diagram is drawn correctly and the event listeners/handlers are working correctly
@@ -62,24 +63,24 @@ public class VoronoidiagramDummyImpl implements VoronoiDiagram
     public Collection<Point> getVoronoiVertices()
     {
         Set<Point> vertices = new HashSet<>();
-        for (Point[] edge : getVoronoiEdges())
+        for (Edge edge : getVoronoiEdges())
         {
-            if (!vertices.contains(edge[0]))
+            if (!vertices.contains(edge.getPoint1()))
             {
-                vertices.add(edge[0]);
+                vertices.add(edge.getPoint1());
             }
-            if (!vertices.contains(edge[1]))
+            if (!vertices.contains(edge.getPoint2()))
             {
-                vertices.add(edge[1]);
+                vertices.add(edge.getPoint2());
             }
         }
         return vertices;
     }
     
     @Override
-    public Collection<Point[]> getVoronoiEdges()
+    public Collection<Edge> getVoronoiEdges()
     {
-        Set<Point[]> edges = new HashSet<>();
+        Set<Edge> edges = new HashSet<>();
         for (Point site : getSites())
         {
             LinkedList<Point> face = getFaceFromSite(site);
@@ -87,9 +88,7 @@ public class VoronoidiagramDummyImpl implements VoronoiDiagram
             while (!face.isEmpty())
             {
                 Point nextVertex = face.pop();
-                Point[] edge = new Point[2];
-                edge[0] = new Point(vertex);
-                edge[1] = new Point(nextVertex);
+                Edge edge = Edge.create(vertex, nextVertex);
                 if (!edges.contains(edge))
                 {
                     edges.add(edge);
@@ -153,8 +152,8 @@ public class VoronoidiagramDummyImpl implements VoronoiDiagram
     }
 
     @Override
-    public void moveSite(Cell cell, Point newSiteLocation)
+    public void moveSite(Point oldSiteLocation, Point newSiteLocation)
     {
-        System.out.println("Moving cell site: " + cell.getPoint().toString() + " to new location: " + newSiteLocation.toString());
+        System.out.println("Moving cell site: " + oldSiteLocation.toString() + " to new location: " + newSiteLocation.toString());
     }
 }

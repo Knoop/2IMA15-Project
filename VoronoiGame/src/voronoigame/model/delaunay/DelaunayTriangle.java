@@ -31,7 +31,7 @@ public class DelaunayTriangle implements Comparable{
     
     protected void insert(Point p){
         if(hasPoint(p)){
-            return;
+            throw new IllegalArgumentException("Point already contained in diagram: " + p);
         }
         
         if(contains(p)){
@@ -86,9 +86,10 @@ public class DelaunayTriangle implements Comparable{
         }
     }
     
+    //To be fixed
     private void legalizeEdge(DelaunayPoint p, DelaunayPoint e1, DelaunayPoint e2){
         DelaunayTriangle targetNeighbour = getEdgeNeighbour(e1, e2);
-        if(targetNeighbour == null || p.getX() > 0){
+        if(targetNeighbour == null){
             return;
         }
         DelaunayPoint targetPoint = null;
@@ -155,11 +156,6 @@ public class DelaunayTriangle implements Comparable{
     }
     
     protected int getEdgeNeighbourIndex(DelaunayPoint e1, DelaunayPoint e2){
-        //System.out.println("this: " + this.points[0] + " " + this.points[1] + " " + this.points[2]);
-        for(int i = 0; i < 3; i++){
-            if(this.neighbours[i] !=null) {
-            //System.out.println("neighbour" + i + ": " + this.neighbours[i].points[0] + " " + this.neighbours[i].points[1] + " " + this.neighbours[i].points[2]);
-        }}
         
         boolean has1, has2;
         int nullIndex = -1;
@@ -183,8 +179,9 @@ public class DelaunayTriangle implements Comparable{
         return nullIndex;
     }
     
+    //To be expanded for more cases
     protected void delete(Point p){
-        if(hasPoint(p)){
+        if(contains(p)){
             
             for(DelaunayTriangle t: this.children){
                 if(t != null){
@@ -192,32 +189,41 @@ public class DelaunayTriangle implements Comparable{
                 }
             }
             
-            for(DelaunayTriangle t: this.parents){
-                if(t != null){
-                    //Reset parent children, fix later for middle deletes
-                    t.children = new DelaunayTriangle[3];
-                
-                    //Correct parent neighbours
-                    DelaunayPoint[] sharedEdge = new DelaunayPoint[2];
-                    DelaunayTriangle sharedNeighbour;
-                    int edgeIndex = 0;
-                    for(DelaunayPoint d: this.points){
-                        if(t.hasPoint(d)){
-                            sharedEdge[edgeIndex] = d;
-                            edgeIndex = 1;
+            if(hasPoint(p)){
+                for(DelaunayTriangle t: this.parents){
+                    if(t != null){
+                        //Reset parent children, fix later for middle deletes
+                        for(int i = 0; i < t.children.length; i++){
+                            if(t.children[i] != null){
+                                if(t.children[i].equals(this)){
+                                    t.children[i] = null;
+                                }
+                            }
                         }
-                    }
-                    sharedNeighbour = this.getEdgeNeighbour(sharedEdge[0], sharedEdge[1]);
-                    t.neighbours[t.getEdgeNeighbourIndex(sharedEdge[0], sharedEdge[1])] = sharedNeighbour;
+                
+                        //Correct parent neighbours
+                        DelaunayPoint[] sharedEdge = new DelaunayPoint[2];
+                        DelaunayTriangle sharedNeighbour;
+                        int edgeIndex = 0;
+                        for(DelaunayPoint d: this.points){
+                            if(t.hasPoint(d)){
+                                sharedEdge[edgeIndex] = d;
+                                edgeIndex = 1;
+                            }
+                        }
+                        sharedNeighbour = this.getEdgeNeighbour(sharedEdge[0], sharedEdge[1]);
+                        t.neighbours[t.getEdgeNeighbourIndex(sharedEdge[0], sharedEdge[1])] = sharedNeighbour;
                     
-                    //Correct neighbour neighbours
-                    int sNeighIndex = sharedNeighbour.getEdgeNeighbourIndex(sharedEdge[0], sharedEdge[1]);
-                    if(sharedNeighbour.neighbours[sNeighIndex].equals(this)){
-                        sharedNeighbour.neighbours[sNeighIndex] = t;
+                        //Correct neighbour neighbours
+                        if(sharedNeighbour != null){
+                            int sNeighIndex = sharedNeighbour.getEdgeNeighbourIndex(sharedEdge[0], sharedEdge[1]);
+                            if(sharedNeighbour.neighbours[sNeighIndex].equals(this)){
+                                sharedNeighbour.neighbours[sNeighIndex] = t;
+                            }
+                        }
                     }
                 }
             }
-            
         }
     }
     
@@ -300,7 +306,7 @@ public class DelaunayTriangle implements Comparable{
         Point base;
         Point edge;
         Point opposite;
-        double px, py, ox, oy;
+        double py, oy;
         double a, b;
         for(int i = numPoints - 1; i >= 0; i--){
             base = this.points[i];
@@ -312,15 +318,7 @@ public class DelaunayTriangle implements Comparable{
             b = base.getY() - edge.getY()*(base.getX()/edge.getX());
             
             py = p.getY() - (b + a*p.getX());
-            oy = opposite.getY() - (b + a*opposite.getX());
-            
-            /*px = p.getX() - base.getX();
-            py = p.getY() - base.getY();
-            ox = opposite.getX() - base.getX();
-            oy = opposite.getY() - base.getY();
-            
-            py = py + edge.getY() * (px/edge.getX());
-            oy = oy + edge.getY() * (ox/edge.getX()); */    
+            oy = opposite.getY() - (b + a*opposite.getX());   
                     
             if(Math.signum(py) != Math.signum(oy) && py != 0){
                 result = false;
@@ -332,30 +330,45 @@ public class DelaunayTriangle implements Comparable{
     public double[] circumCenter(){
         double[] result = new double[2];
         
-        double p1x, p1y, p2x, p2y; //Position vectors
-        p1x = (this.points[0].getX() + this.points[1].getX())/2;
-        p1y = (this.points[0].getY() + this.points[1].getY())/2;
-        p2x = (this.points[1].getX() + this.points[2].getX())/2;
-        p2y = (this.points[1].getY() + this.points[2].getY())/2;
+        double[] px = new double[2]; //Position vectors
+        double[] py = new double[2]; //Position vectors
+        px[0] = (this.points[0].getX() + this.points[1].getX())/2;
+        py[0] = (this.points[0].getY() + this.points[1].getY())/2;
+        px[1] = (this.points[1].getX() + this.points[2].getX())/2;
+        py[1] = (this.points[1].getY() + this.points[2].getY())/2;
         
-        double d1x, d1y, d2x, d2y; //Direction vectors
-        d1x = this.points[1].getX() - p1x;
-        d1y = p1y - this.points[1].getY();
-        d2x = this.points[1].getX() - p2x;
-        d2y = p2y - this.points[1].getY();
+        double[] dx = new double[2]; //Direction vectors
+        double[] dy = new double[2]; //Direction vectors
+        dy[0] = this.points[1].getX() - px[0];
+        dx[0] = py[0] - this.points[1].getY();
+        dy[1] = this.points[1].getX() - px[1];
+        dx[1] = py[1] - this.points[1].getY();
         
-        double a1, b1, a2, b2; //Values for functions yi = ai*x + bi
-        a1 = d1y/d1x;
-        b1 = p1y - d1y*(p1x/d1x);
-        a2 = d2y/d2x;
-        b2 = p2y - d2y*(p2x/d2x);
+        if(dx[0] != 0 && dx[1] != 0){
+            double a1, b1, a2, b2; //Values for functions yi = ai*x + bi
+            a1 = dy[0]/dx[0];
+            b1 = py[0] - px[0]*a1;
+            a2 = dy[1]/dx[1];
+            b2 = py[1] - px[1]*a2;
         
-        double af, bf; //Values for the combined function
-        af = a1-a2;
-        bf = b1-b2;
-        result[0] = -af/bf;
-        result[1] = b1 + a1*result[0];
-        
+            double af, bf; //Values for the combined function
+            af = a1-a2;
+            bf = b1-b2;
+            result[0] = -bf/af;
+            result[1] = b1 + a1*result[0];
+        } else{
+            int z = -1;
+            for(int i = 0; i < 2; i++){
+                if(dx[i] == 0){
+                    z = i;
+                }
+            }
+            double af, bf;
+            af = dy[(z+1)%2]/dx[(z+1)%2];
+            bf = py[(z+1)%2] - px[(z+1)%2]*af;
+            result[0] = px[z];
+            result[1] = bf + af*result[0];
+        }
         return result;
     }
     
