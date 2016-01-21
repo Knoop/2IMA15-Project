@@ -29,8 +29,6 @@ public class VoronoiFacade implements VoronoiDiagram {
     public VoronoiFacade(ArrayList<Point> stillPoints, ArrayList<Point> movingPoints){
         this.stillPoints = stillPoints;
         this.movingPoints = movingPoints;
-        java.util.Collections.shuffle(this.stillPoints);
-        java.util.Collections.shuffle(this.movingPoints);
         
         this.bounds = new Point(0,0);
         
@@ -46,22 +44,21 @@ public class VoronoiFacade implements VoronoiDiagram {
         this.bounds.y += 10;
         
         initializeDelaunay();
-        insertMovingPoints();
     }
     
     VoronoiFacade(ArrayList<Point> stillPoints, ArrayList<Point> movingPoints, Point bounds){
         this.stillPoints = stillPoints;
         this.movingPoints = movingPoints;
-        java.util.Collections.shuffle(this.stillPoints);
-        java.util.Collections.shuffle(this.movingPoints);
         
         this.bounds = bounds;
         
         initializeDelaunay();
-        insertMovingPoints();
     }
     
     private void initializeDelaunay(){
+        
+        java.util.Collections.shuffle(this.stillPoints);
+        java.util.Collections.shuffle(this.movingPoints);
         
         DelaunayPoint[] rootpoints = {new DelaunayPoint(-this.bounds.x-MARGIN, -MARGIN, true), 
                 new DelaunayPoint(this.bounds.x/2, 2*(this.bounds.y+2*MARGIN), true), 
@@ -72,6 +69,7 @@ public class VoronoiFacade implements VoronoiDiagram {
             System.out.println("inserting " + p);
             this.root.insert(p);
         }
+        insertMovingPoints();
     }
     
     private void insertMovingPoints(){
@@ -194,6 +192,13 @@ public class VoronoiFacade implements VoronoiDiagram {
         this.movingPoints.remove(oldSiteLocation);
         this.movingPoints.add(newSiteLocation);
         insertMovingPoints();
+    }
+
+    @Override
+    public void removeSite(Point siteLocation) {
+        this.stillPoints.remove(siteLocation);
+        this.movingPoints.remove(siteLocation);
+        initializeDelaunay();
     }
     
 }
