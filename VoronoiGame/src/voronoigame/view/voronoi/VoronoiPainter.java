@@ -52,13 +52,15 @@ public class VoronoiPainter implements Painter {
      */
     public static final Color[] COLOR_WHITE_CELL = {new Color(0xffffff), new Color(0xd9d9d9)};
     /**
-     * Dead cell colors are the following:
+     * Cells that undergo stress have the following colors:
      * <ol start=0>
      * <li>CELL 0x888888</li>
      * <li>CORE 0x6f6f6f</li>
      * </ol>
      */
-    public static final Color[] COLOR_DEAD = {new Color(0x888888),new Color(0x6f6f6f)};
+    public static final Color[] COLOR_STRESS = {new Color(0x888888),new Color(0x6f6f6f)};
+    
+    public static final Color[] COLOR_DEAD = {new Color(0x222222), new Color(0x111111)};
 
     private static final Stroke EDGE_STROKE = new BasicStroke(1);
     
@@ -79,7 +81,7 @@ public class VoronoiPainter implements Painter {
         Color returnColor = getTypedColor(COLOR_WHITE_CELL, paintType);
         if (cell.getType() == Cell.Type.DEAD)
         {
-            return getTypedColor(COLOR_DEAD,paintType);
+            return getTypedColor(COLOR_DEAD, paintType);
         }
         if (cell.getClass() == StationaryCell.class)
         {
@@ -87,7 +89,7 @@ public class VoronoiPainter implements Painter {
             switch (stationaryCell.getType())
             {
                 case INFECTED:
-                    return getTypedColor(COLOR_INFECTED,paintType);
+                    return getTypedColor(COLOR_INFECTED,paintType);                   
                 default:
                     Color color = getTypedColor(COLOR_HEALTHY,paintType);
                     double currentRatio = cell.getCurrentAreaRatio();
@@ -99,9 +101,9 @@ public class VoronoiPainter implements Painter {
                     int g = color.getGreen();
                     int b = color.getBlue();
                     
-                    int rDiffMax = getTypedColor(COLOR_DEAD,paintType).getRed() - r;
-                    int gDiffMax = getTypedColor(COLOR_DEAD,paintType).getGreen() - g;
-                    int bDiffMax = getTypedColor(COLOR_DEAD,paintType).getBlue() - b;
+                    int rDiffMax = getTypedColor(COLOR_STRESS,paintType).getRed() - r;
+                    int gDiffMax = getTypedColor(COLOR_STRESS,paintType).getGreen() - g;
+                    int bDiffMax = getTypedColor(COLOR_STRESS,paintType).getBlue() - b;
                     
                     r += (int)((double)rDiffMax * colorChangeFactor);
                     g += (int)((double)gDiffMax * colorChangeFactor);
