@@ -122,31 +122,31 @@ public class VoronoiPainter implements Painter {
     
     @Override
     public void paint(Graphics2D g2, Object object, int width, int height) {
-        
-        GameState gameState = (GameState)object;
-        
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setColor(Color.WHITE);
         g2.fillRect(0, 0, width, height);
+        final GameState gameState = (GameState)object;
+        
+        synchronized(gameState)
+        {
+            for (Point site : gameState.getDiagram().getSites()) {
+                LinkedList<Point> face = gameState.getDiagram().getFaceFromSite(site);
+                Polygon polygon = new Polygon();
+                while (!face.isEmpty()) {
+                    Point vertex = face.pop();
+                    polygon.addPoint(vertex.x, vertex.y);
+                }
+                g2.setColor(VoronoiPainter.getColorforCell(gameState.getCell(site), PaintType.CELL));
+                g2.fillPolygon(polygon);
 
-        for (Point site : gameState.getDiagram().getSites()) {
-            LinkedList<Point> face = gameState.getDiagram().getFaceFromSite(site);
-            Polygon polygon = new Polygon();
-            while (!face.isEmpty()) {
-                Point vertex = face.pop();
-                polygon.addPoint(vertex.x, vertex.y);
+                g2.setColor(VoronoiPainter.getColorforCell(gameState.getCell(site), PaintType.CORE));
+                g2.fillOval(site.x - SITE_RADIUS, site.y - SITE_RADIUS, SITE_RADIUS * 2, SITE_RADIUS * 2);
             }
-            g2.setColor(VoronoiPainter.getColorforCell(gameState.getCell(site), PaintType.CELL));
-            g2.fillPolygon(polygon);
 
-            g2.setColor(VoronoiPainter.getColorforCell(gameState.getCell(site), PaintType.CORE));
-            g2.fillOval(site.x - SITE_RADIUS, site.y - SITE_RADIUS, SITE_RADIUS * 2, SITE_RADIUS * 2);
-        }
-
-        for (Edge edge : gameState.getDiagram().getVoronoiEdges()) {
-            g2.setColor(Color.BLACK);
-            g2.setStroke(EDGE_STROKE);
-            g2.drawLine(edge.getPoint1().x, edge.getPoint1().y, edge.getPoint2().x, edge.getPoint2().y);
+            for (Edge edge : gameState.getDiagram().getVoronoiEdges()) {
+                g2.setColor(Color.BLACK);
+                g2.setStroke(EDGE_STROKE);
+                g2.drawLine(edge.getPoint1().x, edge.getPoint1().y, edge.getPoint2().x, edge.getPoint2().y);
+            }
         }
     }
 
