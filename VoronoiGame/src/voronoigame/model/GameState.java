@@ -8,16 +8,19 @@ package voronoigame.model;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Window;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Observable;
+import java.util.Set;
 import voronoigame.model.delaunay.VoronoiFacade;
-import voronoigame.view.VoronoiDiagram;
+import voronoigame.view.voronoi.VoronoiDiagram;
 
 /**
  *
@@ -25,18 +28,30 @@ import voronoigame.view.VoronoiDiagram;
  */
 public class GameState extends Observable
 {
+    
+    private static final float CASUALTIES_RATIO = 0.3f;
 
     private final Map<Point, Cell> pointCellMap;
+    private final Set<Cell> infectedCells;
     private final VoronoiDiagram voronoiDiagram;
+    private final int maxCasualties;
+    private int currentCasualties;
 
     public GameState(Map<Point, Cell.Type> cellTypes, VoronoiDiagram voronoiDiagram)
     {
         this.pointCellMap = new HashMap<>();
         this.voronoiDiagram = voronoiDiagram;
-        this.mapSitesToCells(cellTypes);
+        this.infectedCells = new HashSet<>();
+        this.prepareCells(cellTypes);
+        this.maxCasualties = Math.round(CASUALTIES_RATIO * cellTypes.size());
+        this.currentCasualties = 0;
     }
 
-    private void mapSitesToCells(Map<Point, Cell.Type> cellTypes)
+    /**
+     * Maps sites to cells and determines the evil cells and also reference them in a special set
+     * @param cellTypes 
+     */
+    private void prepareCells(Map<Point, Cell.Type> cellTypes)
     {
         for (Point site : this.voronoiDiagram.getSites())
         {
@@ -52,6 +67,10 @@ public class GameState extends Observable
                     break;
             }
             this.pointCellMap.put(site, cell);
+            if (cell.getType() == Cell.Type.INFECTED)
+            {
+                this.infectedCells.add(cell);
+            }
         }
     }
 
@@ -77,6 +96,8 @@ public class GameState extends Observable
         cell.setPoint(newLocation);
         this.pointCellMap.put(cell.getPoint(), cell);
         this.setChanged();
+        this.updateCellStates();
+        
         this.notifyObservers();
     } 
     
@@ -140,6 +161,57 @@ public class GameState extends Observable
         }
         VoronoiDiagram diagram = new VoronoiFacade(stationaryPoints, movingPoints);
         return new GameState(pointTypeMap, diagram);
+    }
+    
+    private void updateCellStates() {
+        for (Cell cell : this.pointCellMap.values())
+        {
+            if (!(cell instanceof MoveableCell))
+            {
+                cell.updateProperties();
+            }
+        }
+    }
+    
+    public void incrementCasualties() {
+        this.currentCasualties++;
+    }
+    
+    public Set<Cell> getLivingInfectedCells()
+    {
+        Set<Cell> cells = new HashSet<>();
+        for(Cell cell : this.infectedCells)
+        {
+            if (cell.type == Cell.Type.DEAD)
+            {
+                continue;
+            }
+            cells.add(cell);
+        }
+        return cells;
+    }
+
+    /**
+     * Indicates whether this GameState has finished. This should not 
+     * distinguish between whether the player has won or lost, only that the 
+     * player should not be allowed to play further.
+     * @return true if the game has finished and the player is not allowed to do
+     * any more moves, false otherwise.
+     */
+    public boolean isFinished() {
+        return this.currentCasualties > this.maxCasualties || this.getLivingInfectedCells().isEmpty();
+    }
+
+    /**
+     * Indicates whether the player has won in the current state. A value of 
+     * true should indicate that the player has won. This does not mean that a 
+     * value of false indicates that the user has lost.
+     * @return true if the player has won in the current state, 
+     * false otherwise. This includes situations in which the game is not finished!
+     */
+    public boolean hasWon() {
+        return this.isFinished() && this.currentCasualties <= this.maxCasualties 
+                && this.getLivingInfectedCells().isEmpty();
     }
 
    

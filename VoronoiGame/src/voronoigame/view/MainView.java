@@ -61,8 +61,8 @@ public class MainView extends javax.swing.JFrame {
     }
 
     
-    void onLevelSelected(File level){
-        System.out.println("A level was selected: "+level.getName());
+    void onLevelSelected(int level){
+        System.out.println("A level was selected: ");
         this.controller.onLevelSelected(level);
     }
     
@@ -80,7 +80,7 @@ public class MainView extends javax.swing.JFrame {
     public void showLevel(GameState gameState) {
         this.showLoading();
         System.out.println("Showing level");
-        this.setContent(new VoronoiPanel(gameState, this));
+        this.setContent(new GamePanel(gameState, this));
     }
 
     public void showFailedToLoadLevel(File level, int exceptionToCause) {
@@ -89,6 +89,19 @@ public class MainView extends javax.swing.JFrame {
         this.showSelectLevel();
         // Also create dialog
     }
+    
+    public void showNoMoreLevels() {
+        System.out.println("Showing that no more levels exist");
+    }
+
+    void endLevel() {
+        this.controller.endLevel();
+    }
+
+    void nextLevel() {
+        this.controller.nextLevel();
+    }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -133,6 +146,6 @@ public class MainView extends javax.swing.JFrame {
     private javax.swing.JPanel pmContentContainer;
     // End of variables declaration//GEN-END:variables
 
-    
+
 
 }
