@@ -118,12 +118,18 @@ public class GameState extends Observable
     /**
      * Moves the given cell to the given location
      * @param cell The cell to move
-     * @param newLocation The location to move the given cell to.
+     * @param point The location to move the given cell to.
      */
-    private void move(Cell cell, Point newLocation){
-        this.getDiagram().moveSite(cell.getPoint(), newLocation);
+    private void move(Cell cell, Point point){
+
+        // If the point is out of bounds, move it to within bounds
+        if(point.x < 0 || point.y < 0 || point.x >= this.voronoiDiagram.width() || point.y >= this.voronoiDiagram.height())
+            point = new Point(
+                    Math.min(Math.max(point.x, 0), this.voronoiDiagram.width()-1),
+                    Math.min(Math.max(point.y, 0), this.voronoiDiagram.height()-1));
+        this.getDiagram().moveSite(cell.getPoint(), point);
         this.pointCellMap.remove(cell.getPoint());
-        cell.setPoint(newLocation);
+        cell.setPoint(point);
         this.pointCellMap.put(cell.getPoint(), cell);
         this.setChanged();
         this.updateCellStates();
