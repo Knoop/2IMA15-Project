@@ -65,13 +65,29 @@ public class GameState extends Observable
         return pointCellMap;
     }
     
+    /**
+     * Moves the given cell from its current location towards the given point.
+     * The Cell may and up at the given point, however this is not guaranteed.
+     * The new location of the cell is determined by the maximum velocity with 
+     * which a cell may move in one turn, as well as by the presence of nucleii
+     * of other cells that may be in the way. As the maximum amount of velocity
+     * is constant, the maximum amount of movement by the cell is dependent on
+     * the amount of time that has passed since the last movement, thus
+     * indicating how much distance should have been travelled.
+     * @param cell The Cell that must be moved
+     * @param towards The point towards which the cell must move
+     * @param interval The amount of time that has passed since the previous movement.
+     */
+    public void moveTowards(Cell cell, Point towards, double interval){
+        this.move(cell, towards);
+    }
     
     /**
      * Moves the given cell to the given location
      * @param cell The cell to move
      * @param newLocation The location to move the given cell to.
      */
-    public void move(Cell cell, Point newLocation){
+    private void move(Cell cell, Point newLocation){
         this.getDiagram().moveSite(cell.getPoint(), newLocation);
         this.pointCellMap.remove(cell.getPoint());
         cell.setPoint(newLocation);

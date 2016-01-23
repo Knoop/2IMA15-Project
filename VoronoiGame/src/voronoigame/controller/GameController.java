@@ -23,6 +23,10 @@ import voronoigame.view.voronoi.VoronoiPanel;
 public class GameController implements MouseListener, MouseMotionListener {
 
     private final GameState gameState;
+    /**
+     * The moment in time that the last movement was made. This is expressed in the amount of milliseconds as determined by {@code System.currentTimeMillis}.
+     */
+    private long lastMovement = 0;
 
     /**
      * The cell that is in focus.
@@ -64,7 +68,7 @@ public class GameController implements MouseListener, MouseMotionListener {
     @Override
     public void mouseDragged(MouseEvent me) {
         if (this.focus != null && this.focus.getFocusType() != FocusType.NONE) {
-            this.gameState.move(this.focus, me.getPoint());
+            this.gameState.moveTowards(this.focus, me.getPoint(), this.updateMovementInterval());
         }
     }
 
@@ -90,6 +94,7 @@ public class GameController implements MouseListener, MouseMotionListener {
     public void mousePressed(MouseEvent me) {
         if (this.focus != null && this.focus.getFocusType() == FocusType.HOVER) {
             this.setFocus(this.focus, FocusType.DRAG);
+            this.updateMovementInterval();
         }
     }
 
@@ -104,6 +109,12 @@ public class GameController implements MouseListener, MouseMotionListener {
 
     @Override
     public void mouseExited(MouseEvent me) {
+    }
+
+    private long updateMovementInterval() {
+        long previous = this.lastMovement;
+        this.lastMovement = System.currentTimeMillis();
+        return this.lastMovement - previous;
     }
 
 }
