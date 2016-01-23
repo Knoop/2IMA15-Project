@@ -161,4 +161,9 @@ public class VoronoidiagramDummyImpl implements VoronoiDiagram
     public void removeSite(Point siteLocation) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
+    @Override
+    public Collection<Point> getSiteNeighbours(Point site) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

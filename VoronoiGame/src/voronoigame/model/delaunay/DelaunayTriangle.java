@@ -82,6 +82,7 @@ public class DelaunayTriangle implements Comparable{
                 for(DelaunayTriangle t: this.children){
                     if(t != null){
                         inserted = inserted || t.insert(p);
+                        if(inserted) break;
                     }
                 }
             }
