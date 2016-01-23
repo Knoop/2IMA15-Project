@@ -93,6 +93,26 @@ public class VoronoiFacade implements VoronoiDiagram {
         result.addAll(this.movingPoints);
         return result;
     }
+    
+    public Collection<Point> getSiteNeighbours(Point site){
+        TreeSet<DelaunayTriangle> leaves = this.root.findLeaves(site);
+        TreeSet<Point> result = new TreeSet<>();
+        if(leaves.size() < 1){
+            result.add(root.points[0]);
+            result.add(root.points[1]);
+            result.add(root.points[2]);
+            return result;
+        }
+        for (DelaunayTriangle t: leaves){
+            for(DelaunayPoint p: t.points){
+                if(p.getX() != site.getX() && p.getX() != site.getX() && !p.isSymbolic()){
+                    result.add(p);
+                }
+            }
+        }
+        
+        return result;
+    }
 
     @Override
     public Collection<Point> getVoronoiVertices() {
