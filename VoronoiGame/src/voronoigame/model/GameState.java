@@ -13,10 +13,12 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Observable;
 import voronoigame.Util;
+import java.util.Set;
+
 import voronoigame.model.delaunay.VoronoiFacade;
 import voronoigame.view.voronoi.VoronoiDiagram;
 
@@ -26,6 +28,8 @@ import voronoigame.view.voronoi.VoronoiDiagram;
  */
 public class GameState extends Observable
 {
+    
+    private static final float CASUALTIES_RATIO = 0.3f;
 
     /**
      * The maximum amount of distance a cell may travel per millisecond. This is calculated as 100pixels per second, thus 0.1pixel per millisecond.
@@ -33,16 +37,26 @@ public class GameState extends Observable
     private static final double MAX_DISTANCE_PER_MS = 0.1;
 
     private final Map<Point, Cell> pointCellMap;
+    private final Set<Cell> infectedCells;
     private final VoronoiDiagram voronoiDiagram;
+    private final int maxCasualties;
+    private int currentCasualties;
 
     public GameState(Map<Point, Cell.Type> cellTypes, VoronoiDiagram voronoiDiagram)
     {
         this.pointCellMap = new HashMap<>();
         this.voronoiDiagram = voronoiDiagram;
-        this.mapSitesToCells(cellTypes);
+        this.infectedCells = new HashSet<>();
+        this.prepareCells(cellTypes);
+        this.maxCasualties = Math.round(CASUALTIES_RATIO * cellTypes.size());
+        this.currentCasualties = 0;
     }
 
-    private void mapSitesToCells(Map<Point, Cell.Type> cellTypes)
+    /**
+     * Maps sites to cells and determines the evil cells and also reference them in a special set
+     * @param cellTypes 
+     */
+    private void prepareCells(Map<Point, Cell.Type> cellTypes)
     {
         for (Point site : this.voronoiDiagram.getSites())
         {
@@ -58,6 +72,10 @@ public class GameState extends Observable
                     break;
             }
             this.pointCellMap.put(site, cell);
+            if (cell.getType() == Cell.Type.INFECTED)
+            {
+                this.infectedCells.add(cell);
+            }
         }
     }
 
@@ -108,6 +126,8 @@ public class GameState extends Observable
         cell.setPoint(newLocation);
         this.pointCellMap.put(cell.getPoint(), cell);
         this.setChanged();
+        this.updateCellStates();
+        
         this.notifyObservers();
     } 
     
@@ -172,6 +192,34 @@ public class GameState extends Observable
         VoronoiDiagram diagram = new VoronoiFacade(stationaryPoints, movingPoints);
         return new GameState(pointTypeMap, diagram);
     }
+    
+    private void updateCellStates() {
+        for (Cell cell : this.pointCellMap.values())
+        {
+            if (!(cell instanceof MoveableCell))
+            {
+                cell.updateProperties();
+            }
+        }
+    }
+    
+    public void incrementCasualties() {
+        this.currentCasualties++;
+    }
+    
+    public Set<Cell> getLivingInfectedCells()
+    {
+        Set<Cell> cells = new HashSet<>();
+        for(Cell cell : this.infectedCells)
+        {
+            if (cell.type == Cell.Type.DEAD)
+            {
+                continue;
+            }
+            cells.add(cell);
+        }
+        return cells;
+    }
 
     /**
      * Indicates whether this GameState has finished. This should not 
@@ -181,8 +229,7 @@ public class GameState extends Observable
      * any more moves, false otherwise.
      */
     public boolean isFinished() {
-        // TODO actually implement something that will return true sometimes. 
-        return false;
+        return this.currentCasualties > this.maxCasualties || this.getLivingInfectedCells().isEmpty();
     }
 
     /**
@@ -193,8 +240,8 @@ public class GameState extends Observable
      * false otherwise. This includes situations in which the game is not finished!
      */
     public boolean hasWon() {
-        // TODO actually implement something that indicates that the user has won.
-        return false && this.isFinished();
+        return this.isFinished() && this.currentCasualties <= this.maxCasualties 
+                && this.getLivingInfectedCells().isEmpty();
     }
 
    

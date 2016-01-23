@@ -156,4 +156,9 @@ public class VoronoidiagramDummyImpl implements VoronoiDiagram
     {
         System.out.println("Moving cell site: " + oldSiteLocation.toString() + " to new location: " + newSiteLocation.toString());
     }
+
+    @Override
+    public void removeSite(Point siteLocation) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

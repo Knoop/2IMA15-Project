@@ -64,4 +64,11 @@ public interface VoronoiDiagram
      * @param newSiteLocation 
      */
     public void moveSite(Point oldSiteLocation, Point newSiteLocation);
+    
+    /**
+     * Updates the gamestate. The specified site is removed from the diagram.
+     * Afterwards, the voronoi diagram needs to be computed again.
+     * @param siteLocation
+     */
+    public void removeSite(Point siteLocation);
 }
