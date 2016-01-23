@@ -101,4 +101,43 @@ public class Util
     public static File LEVEL_FOLDER = new File("levels");
 
     public static int INDEX_AREA = 0, INDEX_CIRCUMFERENCE = 1;
+
+    /**
+     * Subtracts point b from point a. This means that the x value of the new 
+     * point is equal to the x value of the a point minus the x value of the b 
+     * point. This is also done for the y value. This operation has no effect on
+     * either a or b.
+     * @param a The Point from which to subtract point b. 
+     * @param b The Point to subtract from point a.
+     * @return A new point that is the subtraction of b from a.
+     */
+    public static Point subtract(Point a, Point b) {
+        return new Point(a.x - b.x, a.y - b.y);
+    }
+    
+    /**
+     * Adds point b to point a. This means that the x value of the new 
+     * point is equal to the x value of the a point plus the x value of the b 
+     * point. This is also done for the y value. This operation has no effect on
+     * either a or b.
+     * @param a The Point to which to add point b. 
+     * @param b The Point to which to add point a.
+     * @return A new point that is the addition of a and b.
+     */
+    public static Point add(Point a, Point b) {
+        return new Point(a.x + b.x, a.y + b.y);
+    }
+    
+    /**
+     * Scales the given point by the given factor. The resulting multiplication
+     * is rounded following {@code Math.round(double)}. This has no effect on the given point.
+     * @param p The point to be scaled
+     * @param factor THe factor by which to scale the point. 
+     * @return A new point that is the result of scaling the given point by the
+     * given factor. For instance, if (0,5) is scaled by 0.5, then the result is
+     * (0,2.5), which is then rounded to (0,3). 
+     */
+    public static Point scale(Point p, double factor){
+        return new Point((int)Math.round(p.x * factor), (int)Math.round(p.y * factor));
+    }
 }
