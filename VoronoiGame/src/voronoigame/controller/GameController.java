@@ -38,13 +38,9 @@ public class GameController implements MouseListener, MouseMotionListener {
     
     private void performStep(long interval) {
         if (this.cursorState.focus != null && this.cursorState.focus.getFocusType() != FocusType.NONE && this.cursorState.location != null )
-        {
-            System.out.println("Must move "+this.cursorState.focus.getPoint()+" towards "+this.cursorState.location);
             synchronized(this.gameState){
                 this.gameState.moveTowards(this.cursorState.focus, this.cursorState.location, interval);
             }
-        }
-
     }
 
     @Override
