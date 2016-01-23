@@ -71,4 +71,17 @@ public interface VoronoiDiagram
      * @param siteLocation
      */
     public void removeSite(Point siteLocation);
+    
+    /**
+     * Indicates the width of the voronoi diagram. 
+     * @return the width of the voronoi diagram. 
+     */
+    public int width();
+    
+    /**
+     * Indicates the height of the voronoi diagram. 
+     * @return the height of the voronoi diagram
+     */
+    public int height();
+    
 }

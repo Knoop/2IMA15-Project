@@ -200,5 +200,15 @@ public class VoronoiFacade implements VoronoiDiagram {
         this.movingPoints.remove(siteLocation);
         initializeDelaunay();
     }
+
+    @Override
+    public int width() {
+        return this.bounds.x;
+    }
+
+    @Override
+    public int height() {
+        return this.bounds.y;
+    }
     
 }
