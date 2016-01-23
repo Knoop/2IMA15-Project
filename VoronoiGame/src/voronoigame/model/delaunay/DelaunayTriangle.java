@@ -29,7 +29,8 @@ public class DelaunayTriangle implements Comparable{
         this.neighbours = new DelaunayTriangle[3];
     }
     
-    protected void insert(Point p){
+    protected boolean insert(Point p){
+        boolean inserted = false;
         if(hasPoint(p)){
             throw new IllegalArgumentException("Point already contained in diagram: " + p);
         }
@@ -37,6 +38,7 @@ public class DelaunayTriangle implements Comparable{
         if(contains(p)){
             
             if(this.children[0] == null){
+                inserted = true;
                 //Set new children
                 DelaunayPoint newPoint = new DelaunayPoint((int) p.getX(), (int) p.getY(), false);
                 this.children[0] = new DelaunayTriangle(new DelaunayPoint[] {
@@ -79,12 +81,17 @@ public class DelaunayTriangle implements Comparable{
             else {
                 for(DelaunayTriangle t: this.children){
                     if(t != null){
-                        t.insert(p);
+                        inserted = inserted || t.insert(p);
                     }
                 }
             }
         }
+        if(!inserted && isRoot()){
+            throw new IllegalArgumentException("Could not insert point: " + p);
+        }
+        return inserted;
     }
+    
     
     //To be fixed
     private void legalizeEdge(DelaunayPoint p, DelaunayPoint e1, DelaunayPoint e2){
@@ -288,6 +295,15 @@ public class DelaunayTriangle implements Comparable{
         return false;
     }
     
+    public boolean isRoot(){
+        for(DelaunayPoint p: this.points){
+            if(!p.isSymbolic()){
+                return false;
+            }
+        }
+        return true;
+    }
+    
     public boolean hasPoint(Point p){
         
         boolean hasPoint = false;
@@ -312,15 +328,32 @@ public class DelaunayTriangle implements Comparable{
             base = this.points[i];
             edge = new Point((int) this.points[i].getX() - (int) this.points[(i+1)%numPoints].getX(), 
                 (int) this.points[i].getY() - (int) this.points[(i+1)%numPoints].getY());
-            opposite = this.points[(i+2)%numPoints];
-            
-            a = edge.getY()/edge.getX();
-            b = base.getY() - edge.getY()*(base.getX()/edge.getX());
-            
-            py = p.getY() - (b + a*p.getX());
-            oy = opposite.getY() - (b + a*opposite.getX());   
+            opposite = this.points[(i+2)%numPoints]; 
                     
-            if(Math.signum(py) != Math.signum(oy) && py != 0){
+            if(edge.getX() == 0){
+                if(p.getX() < base.getX()){
+                    py = -1;
+                } else {
+                    py = 1;
+                }
+                if(opposite.getX() < base.getX()){
+                    oy = -1;
+                } else {
+                    oy = 1;
+                }
+        
+                
+            } else{
+                a = edge.getY()/edge.getX();
+                b = base.getY() - edge.getY()*(base.getX()/edge.getX());
+            
+                py = p.getY() - (b + a*p.getX());
+                oy = opposite.getY() - (b + a*opposite.getX());  
+            }
+            
+            
+            
+            if(Math.signum(py) != Math.signum(oy) && py != 0 && oy != 0){
                 result = false;
             }
         }
