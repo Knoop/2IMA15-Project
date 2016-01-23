@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Observable;
+import voronoigame.Util;
 import voronoigame.model.delaunay.VoronoiFacade;
 import voronoigame.view.voronoi.VoronoiDiagram;
 
@@ -25,6 +26,11 @@ import voronoigame.view.voronoi.VoronoiDiagram;
  */
 public class GameState extends Observable
 {
+
+    /**
+     * The maximum amount of distance a cell may travel per millisecond. This is calculated as 100pixels per second, thus 0.1pixel per millisecond.
+     */
+    private static final double MAX_DISTANCE_PER_MS = 0.1;
 
     private final Map<Point, Cell> pointCellMap;
     private final VoronoiDiagram voronoiDiagram;
@@ -78,8 +84,17 @@ public class GameState extends Observable
      * @param towards The point towards which the cell must move
      * @param interval The amount of time that has passed since the previous movement.
      */
-    public void moveTowards(Cell cell, Point towards, double interval){
-        this.move(cell, towards);
+    public void moveTowards(Cell cell, Point towards, long interval){
+        Point reachedPoint;
+        double length = cell.point.distance(towards);
+        double maxLength = interval * GameState.MAX_DISTANCE_PER_MS;
+        if(length < maxLength) {
+            reachedPoint = towards;
+        } else {
+            // Reached point is the direction of towards scaled to how far off the towards point is.
+            reachedPoint = Util.add(cell.point, Util.scale(Util.subtract(towards, cell.point), maxLength / length));
+        }
+        this.move(cell, reachedPoint);
     }
     
     /**
