@@ -34,7 +34,7 @@ public class GameState extends Observable
     /**
      * The maximum amount of distance a cell may travel per millisecond. This is calculated as 100pixels per second, thus 0.1pixel per millisecond.
      */
-    private static final double MAX_DISTANCE_PER_MS = 0.1;
+    private static final double MAX_DISTANCE_PER_MS = 0.12;
 
     private final Map<Point, Cell> pointCellMap;
     private final Set<Cell> infectedCells;
