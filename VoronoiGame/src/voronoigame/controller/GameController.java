@@ -92,7 +92,7 @@ public class GameController implements MouseListener, MouseMotionListener {
 
     private class GameRunner implements Runnable{
 
-        private static final int MAX_REFRESH_RATE = 60;
+        private static final int MAX_REFRESH_RATE = 960;
         private static final long MIN_REFRESH_INTERVAL = 1000 / MAX_REFRESH_RATE;
         
         private boolean run = true;
