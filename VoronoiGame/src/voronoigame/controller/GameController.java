@@ -91,7 +91,7 @@ public class GameController implements MouseListener, MouseMotionListener {
         private static final int MAX_REFRESH_RATE = 960;
         private static final long MIN_REFRESH_INTERVAL = 1000 / MAX_REFRESH_RATE;
         
-        private boolean run = true;
+        private boolean run = false;
         private Thread runner;
 
         private long last;
