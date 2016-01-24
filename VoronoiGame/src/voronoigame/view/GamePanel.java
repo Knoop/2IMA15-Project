@@ -163,6 +163,7 @@ public class GamePanel extends ContentPanel implements Observer {
 
     @Override
     protected void onPanelRemoved() {
+        this.gameController.stop();
     }
 
 
