@@ -22,7 +22,8 @@ public abstract class Cell {
     protected Type type;
     protected boolean alive;
 
-    public static final double MAX_SCALE_FACTOR = 2;
+    public static final double MAX_COMPRESSION_FACTOR = 1.5;
+    public static final double MAX_EXPANSION_FACTOR = 3;
     
     private boolean focussable;
     private FocusType focusType;
@@ -40,14 +41,16 @@ public abstract class Cell {
         return alive;
     }
     
+    public double getApplicableScaleFactor() {
+        return this.getCurrentArea() < this.getInitArea() ? MAX_COMPRESSION_FACTOR : MAX_EXPANSION_FACTOR;
+    }
+    
     public void updateProperties() {
-
-
         double[] properties = Util.calculateProperties(this.point, this.gameState);
         this.currentArea = properties[Util.INDEX_AREA];
         this.currentCircumference = properties[Util.INDEX_CIRCUMFERENCE];
 
-        if (this.getCurrentAreaRatio() >= MAX_SCALE_FACTOR) {
+        if (this.getCurrentAreaRatio() >= getApplicableScaleFactor()) {
             this.kill();
         } else {
             this.notifyCellPropertyChanged();

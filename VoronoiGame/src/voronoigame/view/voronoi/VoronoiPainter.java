@@ -108,11 +108,14 @@ public class VoronoiPainter implements Painter
                     {
                         return getTypedColor(COLOR_REGULAR, paintType);
                     }
+                    
+                    double maxScaleFactor = cell.getApplicableScaleFactor();
+                    
                     Color color = getTypedColor(COLOR_REGULAR, paintType);
                     double currentRatio = cell.getCurrentAreaRatio();
-                    currentRatio = currentRatio < Cell.MAX_SCALE_FACTOR ? currentRatio : Cell.MAX_SCALE_FACTOR;
+                    currentRatio = currentRatio < maxScaleFactor ? currentRatio : maxScaleFactor;
 
-                    double colorChangeFactor = (currentRatio - 1) / (Cell.MAX_SCALE_FACTOR - 1);
+                    double colorChangeFactor = (currentRatio - 1) / (maxScaleFactor - 1);
 
                     int r = color.getRed();
                     int g = color.getGreen();
