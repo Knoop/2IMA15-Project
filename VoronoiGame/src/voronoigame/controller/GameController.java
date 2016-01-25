@@ -36,6 +36,11 @@ public class GameController implements MouseListener, MouseMotionListener {
      */
     private Cell focus = null;
     
+    /**
+     * The MoveOperation that must be used to update the location of the
+     * selected cell in case the mouse is dragging. When no cell is selected
+     * this will be null.
+     */
     private MoveOperation currentMoveOperation;
 
     public GameController(GameState gameState) {
@@ -109,6 +114,10 @@ public class GameController implements MouseListener, MouseMotionListener {
     }
     
 
+    /**
+     * The GameRunner updates the GameState every few milliseconds. It moves the
+     * selected cell towards the cursor with every step. 
+     */
     private class GameRunner implements Runnable{
 
         private static final int MAX_REFRESH_RATE = 960;
