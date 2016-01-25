@@ -53,7 +53,7 @@ public abstract class Cell {
         double ratio = this.getCurrentAreaRatio();
         
         // Scaled out of proportion
-        if (this.getScaleRatio() > 1)
+        if (this.getCurrentAreaRatio() > MAX_EXPANSION_FACTOR || this.getCurrentAreaRatio() < MAX_COMPRESSION_FACTOR)
             this.kill();
         else
             this.notifyCellPropertyChanged();
