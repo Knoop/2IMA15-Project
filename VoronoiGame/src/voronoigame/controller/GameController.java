@@ -86,12 +86,17 @@ public class GameController implements MouseListener, MouseMotionListener {
         this.runner.pause();
     }
 
+    public void stop() {
+        this.runner.stop = true;
+    }
+    
+
     private class GameRunner implements Runnable{
 
         private static final int MAX_REFRESH_RATE = 960;
         private static final long MIN_REFRESH_INTERVAL = 1000 / MAX_REFRESH_RATE;
         
-        private boolean run = true;
+        private boolean run = true, stop = false;
         private Thread runner;
 
         private long last;
@@ -99,7 +104,7 @@ public class GameController implements MouseListener, MouseMotionListener {
         @Override
         public void run(){
             long time;
-            while(this.run){
+            while(this.run && !this.stop){
                 // Update the timer and calculate the elapsed time
                 time = this.last;
                 this.last = System.currentTimeMillis();
@@ -122,7 +127,7 @@ public class GameController implements MouseListener, MouseMotionListener {
         }
 
         private void resume(){
-            if(!this.run){
+            if(!this.run && !this.stop){
                 this.run = true;
                 this.start();
             }

@@ -6,6 +6,7 @@
 package voronoigame.view;
 
 import java.io.File;
+import javax.swing.JOptionPane;
 import voronoigame.controller.Controller;
 import voronoigame.model.GameState;
 
@@ -92,7 +93,45 @@ public class MainView extends javax.swing.JFrame {
     
     public void showNoMoreLevels() {
         System.out.println("Showing that no more levels exist");
+        this.showDialogAsync(new DialogRequest(
+                "Game over",
+                "You've played the last level",
+                "start over",
+                "stop"){
+
+                @Override
+                void onChoiceSelected(int choice) {
+                    if(choice == 0)
+                        MainView.this.controller.onLevelSelected(0);
+                    else if(choice == 1)
+                        MainView.this.controller.endLevel();
+                    }
+
+                });
     }
+
+    public void showLevelCompleted(final GameState gameState) {
+        System.out.println("Showing that the level is finished");
+
+        this.showDialogAsync(new DialogRequest(
+                gameState.hasWon()? "Level completed":"Level failed",
+                gameState.hasWon()?"You've won!":"You've lost!",
+                gameState.hasWon()?"continue":"retry",
+                "stop"){
+
+                @Override
+                void onChoiceSelected(int choice) {
+                    if(choice == 0 && gameState.hasWon())
+                        MainView.this.controller.nextLevel();
+                    else if(choice == 0 && !gameState.hasWon())
+                        MainView.this.controller.restart();
+                    else if(choice == 1)
+                        MainView.this.controller.endLevel();
+                    }
+
+                });
+    }
+
 
     void endLevel() {
         this.controller.endLevel();
@@ -103,6 +142,37 @@ public class MainView extends javax.swing.JFrame {
     }
 
 
+    /**
+     * Shows the dialog that is created from the DialogRequest.
+     * @param request The request that indicates how the dialog
+     * should be displayed and that will handle the result from the dialog.
+     */
+    private void showDialog(DialogRequest request){
+        request.onChoiceSelected(JOptionPane.showOptionDialog(this,
+            request.text,
+            request.title,
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.PLAIN_MESSAGE,
+            null,     //do not use a custom Icon
+            request.options,  //the titles of buttons
+            request.options[0]) //default button title
+        );
+    }
+
+    /**
+     * Shows the dialog that is created from the DialogRequest.
+     * This is done asynchronous.
+     * @param request The request that indicates how the dialog should be
+     * displayed and that will handle the result from the dialog.
+     */
+    private void showDialogAsync(final DialogRequest request){
+        (new Thread(new Runnable(){
+            @Override
+            public void run() {
+                showDialog(request);
+            }
+        })).start();
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -146,6 +216,21 @@ public class MainView extends javax.swing.JFrame {
     private javax.swing.JPanel pmContentContainer;
     // End of variables declaration//GEN-END:variables
 
+    /**
+     * Request for showing a dialog. This makes it possible to let dialogs be
+     * handled both synchronous as well as asynchronous.
+     */
+    private static abstract class DialogRequest {
+        private final String title;
+        private final String text;
+        private final String[] options;
 
+        private DialogRequest(String title, String text, String...options){
+            this.title = title;
+            this.text = text;
+            this.options = options;
+        }
 
+        abstract void onChoiceSelected(int choice);
+    }
 }
