@@ -57,36 +57,68 @@ public class MainView extends javax.swing.JFrame {
         return this.contentPanel;
     }
 
-    
+    /**
+     * Event that indicates that a level has been selected. 
+     * This is called by the LevelSelectionPanel.
+     * @param level The integer index of the selected level from the set of levels
+     * made available by the controller
+     */
     void onLevelSelected(int level){
         System.out.println("A level was selected: ");
         this.controller.onLevelSelected(level);
     }
     
+    /**
+     * Shows a loading screen
+     */
     public void showLoading(){
         System.out.println("Showing loading");
         this.setContent(new LoadingPanel(this));
     }
     
+    /**
+     * Shows the screen to select a level
+     */
     public void showSelectLevel() {
         this.showLoading();
         System.out.println("Showing level selection");
         this.setContent(new LevelSelectionPanel(this, this.controller.getLevels()));
     }
 
+    /**
+     * Shows a level for the given GameState.
+     * @param gameState The GameState to show as a level
+     */
     public void showLevel(GameState gameState) {
         this.showLoading();
         System.out.println("Showing level");
         this.setContent(new GamePanel(gameState, this));
     }
 
+    /**
+     * Shows that the selected file could not be loaded. 
+     * @param level The level that couldn't be loaded.
+     * @param exceptionToCause The reason why the level couldn't be loaded
+     */
     public void showFailedToLoadLevel(File level, int exceptionToCause) {
         this.showLoading();
         System.out.println("Showing level loading failure");
+        this.showDialogAsync(new DialogRequest("Failed to load level","The level couldn't be loaded. Error E"+exceptionToCause,"next","stop"){
+            @Override
+            void onChoiceSelected(int choice) {
+                if(choice == 0)
+                    MainView.this.nextLevel();
+                else if(choice == 1)
+                    MainView.this.showSelectLevel();
+            }
+        });
         this.showSelectLevel();
         // Also create dialog
     }
     
+    /**
+     * Shows a dialog to the user that there are no more levels to play.
+     */
     public void showNoMoreLevels() {
         System.out.println("Showing that no more levels exist");
         this.showDialogAsync(new DialogRequest(
@@ -106,6 +138,12 @@ public class MainView extends javax.swing.JFrame {
                 });
     }
 
+    /**
+     * Shows a dialog to the user that the game is over, 
+     * either because they lost or because they won. 
+     * @param gameState The GameState that is now finished and for which the dialog
+     * must be shown.
+     */
     public void showLevelCompleted(final GameState gameState) {
         System.out.println("Showing that the level is finished");
 
@@ -128,11 +166,16 @@ public class MainView extends javax.swing.JFrame {
                 });
     }
 
-
+    /**
+     * Ends the current level
+     */
     void endLevel() {
         this.controller.endLevel();
     }
 
+    /**
+     * Moves to the next level
+     */
     void nextLevel() {
         this.controller.nextLevel();
     }
@@ -214,7 +257,7 @@ public class MainView extends javax.swing.JFrame {
 
     /**
      * Request for showing a dialog. This makes it possible to let dialogs be
-     * handled both synchronous as well as asynchronous.
+     * handled both synchronous as well as asynchronous. 
      */
     private static abstract class DialogRequest {
         private final String title;
@@ -227,6 +270,10 @@ public class MainView extends javax.swing.JFrame {
             this.options = options;
         }
 
+        /**
+         * Called when the user has made a decision.
+         * @param choice THe item from the array of options that was picked.
+         */
         abstract void onChoiceSelected(int choice);
     }
 }
