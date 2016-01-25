@@ -186,6 +186,11 @@ public class DelaunayTriangle implements Comparable{
         return nullIndex;
     }
     
+    //TO DO: Use fancy deletion procedure
+    protected void delete(Point p){
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
     //TO DO: Add full delete
     protected void deleteLeafPoint(Point p){
         if(contains(p)){
