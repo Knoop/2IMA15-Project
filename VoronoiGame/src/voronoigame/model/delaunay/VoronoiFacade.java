@@ -149,6 +149,7 @@ public class VoronoiFacade implements VoronoiDiagram {
         assert !useBounds;
         double[] tVertex = t.getVoronoiVertex();
         if(!isInBounds(new Point((int) tVertex[0], (int) tVertex[1])) && useBounds){
+            //TO DO: Make this work correctly
             double[] nullVertex = new double[] {-1,-1};
             double[] nVertex = nullVertex;
             for(DelaunayTriangle n: t.neighbours){
