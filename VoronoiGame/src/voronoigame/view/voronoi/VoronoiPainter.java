@@ -48,52 +48,58 @@ public class VoronoiPainter implements Painter
     /**
      * Regular cell colors are the following:
      * <ol start=0>
-     * <li>CELL 0x93ed94</li>
-     * <li>CORE 0x67e669</li>
-     * <li>STRESS (expanded) </li>
-     * <li>STRESS (compressed) </li>
-     * <li>DEAD</li>
+     * <li>CELL #2ddc2f</li>
+     * <li>CORE #1ba21c</li>
+     * <li>STRESS (expanded) #188f19</li>
+     * <li>STRESS (compressed) #92ed93</li>
+     * <li>DEAD #072a07</li>
      * </ol>
      */
     public static final Color[] COLOR_REGULAR =
     {
         new Color(0x2ddc2f), // CELL 
-        new Color(0x20c222), // CORE
-        new Color(0xffffff), // STRESS_EXPANDED
-        new Color(0x000000), // STRESS_COMPRESSED
-        new Color(0x194C19), // DEAD
+        new Color(0x1ba21c), // CORE
+        new Color(0x188f19), // STRESS_EXPANDED
+        new Color(0x92ed93), // STRESS_COMPRESSED
+        new Color(0x072a07), // DEAD
     };
 
     /**
      * Infected cell colors are the following:
      * <ol start=0>
-     * <li>CELL 0x93ed94</li>
-     * <li>CORE 0xcc0000</li>
+     * <li>CELL #d32523</li>
+     * <li>CORE #911918</li>
+     * <li>STRESS (expanded) #901918</li>
+     * <li>STRESS (compressed) #ea8382</li>
+     * <li>DEAD #2b0707</li>
      * </ol>
      */
     public static final Color[] COLOR_INFECTED =
     {
         new Color(0xd32523), // CELL
-        new Color(0xb11f1d), // CORE
-        new Color(0xffffff), // STRESS_EXPANDED
-        new Color(0x000000), // STRESS_COMPRESSED
-        new Color(0x4C1919), // DEAD
+        new Color(0x911918), // CORE
+        new Color(0x901918), // STRESS_EXPANDED
+        new Color(0xea8382), // STRESS_COMPRESSED
+        new Color(0x2b0707), // DEAD
     };
 
     /**
      * White cell colors are the following:
      * <ol start=0>
-     * <li>CELL 0x93ed94</li>
-     * <li>CORE 0xe6e6e6</li>
+     * <li>CELL #eeeeee</li>
+     * <li>CORE #c8c8c8</li>
+     * <li>STRESS (expanded) #515151</li>
+     * <li>STRESS (compressed) #b3b3b3</li>
+     * <li>DEAD #161616</li>
      * </ol>
      */
     public static final Color[] COLOR_WHITE_CELL =
     {
-        new Color(0xffffff), // CELL
-        new Color(0xd9d9d9), // CORE
-        new Color(0xffffff), // STRESS_EXPANDED
-        new Color(0x000000), // STRESS_COMPRESSED
-        new Color(0x333333), // DEAD
+        new Color(0xeeeeee), // CELL
+        new Color(0xc8c8c8), // CORE
+        new Color(0x515151), // STRESS_EXPANDED
+        new Color(0xb3b3b3), // STRESS_COMPRESSED
+        new Color(0x161616), // DEAD
     };
 
     private static final Stroke EDGE_STROKE = new BasicStroke(1);
