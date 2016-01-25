@@ -44,7 +44,7 @@ public class GameState extends Observable
     private int currentCasualties;
     
     private int score;
-    private int minimumScore;
+    private final int minimumScore;
 
     public GameState(Map<Point, Cell.Type> cellTypes, VoronoiDiagram voronoiDiagram)
     {
@@ -104,6 +104,10 @@ public class GameState extends Observable
     public int getMinimumScore()
     {
         return minimumScore;
+    }
+    
+    public int getMaximumScore() {
+        return this.pointCellMap.size() * SCORE_MULTIPLIER;
     }
     
     /**

@@ -16,14 +16,12 @@ import java.util.TreeSet;
 public class DelaunayTriangle implements Comparable{
     
     protected DelaunayPoint[] points;
-    private Point bounds;
     private DelaunayTriangle[] parents;
     private DelaunayTriangle[] children;
     protected DelaunayTriangle[] neighbours;
     
-    DelaunayTriangle(DelaunayPoint[] points, Point bounds){
+    DelaunayTriangle(DelaunayPoint[] points){
         this.points = points;
-        this.bounds = bounds;
         this.parents = new DelaunayTriangle[2];
         this.children = new DelaunayTriangle[3];
         this.neighbours = new DelaunayTriangle[3];
@@ -43,13 +41,13 @@ public class DelaunayTriangle implements Comparable{
                 DelaunayPoint newPoint = new DelaunayPoint((int) p.getX(), (int) p.getY(), false);
                 this.children[0] = new DelaunayTriangle(new DelaunayPoint[] {
                     newPoint, this.points[0], this.points[1]
-                    }, this.bounds);
+                    });
                 this.children[1] = new DelaunayTriangle(new DelaunayPoint[] {
                     newPoint, this.points[1], this.points[2]
-                    }, this.bounds);
+                    });
                 this.children[2] = new DelaunayTriangle(new DelaunayPoint[] {
                     newPoint, this.points[2], this.points[0]
-                    }, this.bounds);
+                    });
                 
                 //Set parents
                 this.children[0].parents[0] = this;
@@ -88,7 +86,8 @@ public class DelaunayTriangle implements Comparable{
             }
         }
         if(!inserted && isRoot()){
-            throw new IllegalArgumentException("Could not insert point: " + p);
+            throw new IllegalStateException("Could not insert point: " + p);
+            //Exception in thread "Thread-2" java.lang.IllegalStateException: Could not insert point: java.awt.Point[x=339,y=301]
         }
         return inserted;
     }
@@ -117,7 +116,7 @@ public class DelaunayTriangle implements Comparable{
                 
                 this.children[i] = new DelaunayTriangle(new DelaunayPoint[] {
                     p, edge[i], targetPoint
-                    }, this.bounds);
+                    });
                 
             }
             
@@ -187,13 +186,13 @@ public class DelaunayTriangle implements Comparable{
         return nullIndex;
     }
     
-    //To be expanded for more cases
-    protected void delete(Point p){
+    //TO DO: Add full delete
+    protected void deleteLeafPoint(Point p){
         if(contains(p)){
             
             for(DelaunayTriangle t: this.children){
                 if(t != null){
-                    t.delete(p);
+                    t.deleteLeafPoint(p);
                 }
             }
             
@@ -288,21 +287,21 @@ public class DelaunayTriangle implements Comparable{
     }
     
     public boolean isSymbolic(){
+        return symbolicDegree() > 0;
+    }
+    
+    public int symbolicDegree(){
+        int r = 0;
         for(DelaunayPoint p: this.points){
             if(p.isSymbolic()){
-                return true;
+                r++;
             }
         }
-        return false;
+        return r;
     }
     
     public boolean isRoot(){
-        for(DelaunayPoint p: this.points){
-            if(!p.isSymbolic()){
-                return false;
-            }
-        }
-        return true;
+        return symbolicDegree() == 3;
     }
     
     public boolean hasPoint(Point p){
