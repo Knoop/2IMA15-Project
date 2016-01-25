@@ -32,11 +32,6 @@ public class GameState extends Observable
     private static final float CASUALTIES_RATIO = 0.3f;
     private static final int SCORE_MULTIPLIER = 10;
     
-    /**
-     * The maximum amount of distance a cell may travel per millisecond. This is calculated as 100pixels per second, thus 0.1pixel per millisecond.
-     */
-    private static final double MAX_DISTANCE_PER_MS = 0.12;
-
     private final Map<Point, Cell> pointCellMap;
     private final Set<Cell> infectedCells;
     private final VoronoiDiagram voronoiDiagram;
@@ -110,31 +105,7 @@ public class GameState extends Observable
         return this.pointCellMap.size() * SCORE_MULTIPLIER;
     }
     
-    /**
-     * Moves the given cell from its current location towards the given point.
-     * The Cell may and up at the given point, however this is not guaranteed.
-     * The new location of the cell is determined by the maximum velocity with 
-     * which a cell may move in one turn, as well as by the presence of nucleii
-     * of other cells that may be in the way. As the maximum amount of velocity
-     * is constant, the maximum amount of movement by the cell is dependent on
-     * the amount of time that has passed since the last movement, thus
-     * indicating how much distance should have been travelled.
-     * @param cell The Cell that must be moved
-     * @param towards The point towards which the cell must move
-     * @param interval The amount of time that has passed since the previous movement.
-     */
-    public void moveTowards(Cell cell, Point towards, long interval){
-        Point reachedPoint;
-        double length = cell.point.distance(towards);
-        double maxLength = interval * GameState.MAX_DISTANCE_PER_MS;
-        if(length < maxLength) {
-            reachedPoint = towards;
-        } else {
-            // Reached point is the direction of towards scaled to how far off the towards point is.
-            reachedPoint = Util.add(cell.point, Util.scale(Util.subtract(towards, cell.point), maxLength / length));
-        }
-        this.move(cell, reachedPoint);
-    }
+    
     
     /**
      * Moves the given cell to the given location
@@ -271,6 +242,129 @@ public class GameState extends Observable
         return this.isFinished() && this.currentCasualties <= this.maxCasualties 
                 && this.getLivingInfectedCells().isEmpty();
     }
+    
+    /**
+     * Starts a move operation on this GameState. This allows you to move a cell
+     * in the gamestate. Any previously issued MoveOperation for the given cell will be finished and will no longer be usable.
+     * @param cell The Cell that must be moved by the returned operation.
+     * @return The MoveOperation that can be used to (repeatedly) move a cell in
+     * the gamestate.
+     */
+    public MoveOperation move(Cell cell) {
+        this.finishMoveOperation(cell);
+        MoveOperation op = new MoveOperation(cell);
+        this.currentOperations.put(cell, op);
+        return op;
+    }
+    
+    /**
+     * Finishes the current move operation for the given cell if applicable
+     * @param cell The Cell for which to remove the current move operation. 
+     */
+    private void finishMoveOperation(Cell cell){
+        if(currentOperations.containsKey(cell))
+            this.currentOperations.remove(cell).finish();
+    }
+    
+        /**
+     * A mapping containing all operations that are currently active. 
+     */
+    private final Map<Cell, MoveOperation> currentOperations = new HashMap<>();
 
+    public class MoveOperation{
+        
+        /**
+         * The maximum amount of distance a cell may travel per millisecond. This is calculated as 100pixels per second, thus 0.1pixel per millisecond.
+         */
+        private static final double MAX_DISTANCE_PER_MS = 0.12;
+    
+        /**
+         * The real x and y, which will be rounded for the GameState. 
+         */
+        private double realX,realY;
+        
+        /**
+         * Indicates whether the value of this MoveOperation has been finished. If the MoveOperation is finished, it can no longer apply its updates. 
+         */
+        private boolean finished = false;
+        
+        /**
+         * The Cell to which this move operation is applicable
+         */
+        private final Cell cell;
+        
+        /**
+         * The time in milliseconds that the last operation occured.
+         */
+        private long lastOperation;
+        
+        
+        private MoveOperation(Cell cell){
+            this.cell = cell;
+            this.realX = cell.point.x;
+            this.realY = cell.point.y;
+            this.lastOperation = System.currentTimeMillis();
+        }
+        
+        /**
+         * Moves the cell contained by this move operation from its current 
+         * location towards the given point. The Cell may and up at the given 
+         * point, however this is not guaranteed. The new location of the cell 
+         * is determined by the maximum velocity with which a cell may move in 
+         * one turn, as well as by the presence of nucleii of other cells that
+         * may be in the way. As the maximum amount of velocity is constant, the
+         * maximum amount of movement by the cell is dependent on the amount of
+         * time that has passed since the last movement, thus indicating how
+         * much distance should have been travelled.
+         * @param towards The point towards which the cell must move
+         */
+        public void moveTowards(Point towards){
+            double length = towards.distance(realX, realY);
+            double maxLength = this.interval() * MAX_DISTANCE_PER_MS;
+
+            if(length <= maxLength) {
+                this.realX = towards.x;
+                this.realY = towards.y;
+            } else {
+                // Reached point is the direction of towards scaled to how far off the towards point is.
+                this.realX += ((towards.x - cell.point.x)* maxLength / length);
+                this.realY += ((towards.y - cell.point.y)* maxLength / length);
+            }
+
+            this.apply();
+        }
+        
+        /**
+         * Applies the current realX and realY to the position of the cell in
+         * the gamestate. This means that realX and realY are converted to a
+         * java.awt.Point.
+         */
+        private void apply(){
+            synchronized(GameState.this){
+                if(this.finished)
+                    throw new IllegalStateException(
+                            "A finished MoveOperation can not apply its state");
+                GameState.this.move(cell, 
+                        new Point((int)Math.round(realX), (int)Math.round(realY)));
+            }
+        }
+
+        public void finish() {
+            this.finished = true;
+            GameState.this.finishMoveOperation(this.cell);
+        }
+
+        /**
+         * Creates a new interval. This set the lastOperation to now and returns
+         * the time in milliseconds since the previous operation.
+         * @return The amount of milliseconds between the previous operation and
+         * now.
+         */
+        private double interval() {
+            long interval = System.currentTimeMillis() - this.lastOperation; 
+            this.lastOperation = System.currentTimeMillis();
+            return interval;
+        }
+    }
    
 }
