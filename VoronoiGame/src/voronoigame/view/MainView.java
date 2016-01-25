@@ -7,6 +7,7 @@ package voronoigame.view;
 
 import java.io.File;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import voronoigame.controller.Controller;
 import voronoigame.model.GameState;
 
@@ -27,34 +28,29 @@ public class MainView extends javax.swing.JFrame {
         initComponents();
         this.controller = controller;
     }
-
-    /**
-     * Removes the current ContentPanel from this frame.
-     *
-     * @return The removed ContentPanel, or null if there was none.
-     */
-    public ContentPanel removeContent() {
-        
-        this.pmContentContainer.setVisible(false);
-        if (this.contentPanel != null) {
-            this.pmContentContainer.remove(this.contentPanel);
-            ContentPanel removed = this.contentPanel;
-            this.contentPanel = null;
-            removed.notifyPanelRemoved();
-            return removed;
-        } else {
-            return null;
-        }
-    }
     
-    private void setContent(ContentPanel panel){
+    private void setContent(final ContentPanel panel){
         // If there is an existing panel, remove it
-        this.removeContent();
+         SwingUtilities.invokeLater(new Runnable() {
 
-        this.contentPanel = panel;
-        this.pmContentContainer.add(this.contentPanel);
-        this.contentPanel.notifyPanelAdded();
-        this.pmContentContainer.setVisible(true);
+            public void run() {
+                // Out with the old
+                MainView.this.pmContentContainer.setVisible(false);
+                if (MainView.this.contentPanel != null) {
+                    MainView.this.pmContentContainer.remove(MainView.this.contentPanel);
+                    ContentPanel removed = MainView.this.contentPanel;
+                    MainView.this.contentPanel = null;
+                    removed.notifyPanelRemoved();
+                }
+                
+                // In with the new
+                MainView.this.contentPanel = panel;
+                MainView.this.pmContentContainer.add(MainView.this.contentPanel);
+                MainView.this.contentPanel.notifyPanelAdded();
+                MainView.this.pmContentContainer.setVisible(true);
+            }
+        });
+        
     }
     
     public ContentPanel getContent() {
