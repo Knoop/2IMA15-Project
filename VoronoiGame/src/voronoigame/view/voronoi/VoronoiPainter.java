@@ -17,11 +17,9 @@ import java.awt.font.FontRenderContext;
 import java.awt.geom.Rectangle2D;
 import java.util.LinkedList;
 import javax.swing.Painter;
-import voronoigame.Util;
 import voronoigame.model.Cell;
 import voronoigame.model.FocusType;
 import voronoigame.model.GameState;
-import voronoigame.model.StationaryCell;
 import voronoigame.model.delaunay.Edge;
 
 /**
