@@ -188,6 +188,7 @@ public class GamePanel extends ContentPanel implements Observer {
         // If won, allow to go to the next level
         if(gameState.hasWon())
             this.nextButton.setEnabled(true);
+        this.updatePanel();
     }
 
     private class RenderTimerTask extends TimerTask {
