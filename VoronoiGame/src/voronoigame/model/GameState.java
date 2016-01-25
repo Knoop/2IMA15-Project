@@ -271,6 +271,10 @@ public class GameState extends Observable
      */
     private final Map<Cell, MoveOperation> currentOperations = new HashMap<>();
 
+    /**
+     * A MoveOperation allows a single cell to be moved in the GameState. All
+     * checks about where a cell can and cannot go are performed by this class.
+     */
     public class MoveOperation{
         
         /**
