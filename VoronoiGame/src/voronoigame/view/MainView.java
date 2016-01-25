@@ -152,7 +152,7 @@ public class MainView extends javax.swing.JFrame {
             request.text,
             request.title,
             JOptionPane.YES_NO_OPTION,
-            JOptionPane.QUESTION_MESSAGE,
+            JOptionPane.PLAIN_MESSAGE,
             null,     //do not use a custom Icon
             request.options,  //the titles of buttons
             request.options[0]) //default button title
