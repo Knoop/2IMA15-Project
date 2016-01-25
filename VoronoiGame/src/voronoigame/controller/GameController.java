@@ -14,7 +14,7 @@ import voronoigame.model.MoveableCell;
 import voronoigame.Util;
 import voronoigame.model.FocusType;
 import voronoigame.model.GameState;
-import voronoigame.view.voronoi.VoronoiPanel;
+import voronoigame.model.GameState.MoveOperation;
 
 /**
  *
@@ -23,41 +23,52 @@ import voronoigame.view.voronoi.VoronoiPanel;
 public class GameController implements MouseListener, MouseMotionListener {
 
     private final GameState gameState;
-    
-    private final CursorState cursorState;
 
     private final GameRunner runner;
 
+    /**
+     * The location of the cursor in the world
+     */
+    private Point lastMouseLocation;
+
+    /**
+     * The cell that is currently in focus, or null if there is no such cell. 
+     */
+    private Cell focus = null;
+    
+    private MoveOperation currentMoveOperation;
+
     public GameController(GameState gameState) {
         this.gameState = gameState;
-        this.cursorState = new CursorState();
         this.runner = new GameRunner();
     }
     
-    private void performStep(long interval) {
-        if (this.cursorState.focus != null && this.cursorState.focus.getFocusType() != FocusType.NONE && this.cursorState.location != null )
-            synchronized(this.gameState){
-                this.gameState.moveTowards(this.cursorState.focus, this.cursorState.location, interval);
-            }
+    private void performStep() {
+        System.out.println("this.lastMouseLocation:"+this.lastMouseLocation);
+        if (this.currentMoveOperation != null && this.lastMouseLocation != null )
+            this.currentMoveOperation.moveTowards(this.lastMouseLocation);
+            
     }
 
     @Override
     public void mouseDragged(MouseEvent me) {
-        this.cursorState.drag(me.getPoint());
+        this.lastMouseLocation = me.getPoint();
+        System.out.println("Moved mouse to "+me.getPoint());
+        System.out.println("Focus: "+(this.focus == null? "none":this.focus.getPoint())+ " moveop: "+(this.currentMoveOperation != null));
     }
 
     @Override
     public void mouseMoved(MouseEvent me) {
+        Point cursorLocation = me.getPoint();
         for (Point site : this.gameState.getDiagram().getSites()) {
-            Point cursorLocation = me.getPoint();
             Cell cell = this.gameState.getCell(site);
             if (Util.isInCircle(cursorLocation, site, Cell.NUCLEUS_RADIUS)
                     && cell instanceof MoveableCell) {
-                this.cursorState.setFocus(cell, FocusType.HOVER);
+                this.setFocus(cell, FocusType.HOVER);
                 return;
             }
         }
-        this.cursorState.clearFocus();
+        this.clearFocus();
     }
 
     @Override
@@ -67,13 +78,24 @@ public class GameController implements MouseListener, MouseMotionListener {
     @Override
     public void mousePressed(MouseEvent me) {
         this.runner.resume();
-        this.cursorState.drag(me.getPoint());
+        this.lastMouseLocation = me.getPoint();
+        if(this.focus != null)
+        {
+            System.out.println("Focus exists at "+me.getPoint()+" focus: "+this.focus.getPoint());
+            this.currentMoveOperation = this.gameState.move(this.focus);
+        }
+        else
+            System.out.println("No focus");
     }
 
     @Override
     public void mouseReleased(MouseEvent me) {
-        this.cursorState.clearFocus();
+        System.out.println("Clearing focus and move operation");
+        this.clearFocus();
         this.runner.pause();
+        this.currentMoveOperation.finish();
+        this.currentMoveOperation = null;
+        this.lastMouseLocation = null;
     }
 
     @Override
@@ -93,21 +115,16 @@ public class GameController implements MouseListener, MouseMotionListener {
         private static final long MIN_REFRESH_INTERVAL = 1000 / MAX_REFRESH_RATE;
         private boolean run = false, stop = false;
         private Thread runner;
-
-        private long last;
         
         @Override
         public void run(){
             long time;
             while(this.run && !this.stop){
-                // Update the timer and calculate the elapsed time
-                time = this.last;
-                this.last = System.currentTimeMillis();
-                time = this.last - time;
-                
                 // Perform a step for the elapsed time
-                GameController.this.performStep(time);
-                
+                time = -System.currentTimeMillis();
+                GameController.this.performStep();
+                time += System.currentTimeMillis();
+
                 //System.out.println("Took "+time+"ms to perform step");
                 // If the elapsed time is below the minimal refresh interval, sleep until the refresh rate is back to what it is supposed to be. 
                 if(MIN_REFRESH_INTERVAL > 0 && MIN_REFRESH_INTERVAL > time)
@@ -130,59 +147,35 @@ public class GameController implements MouseListener, MouseMotionListener {
 
         private void start(){
             if(this.run && this.runner == null){
-                this.last = System.currentTimeMillis();
                 this.runner = new Thread(this);
                 this.runner.start();
             }
         }
     }
 
-    private class CursorState {
+    private void clearFocus(){
 
-        /**
-         * The location of the cursor in the world
-         */
-        private Point location;
+        if(this.focus == null)
+            return;
 
-        /**
-         * The cell that is currently in focus, or null if there is no such cell. 
-         */
-        private Cell focus = null;
+        this.focus.setFocusType(FocusType.NONE);
+        this.focus = null;
+        this.lastMouseLocation = null;
+    }
 
-        private void clearFocus(){
- 
-            if(this.focus == null)
-                return;
-
-            this.focus.setFocusType(FocusType.NONE);
-            this.focus = null;
-            this.location = null;
-        }
-
-        /**
-         * Sets the current focus on the given cell as the given focus type.
-         *
-         * @param focus
-         * @param focusType
-         */
-        private void setFocus(Cell focus, FocusType focusType) {
-            if (focusType == FocusType.NONE) {
-                this.clearFocus();
-            } else {
-                System.out.println("Setting focus");
-                this.focus = focus;
-                this.focus.setFocusType(focusType);
-            }
-
-        }
-
-        /**
-         * Turns the focus of the current cell into a drag type focus if it was a hover type focus.
-         */
-        private void drag(Point point){
-            if (this.focus != null && this.focus.getFocusType() == FocusType.HOVER)
-                this.setFocus(this.focus, FocusType.DRAG);  
-            this.location = point;
+    /**
+     * Sets the current focus on the given cell as the given focus type.
+     *
+     * @param focus
+     * @param focusType
+     */
+    private void setFocus(Cell focus, FocusType focusType) {
+        if (focusType == FocusType.NONE) {
+            this.clearFocus();
+        } else {
+            System.out.println("Setting focus");
+            this.focus = focus;
+            this.focus.setFocusType(focusType);
         }
     }
 }
