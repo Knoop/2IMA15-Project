@@ -147,10 +147,11 @@ public class Util
      * Gets the point from the given collection that is closest to the given point.
      * @param collection The collection of points from which to get the point
      * closest to the reference point.
-     * @param reference The reference point.
+     * @param x The x coordinate of the reference point.
+     * @param y The y coordinate of the reference point.
      * @return The closest point, or null if there are no points in the given collection.
      */
-    public static Point getClosest(Collection<Point> collection, Point reference){
+    public static Point getClosest(Collection<Point> collection, double x, double y){
         if(collection.isEmpty())
             return null;
 
@@ -159,7 +160,7 @@ public class Util
 
         while(iter.hasNext()) {
             temp = iter.next();
-            if(temp.distance(reference) < closest.distance(reference))
+            if(temp.distance(x,y) < closest.distance(x,y))
                 closest = temp;
         }
 

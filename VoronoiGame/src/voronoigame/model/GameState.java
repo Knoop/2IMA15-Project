@@ -322,16 +322,26 @@ public class GameState extends Observable
             double length = towards.distance(realX, realY);
             double maxLength = this.interval() * MAX_DISTANCE_PER_MS;
 
+            double reachedX, reachedY; 
             if(length <= maxLength) {
-                this.realX = towards.x;
-                this.realY = towards.y;
+                reachedX = towards.x;
+                reachedY = towards.y;
             } else {
                 // Reached point is the direction of towards scaled to how far off the towards point is.
-                this.realX += ((towards.x - cell.point.x)* maxLength / length);
-                this.realY += ((towards.y - cell.point.y)* maxLength / length);
+                reachedX = this.realX + ((towards.x - cell.point.x)* maxLength / length);
+                reachedY = this.realY + ((towards.y - cell.point.y)* maxLength / length);
             }
-
-            this.apply();
+            
+            Point closest = Util.getClosest(GameState.this.voronoiDiagram.getSiteNeighbours(cell.point), reachedX, reachedY);
+            if(closest == null || closest.distance(reachedX, reachedY) >= Cell.NUCLEUS_RADIUS*2){
+                this.realX = reachedX;
+               this.realY = reachedY;
+                this.apply();
+            }
+            else
+            {
+                System.out.println("Not performing move, it would intersect another core.");
+            }
         }
         
         /**
