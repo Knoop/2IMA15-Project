@@ -204,32 +204,49 @@ public class VoronoiPainter implements Painter
             if (showScore)
             {
                 //draw the score
-                drawScore(g2, gameState.getScore(), gameState.getMinimumScore());
+                drawScore(g2, gameState.getScore(), gameState.getMaximumScore(), gameState.getMinimumScore());
             }
         }
     }
     
-    private void drawScore(Graphics2D g, int score, int minimumScore) {
-    FontRenderContext frc = 
-            new FontRenderContext(null, true, true);
-
-    Font font = g.getFont();
+    private static final Color[] SCORE_BINS = {new Color(0xffffff), new Color(0xffa000), new Color(0xff0000)};
     
-    String scoreString = String.format("Score: %d. Minimum score: %d", score, minimumScore);
-    
-    Rectangle2D r2D = font.getStringBounds(scoreString, frc);
-    int rWidth = (int) Math.round(r2D.getWidth());
-    int rHeight = (int) Math.round(r2D.getHeight());
-    int rX = (int) Math.round(r2D.getX());
-    int rY = (int) Math.round(r2D.getY());
+    private void drawScore(Graphics2D g, int score, int maximumScore, int minimumScore) {
+        FontRenderContext frc = 
+                new FontRenderContext(null, true, true);
 
-    int x = (g.getClipBounds().width / 2) - (rWidth / 2) - rX;
-    int y = ((int)r2D.getHeight() / 2) + 5;
+        Font font = g.getFont().deriveFont(Font.BOLD, 16);
 
-    g.setFont(font);
-    g.setColor(Color.white);
-    g.drawString(scoreString, x, y);
-}
+        String scoreString = String.format("Score: %d", score);
+
+        Rectangle2D r2D = font.getStringBounds(scoreString, frc);
+        int rWidth = (int) Math.round(r2D.getWidth());
+        int rHeight = (int) Math.round(r2D.getHeight());
+        int rX = (int) Math.round(r2D.getX());
+        int rY = (int) Math.round(r2D.getY());
+
+        int x = (g.getClipBounds().width / 2) - (rWidth / 2) - rX;
+        int y = ((int)r2D.getHeight() / 2) + 10;
+        
+        //Determine score color
+        int scoreRange = maximumScore - minimumScore;
+        int binSize = scoreRange / SCORE_BINS.length;
+        Color scoreColor = SCORE_BINS[0];
+        for (int i = 1; i < SCORE_BINS.length; i++)
+        {
+            int checkScore = maximumScore - (binSize * i);
+            if (score < checkScore)
+            {
+                scoreColor = SCORE_BINS[i];
+                continue;
+            }
+            break;
+        }
+
+        g.setFont(font);
+        g.setColor(scoreColor);
+        g.drawString(scoreString, x, y);
+    }
 
     public enum PaintType
     {
