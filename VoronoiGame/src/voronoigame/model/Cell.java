@@ -52,11 +52,12 @@ public abstract class Cell {
         this.currentCircumference = properties[Util.INDEX_CIRCUMFERENCE];
         double ratio = this.getCurrentAreaRatio();
         
-        if (MAX_COMPRESSION_FACTOR >= ratio && ratio <= MAX_EXPANSION_FACTOR) {
-            this.notifyCellPropertyChanged();
-        } else {
+        // Scaled out of proportion
+        if (this.getScaleRatio() > 1)
             this.kill();
-        }
+        else
+            this.notifyCellPropertyChanged();
+        
     }
 
     private void kill() {
@@ -85,6 +86,21 @@ public abstract class Cell {
 
     public double getCurrentAreaRatio() {
         return this.getCurrentArea() / this.getInitArea();
+    }
+    
+    /**
+     * Returns the ratio by which the cells dimension have scaled, regardless of whether this is by expansion or compression. 
+     * @return The ratio by which the cell has scaled where 0 means not at all and 1 means as large as it may.
+     */
+    public double getScaleRatio(){
+        
+        double ratio = this.getCurrentAreaRatio();
+        if(ratio < 1)
+            return ( 1 - ratio ) / MAX_COMPRESSION_FACTOR;
+        else
+            return (ratio - 1) / (MAX_EXPANSION_FACTOR - 1);
+        
+        
     }
 
     protected Cell(Point point, Type type, GameState gameState, boolean focussable) {
@@ -154,6 +170,15 @@ public abstract class Cell {
      */
     protected void onTypeChanged() {
         this.notifyCellTypeChanged();
+    }
+
+    /**
+     * Indicates whether the cell has been compressed. 
+     * @return true if the size of this cell is smaller than it's original size,
+     * false otherwise.
+     */
+    public boolean isCompressed() {
+        return this.getCurrentAreaRatio() < 1;
     }
 
     public enum Type {
