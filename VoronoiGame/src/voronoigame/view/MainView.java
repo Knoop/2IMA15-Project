@@ -93,6 +93,21 @@ public class MainView extends javax.swing.JFrame {
     
     public void showNoMoreLevels() {
         System.out.println("Showing that no more levels exist");
+        this.showDialogAsync(new DialogRequest(
+                "Game over",
+                "You've played the last level",
+                "start over",
+                "stop"){
+
+                @Override
+                void onChoiceSelected(int choice) {
+                    if(choice == 0)
+                        MainView.this.controller.onLevelSelected(0);
+                    else if(choice == 1)
+                        MainView.this.controller.endLevel();
+                    }
+
+                });
     }
 
     public void showLevelCompleted(final GameState gameState) {
