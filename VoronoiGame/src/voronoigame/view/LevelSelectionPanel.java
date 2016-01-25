@@ -60,7 +60,7 @@ public class LevelSelectionPanel extends ContentPanel {
         // Force preview update
         this.levelList.setSelectedIndex(this.selected);
         this.onLevelSelectionChanged(this.selected);
-
+        this.voronoiPreview.setShowScore(false);
     }
 
     /**

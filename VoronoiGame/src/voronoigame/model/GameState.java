@@ -30,7 +30,8 @@ public class GameState extends Observable
 {
     
     private static final float CASUALTIES_RATIO = 0.3f;
-
+    private static final int SCORE_MULTIPLIER = 10;
+    
     /**
      * The maximum amount of distance a cell may travel per millisecond. This is calculated as 100pixels per second, thus 0.1pixel per millisecond.
      */
@@ -41,6 +42,9 @@ public class GameState extends Observable
     private final VoronoiDiagram voronoiDiagram;
     private final int maxCasualties;
     private int currentCasualties;
+    
+    private int score;
+    private int minimumScore;
 
     public GameState(Map<Point, Cell.Type> cellTypes, VoronoiDiagram voronoiDiagram)
     {
@@ -50,6 +54,9 @@ public class GameState extends Observable
         this.prepareCells(cellTypes);
         this.maxCasualties = Math.round(CASUALTIES_RATIO * cellTypes.size());
         this.currentCasualties = 0;
+        
+        score = pointCellMap.size() * SCORE_MULTIPLIER;
+        minimumScore = score - (maxCasualties * SCORE_MULTIPLIER);
     }
 
     /**
@@ -87,6 +94,16 @@ public class GameState extends Observable
     public Map<Point, Cell> getPointCellMap()
     {
         return pointCellMap;
+    }
+
+    public int getScore()
+    {
+        return score;
+    }
+
+    public int getMinimumScore()
+    {
+        return minimumScore;
     }
     
     /**
@@ -211,6 +228,7 @@ public class GameState extends Observable
     
     public void incrementCasualties() {
         this.currentCasualties++;
+        score -= SCORE_MULTIPLIER;
     }
     
     public Set<Cell> getLivingInfectedCells()

@@ -7,11 +7,14 @@ package voronoigame.view.voronoi;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
+import java.awt.font.FontRenderContext;
+import java.awt.geom.Rectangle2D;
 import java.util.LinkedList;
 import javax.swing.Painter;
 import voronoigame.Util;
@@ -29,6 +32,22 @@ import static voronoigame.view.voronoi.VoronoiPanel.SITE_RADIUS;
 public class VoronoiPainter implements Painter
 {
 
+    private boolean showScore;
+
+    public boolean isShowScore()
+    {
+        return showScore;
+    }
+
+    public void setShowScore(boolean showScore)
+    {
+        this.showScore = showScore;
+    }
+    
+    public VoronoiPainter(boolean showScore) {
+        this.showScore = showScore;
+    }
+    
     /**
      * Regular cell colors are the following:
      * <ol start=0>
@@ -182,8 +201,36 @@ public class VoronoiPainter implements Painter
                 g2.setStroke(EDGE_STROKE);
                 g2.drawLine(edge.getPoint1().x, edge.getPoint1().y, edge.getPoint2().x, edge.getPoint2().y);
             }
+            
+            if (showScore)
+            {
+                //draw the score
+                drawScore(g2, gameState.getScore(), gameState.getMinimumScore());
+            }
         }
     }
+    
+    private void drawScore(Graphics2D g, int score, int minimumScore) {
+    FontRenderContext frc = 
+            new FontRenderContext(null, true, true);
+
+    Font font = g.getFont();
+    
+    String scoreString = String.format("Score: %d. Minimum score: %d", score, minimumScore);
+    
+    Rectangle2D r2D = font.getStringBounds(scoreString, frc);
+    int rWidth = (int) Math.round(r2D.getWidth());
+    int rHeight = (int) Math.round(r2D.getHeight());
+    int rX = (int) Math.round(r2D.getX());
+    int rY = (int) Math.round(r2D.getY());
+
+    int x = (g.getClipBounds().width / 2) - (rWidth / 2) - rX;
+    int y = ((int)r2D.getHeight() / 2) + 5;
+
+    g.setFont(font);
+    g.setColor(Color.white);
+    g.drawString(scoreString, x, y);
+}
 
     public enum PaintType
     {
