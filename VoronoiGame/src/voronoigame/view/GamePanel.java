@@ -174,6 +174,11 @@ public class GamePanel extends ContentPanel implements Observer {
     private voronoigame.view.voronoi.VoronoiPanel voronoiPanel;
     // End of variables declaration//GEN-END:variables
 
+    /**
+     * Called when the game has changed. 
+     * @param o The GameState object that has changed
+     * @param arg Ignored
+     */
     @Override
     public void update(Observable o, Object arg) {
         this.changed = true;
@@ -181,6 +186,11 @@ public class GamePanel extends ContentPanel implements Observer {
             this.endGame((GameState)o);
     }
 
+    /**
+     * Ends the current game. This pauses the rendering and the gamecontroller.
+     * @param gameState The game that must be ended. This must be the game that 
+     * is currently under control of the stored GameController.
+     */
     private void endGame(GameState gameState) {
         this.gameController.stop();
         this.pause();
@@ -191,6 +201,13 @@ public class GamePanel extends ContentPanel implements Observer {
         this.updatePanel();
     }
 
+    /**
+     * The task that is used to repaint the panel. This task adds a new 
+     * RenderTimerTask to the render timer as long the rendering isn't set to paused.
+     * 
+     * The timer executes at a set frequency, but redrawing only occurs if there
+     * has been a change in the game since the previous render. 
+     */
     private class RenderTimerTask extends TimerTask {
 
         @Override
