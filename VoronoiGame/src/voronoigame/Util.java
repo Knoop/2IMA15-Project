@@ -7,6 +7,7 @@ package voronoigame;
 
 import java.awt.Point;
 import java.io.File;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import voronoigame.model.GameState;
@@ -139,5 +140,28 @@ public class Util
      */
     public static Point scale(Point p, double factor){
         return new Point((int)Math.round(p.x * factor), (int)Math.round(p.y * factor));
+    }
+
+    /**
+     * Gets the point from the given collection that is closest to the given point.
+     * @param collection The collection of points from which to get the point
+     * closest to the reference point.
+     * @param reference The reference point.
+     * @return The closest point, or null if there are no points in the given collection.
+     */
+    public static Point getClosest(Collection<Point> collection, Point reference){
+        if(collection.isEmpty())
+            return null;
+
+        Iterator<Point> iter = collection.iterator();
+        Point temp, closest = iter.next();
+
+        while(iter.hasNext()) {
+            temp = iter.next();
+            if(temp.distance(reference) < closest.distance(reference))
+                closest = temp;
+        }
+
+        return closest;
     }
 }

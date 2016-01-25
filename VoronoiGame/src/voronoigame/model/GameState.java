@@ -102,19 +102,43 @@ public class GameState extends Observable
      * @param towards The point towards which the cell must move
      * @param interval The amount of time that has passed since the previous movement.
      */
-    public void moveTowards(Cell cell, Point towards, long interval){
-        Point reachedPoint;
+    public void moveTowards(final Cell cell, Point towards, long interval){
+        final Point reachedPoint, delta = Util.subtract(towards, cell.point);
         double length = cell.point.distance(towards);
         double maxLength = interval * GameState.MAX_DISTANCE_PER_MS;
         if(length < maxLength) {
             reachedPoint = towards;
         } else {
             // Reached point is the direction of towards scaled to how far off the towards point is.
-            reachedPoint = Util.add(cell.point, Util.scale(Util.subtract(towards, cell.point), maxLength / length));
+            reachedPoint = Util.add(cell.point, Util.scale(delta, maxLength / length));
         }
-        this.move(cell, reachedPoint);
+
+        // Check whether we do not intersect the closest point
+        Point closest = Util.getClosest(this.voronoiDiagram.getSiteNeighbours(cell.point), reachedPoint);
+        if(closest == null || reachedPoint.distance(closest) >= Cell.NUCLEUS_RADIUS*2){
+            System.out.println("Moving towards: "+reachedPoint+"("+(towards == reachedPoint)+")"+" distance: "+length+" maxLength: "+maxLength);
+            this.move(cell, reachedPoint);
+        } else {
+            System.out.println("Move would require passing through a cell. Not going to do that");
+        }
+
+        /*
+        Ideally we would check how far we can go in the wanted direction before
+        hitting the other nucleus. This would however require more checks that
+        would reduce the rate with which we can update the gamestate.
+        Interestingly, the check above won't create new problems as long as the
+        cell won't move too much, which is achieved by not performing too
+        complex calculations per step. Therefore the check above is enough.
+
+        Specifically: to skip a core we need to cover a distance of 8 in one
+        step. Given that the maximum distance per millisecond is 0.12, we obtain
+        that a skip can only happen when a step takes 67ms or more. This gives
+        us a rate of 15Hz. So as long as steps are performed at a frequency
+        (well) above 15 Hz we'll be fine in practice. Small skips along the edge
+        of a core may still occur.
+        */
     }
-    
+
     /**
      * Moves the given cell to the given location
      * @param cell The cell to move

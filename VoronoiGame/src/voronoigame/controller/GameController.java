@@ -9,7 +9,6 @@ import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.util.logging.Level;
 import voronoigame.model.Cell;
 import voronoigame.model.MoveableCell;
 import voronoigame.Util;
@@ -33,7 +32,6 @@ public class GameController implements MouseListener, MouseMotionListener {
         this.gameState = gameState;
         this.cursorState = new CursorState();
         this.runner = new GameRunner();
-        this.runner.start();
     }
     
     private void performStep(long interval) {
@@ -53,7 +51,7 @@ public class GameController implements MouseListener, MouseMotionListener {
         for (Point site : this.gameState.getDiagram().getSites()) {
             Point cursorLocation = me.getPoint();
             Cell cell = this.gameState.getCell(site);
-            if (Util.isInCircle(cursorLocation, site, VoronoiPanel.SITE_RADIUS)
+            if (Util.isInCircle(cursorLocation, site, Cell.NUCLEUS_RADIUS)
                     && cell instanceof MoveableCell) {
                 this.cursorState.setFocus(cell, FocusType.HOVER);
                 return;
@@ -68,23 +66,21 @@ public class GameController implements MouseListener, MouseMotionListener {
 
     @Override
     public void mousePressed(MouseEvent me) {
+        this.runner.resume();
         this.cursorState.drag(me.getPoint());
     }
 
     @Override
     public void mouseReleased(MouseEvent me) {
         this.cursorState.clearFocus();
-    }
-
-    @Override
-    public void mouseEntered(MouseEvent me) {
-        this.runner.resume();
-    }
-
-    @Override
-    public void mouseExited(MouseEvent me) {
         this.runner.pause();
     }
+
+    @Override
+    public void mouseEntered(MouseEvent me) { }
+
+    @Override
+    public void mouseExited(MouseEvent me) { }
 
     public void stop() {
         this.runner.stop = true;
@@ -95,8 +91,7 @@ public class GameController implements MouseListener, MouseMotionListener {
 
         private static final int MAX_REFRESH_RATE = 960;
         private static final long MIN_REFRESH_INTERVAL = 1000 / MAX_REFRESH_RATE;
-        
-        private boolean run = true, stop = false;
+        private boolean run = false, stop = false;
         private Thread runner;
 
         private long last;
