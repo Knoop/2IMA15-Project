@@ -33,7 +33,6 @@ public class GameController implements MouseListener, MouseMotionListener {
         this.gameState = gameState;
         this.cursorState = new CursorState();
         this.runner = new GameRunner();
-        this.runner.start();
     }
     
     private void performStep(long interval) {
@@ -68,23 +67,21 @@ public class GameController implements MouseListener, MouseMotionListener {
 
     @Override
     public void mousePressed(MouseEvent me) {
+        this.runner.resume();
         this.cursorState.drag(me.getPoint());
     }
 
     @Override
     public void mouseReleased(MouseEvent me) {
         this.cursorState.clearFocus();
-    }
-
-    @Override
-    public void mouseEntered(MouseEvent me) {
-        this.runner.resume();
-    }
-
-    @Override
-    public void mouseExited(MouseEvent me) {
         this.runner.pause();
     }
+
+    @Override
+    public void mouseEntered(MouseEvent me) { }
+
+    @Override
+    public void mouseExited(MouseEvent me) { }
 
     public void stop() {
         this.runner.stop = true;
