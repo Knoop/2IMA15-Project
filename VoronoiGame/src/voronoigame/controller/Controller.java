@@ -110,4 +110,8 @@ public class Controller {
             this.mainView.showNoMoreLevels();
     }
 
+    public void restart() {
+        this.loadLevel(this.currentLevel);
+    }
+
 }

@@ -16,14 +16,21 @@ import voronoigame.model.GameState;
  */
 public class VoronoiPanel extends JPanel {
 
-    public static final int SITE_RADIUS = 4;
     private final VoronoiPainter painter;
     private GameState gameState;
+    
+    public void setShowScore(boolean showScore)
+    {
+        this.painter.setShowScore(showScore);
+    }
 
     public VoronoiPanel() {
+        this(true);
+    }
+    
+    public VoronoiPanel(boolean showScore) {
         System.out.println("New VoronoiPanel created");
-        this.painter = new VoronoiPainter();
-
+        this.painter = new VoronoiPainter(showScore);
     }
 
     public void setGameState(GameState gameState) {

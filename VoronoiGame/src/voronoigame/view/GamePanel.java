@@ -163,6 +163,7 @@ public class GamePanel extends ContentPanel implements Observer {
 
     @Override
     protected void onPanelRemoved() {
+        this.gameController.stop();
     }
 
 
@@ -176,8 +177,18 @@ public class GamePanel extends ContentPanel implements Observer {
     @Override
     public void update(Observable o, Object arg) {
         this.changed = true;
-        if(((GameState) o).hasWon())
+        if(((GameState) o).isFinished())
+            this.endGame((GameState)o);
+    }
+
+    private void endGame(GameState gameState) {
+        this.gameController.stop();
+        this.pause();
+        this.parent.showLevelCompleted(gameState);
+        // If won, allow to go to the next level
+        if(gameState.hasWon())
             this.nextButton.setEnabled(true);
+        this.updatePanel();
     }
 
     private class RenderTimerTask extends TimerTask {

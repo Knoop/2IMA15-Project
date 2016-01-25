@@ -20,8 +20,15 @@ public abstract class Cell {
     protected double currentCircumference, currentArea;
 
     protected Type type;
+    protected boolean alive;
 
-    public static final double MAX_SCALE_FACTOR = 2;
+    public static final double MAX_COMPRESSION_FACTOR = 1.5;
+    public static final double MAX_EXPANSION_FACTOR = 3;
+    
+    /**
+     * The radius of the nucleus of a cell
+     */
+    public static final int NUCLEUS_RADIUS = 4;
     
     private boolean focussable;
     private FocusType focusType;
@@ -34,14 +41,21 @@ public abstract class Cell {
         return initArea;
     }
 
+    public boolean isAlive()
+    {
+        return alive;
+    }
+    
+    public double getApplicableScaleFactor() {
+        return this.getCurrentArea() < this.getInitArea() ? MAX_COMPRESSION_FACTOR : MAX_EXPANSION_FACTOR;
+    }
+    
     public void updateProperties() {
-
-
         double[] properties = Util.calculateProperties(this.point, this.gameState);
         this.currentArea = properties[Util.INDEX_AREA];
         this.currentCircumference = properties[Util.INDEX_CIRCUMFERENCE];
 
-        if (this.getCurrentAreaRatio() >= MAX_SCALE_FACTOR) {
+        if (this.getCurrentAreaRatio() >= getApplicableScaleFactor()) {
             this.kill();
         } else {
             this.notifyCellPropertyChanged();
@@ -49,11 +63,11 @@ public abstract class Cell {
     }
 
     private void kill() {
-        if (this.type == Type.DEAD)
+        if (!this.alive)
         {
             return;
         }
-        this.setType(Type.DEAD);
+        this.alive = false;
         this.gameState.incrementCasualties();
         this.notifyCellKilled();
     }
@@ -85,6 +99,7 @@ public abstract class Cell {
         this.type = type;
         this.focussable = focussable;
         this.focusType = FocusType.NONE;
+        this.alive = true;
 
         double[] properties = Util.calculateProperties(this.point, this.gameState);
         this.currentArea = this.initArea = properties[Util.INDEX_AREA];
@@ -97,10 +112,6 @@ public abstract class Cell {
     }
 
     protected final void setType(Type type) {
-        if (this.type == Type.DEAD) {
-            return;
-        }
-
         this.type = type;
         this.onTypeChanged();
     }
@@ -151,7 +162,7 @@ public abstract class Cell {
     }
 
     public enum Type {
-        HEALTHY, INFECTED, DEAD, DEFENSE
+        HEALTHY, INFECTED, DEFENSE
     }
 
     public void addCellLifeListener(CellLifeCycleListener listener) {
