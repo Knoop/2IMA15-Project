@@ -49,7 +49,6 @@ public class GameController implements MouseListener, MouseMotionListener {
     }
     
     private void performStep() {
-        System.out.println("this.lastMouseLocation:"+this.lastMouseLocation);
         if (this.currentMoveOperation != null && this.lastMouseLocation != null )
             this.currentMoveOperation.moveTowards(this.lastMouseLocation);
             
@@ -58,8 +57,6 @@ public class GameController implements MouseListener, MouseMotionListener {
     @Override
     public void mouseDragged(MouseEvent me) {
         this.lastMouseLocation = me.getPoint();
-        System.out.println("Moved mouse to "+me.getPoint());
-        System.out.println("Focus: "+(this.focus == null? "none":this.focus.getPoint())+ " moveop: "+(this.currentMoveOperation != null));
     }
 
     @Override
@@ -85,17 +82,11 @@ public class GameController implements MouseListener, MouseMotionListener {
         this.runner.resume();
         this.lastMouseLocation = me.getPoint();
         if(this.focus != null)
-        {
-            System.out.println("Focus exists at "+me.getPoint()+" focus: "+this.focus.getPoint());
             this.currentMoveOperation = this.gameState.move(this.focus);
-        }
-        else
-            System.out.println("No focus");
     }
 
     @Override
     public void mouseReleased(MouseEvent me) {
-        System.out.println("Clearing focus and move operation");
         this.clearFocus();
         this.runner.pause();
         this.currentMoveOperation.finish();
@@ -182,7 +173,6 @@ public class GameController implements MouseListener, MouseMotionListener {
         if (focusType == FocusType.NONE) {
             this.clearFocus();
         } else {
-            System.out.println("Setting focus");
             this.focus = focus;
             this.focus.setFocusType(focusType);
         }
