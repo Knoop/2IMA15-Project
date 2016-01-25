@@ -17,6 +17,7 @@ import java.awt.font.FontRenderContext;
 import java.awt.geom.Rectangle2D;
 import java.util.LinkedList;
 import javax.swing.Painter;
+import voronoigame.Util;
 import voronoigame.model.Cell;
 import voronoigame.model.FocusType;
 import voronoigame.model.GameState;
@@ -170,15 +171,7 @@ public class VoronoiPainter implements Painter
     private static Color getCellColorWithStress(Color[] range, boolean compressed, double factor){
         Color base = getTypedColor(range, PaintType.CELL);
         Color stress = getTypedColor(range, compressed ? PaintType.STESS_COMPRESSED : PaintType.STRESS_EXPANDED);
-        
-        int rDiffMax = stress.getRed() - base.getRed();
-        int gDiffMax = stress.getGreen() - base.getGreen();
-        int bDiffMax = stress.getBlue() - base.getBlue();
-
-        return new Color( 
-                base.getRed() + (int) ((double) rDiffMax * factor),
-                base.getGreen() + (int) ((double) gDiffMax * factor),
-                base.getBlue() + (int) ((double) bDiffMax * factor));
+        return Util.colorRange(base, stress, factor);
     }
 
     @Override
