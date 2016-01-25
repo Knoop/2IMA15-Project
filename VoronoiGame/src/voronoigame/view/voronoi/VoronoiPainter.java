@@ -50,8 +50,8 @@ public class VoronoiPainter implements Painter
      * <ol start=0>
      * <li>CELL #2ddc2f</li>
      * <li>CORE #1ba21c</li>
-     * <li>STRESS (expanded) #188f19</li>
-     * <li>STRESS (compressed) #92ed93</li>
+     * <li>STRESS (expanded) #92ed93</li>
+     * <li>STRESS (compressed) #188f19</li>
      * <li>DEAD #072a07</li>
      * </ol>
      */
@@ -59,8 +59,8 @@ public class VoronoiPainter implements Painter
     {
         new Color(0x2ddc2f), // CELL 
         new Color(0x1ba21c), // CORE
-        new Color(0x188f19), // STRESS_EXPANDED
-        new Color(0x92ed93), // STRESS_COMPRESSED
+        new Color(0x92ed93), // STRESS_EXPANDED
+        new Color(0x188f19), // STRESS_COMPRESSED
         new Color(0x072a07), // DEAD
     };
 
@@ -69,8 +69,8 @@ public class VoronoiPainter implements Painter
      * <ol start=0>
      * <li>CELL #d32523</li>
      * <li>CORE #911918</li>
-     * <li>STRESS (expanded) #901918</li>
-     * <li>STRESS (compressed) #ea8382</li>
+     * <li>STRESS (expanded) #ea8382</li>
+     * <li>STRESS (compressed) #901918</li>
      * <li>DEAD #2b0707</li>
      * </ol>
      */
@@ -78,8 +78,8 @@ public class VoronoiPainter implements Painter
     {
         new Color(0xd32523), // CELL
         new Color(0x911918), // CORE
-        new Color(0x901918), // STRESS_EXPANDED
-        new Color(0xea8382), // STRESS_COMPRESSED
+        new Color(0xea8382), // STRESS_EXPANDED
+        new Color(0x901918), // STRESS_COMPRESSED
         new Color(0x2b0707), // DEAD
     };
 
@@ -88,8 +88,8 @@ public class VoronoiPainter implements Painter
      * <ol start=0>
      * <li>CELL #eeeeee</li>
      * <li>CORE #c8c8c8</li>
-     * <li>STRESS (expanded) #515151</li>
-     * <li>STRESS (compressed) #b3b3b3</li>
+     * <li>STRESS (expanded) #b3b3b3</li>
+     * <li>STRESS (compressed) #515151</li>
      * <li>DEAD #161616</li>
      * </ol>
      */
@@ -97,8 +97,8 @@ public class VoronoiPainter implements Painter
     {
         new Color(0xeeeeee), // CELL
         new Color(0xc8c8c8), // CORE
-        new Color(0x515151), // STRESS_EXPANDED
-        new Color(0xb3b3b3), // STRESS_COMPRESSED
+        new Color(0xb3b3b3), // STRESS_EXPANDED
+        new Color(0x515151), // STRESS_COMPRESSED
         new Color(0x161616), // DEAD
     };
 
