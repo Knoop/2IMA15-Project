@@ -36,12 +36,23 @@ public interface VoronoiDiagram
      * @return 
      */
     public Collection<Point> getVoronoiVertices();
+    /**
+     * Gets all vertices in the voronoi diagram.
+     * @return 
+     */
+    public Collection<Point> getVoronoiVerticesBySite(Point site);
     
     /**
      * Gets all edges in the voronoi diagram.
      * @return A set of point pairs (array of points with size 2)
      */
     public Collection<Edge> getVoronoiEdges();
+    
+    /**
+     * Gets all edges in the voronoi diagram.
+     * @return A set of point pairs (array of points with size 2)
+     */
+    public Collection<Edge> getVoronoiEdgesBySite(Point site);
     
     /**
      * Given a site for a voronoi cell, returns its correesponding face.
@@ -89,5 +100,18 @@ public interface VoronoiDiagram
      * @return the height of the voronoi diagram
      */
     public int height();
+
+    
+    /**
+     * Gets the set of all points that have been updated since the last flush.
+     * @return the set of points to be updated
+     */
+    public Collection<Point> getUpdatedPoints();
+
+    
+    /**
+     * Empties the queue of points to be updated in the view
+     */
+    public void flushUpdatedPoints();
     
 }

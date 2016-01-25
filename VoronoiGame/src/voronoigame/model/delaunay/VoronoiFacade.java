@@ -24,12 +24,14 @@ public class VoronoiFacade implements VoronoiDiagram {
     private Point bounds;
     private DelaunayTriangle root;
     
+    TreeSet<Point> updatedPoints;
+    
     final private int MARGIN = 1;
     
     public VoronoiFacade(ArrayList<Point> stillPoints, ArrayList<Point> movingPoints){
         this.stillPoints = stillPoints;
         this.movingPoints = movingPoints;
-        
+        flushUpdatedPoints();
         this.bounds = new Point(0,0);
         
         for(Point p: this.stillPoints){
@@ -49,7 +51,7 @@ public class VoronoiFacade implements VoronoiDiagram {
     VoronoiFacade(ArrayList<Point> stillPoints, ArrayList<Point> movingPoints, Point bounds){
         this.stillPoints = stillPoints;
         this.movingPoints = movingPoints;
-        
+        flushUpdatedPoints();
         this.bounds = bounds;
         
         initializeDelaunay();
@@ -114,6 +116,16 @@ public class VoronoiFacade implements VoronoiDiagram {
     @Override
     public Collection<Point> getVoronoiVertices() {
         TreeSet<DelaunayTriangle> leaves = root.getLeaves();
+        return getVerticesByLeaves(leaves);
+    }
+
+    @Override
+    public Collection<Point> getVoronoiVerticesBySite(Point siteLocation) {
+        TreeSet<DelaunayTriangle> leaves = root.findLeaves(siteLocation);
+        return getVerticesByLeaves(leaves);
+    }
+
+    public Collection<Point> getVerticesByLeaves(Collection<DelaunayTriangle> leaves) {
         ArrayList<Point> result = new ArrayList<>();
         double[] current;
         for(DelaunayTriangle t: leaves){
@@ -189,6 +201,18 @@ public class VoronoiFacade implements VoronoiDiagram {
     public Collection<Edge> getVoronoiEdges() {
         
         TreeSet<DelaunayTriangle> leaves = root.getLeaves();
+        return getEdgesFromLeaves(leaves);
+    }
+
+    @Override
+    public Collection<Edge> getVoronoiEdgesBySite(Point siteLocation) {
+        
+        TreeSet<DelaunayTriangle> leaves = root.findLeaves(siteLocation);
+        return getEdgesFromLeaves(leaves);
+    }
+
+    private Collection<Edge> getEdgesFromLeaves(Collection<DelaunayTriangle> leaves) {
+        
         ArrayList<Edge> result = new ArrayList<>();
         double[] current;
         double[] currentNeighbour;
@@ -266,10 +290,12 @@ public class VoronoiFacade implements VoronoiDiagram {
         if(!isInBounds(newSiteLocation)){
             throw new IllegalArgumentException("Point out of bounds: " + newSiteLocation);
         }
+        updateSurroundings(oldSiteLocation);
         deleteMovingPoints();
         this.movingPoints.remove(oldSiteLocation);
         this.movingPoints.add(newSiteLocation);
         insertMovingPoints();
+        updateSurroundings(newSiteLocation);
     }
     
     public boolean isInBounds(Point p){
@@ -283,9 +309,21 @@ public class VoronoiFacade implements VoronoiDiagram {
 
     @Override
     public void removeSite(Point siteLocation) {
+        updateSurroundings(siteLocation);
         this.stillPoints.remove(siteLocation);
         this.movingPoints.remove(siteLocation);
         initializeDelaunay();
+    }
+    
+    private void updateSurroundings(Point siteLocation){
+        Collection<DelaunayTriangle> upDateables = root.findLeaves(siteLocation);
+        for(DelaunayTriangle t: upDateables){
+            for(DelaunayPoint p: t.points){
+                if(!p.equals(siteLocation) && !p.isSymbolic()){
+                    this.updatedPoints.add(p);
+                }
+            }
+        }
     }
 
     @Override
@@ -296,6 +334,16 @@ public class VoronoiFacade implements VoronoiDiagram {
     @Override
     public int height() {
         return this.bounds.y;
+    }
+
+    @Override
+    public Collection<Point> getUpdatedPoints() {
+        return this.updatedPoints;
+    }
+
+    @Override
+    public void flushUpdatedPoints() {
+        this.updatedPoints = new TreeSet<>();
     }
     
 }
