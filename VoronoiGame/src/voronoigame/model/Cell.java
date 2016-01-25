@@ -20,6 +20,7 @@ public abstract class Cell {
     protected double currentCircumference, currentArea;
 
     protected Type type;
+    protected boolean alive;
 
     public static final double MAX_SCALE_FACTOR = 2;
     
@@ -34,6 +35,11 @@ public abstract class Cell {
         return initArea;
     }
 
+    public boolean isAlive()
+    {
+        return alive;
+    }
+    
     public void updateProperties() {
 
 
@@ -49,11 +55,11 @@ public abstract class Cell {
     }
 
     private void kill() {
-        if (this.type == Type.DEAD)
+        if (!this.alive)
         {
             return;
         }
-        this.setType(Type.DEAD);
+        this.alive = false;
         this.gameState.incrementCasualties();
         this.notifyCellKilled();
     }
@@ -85,6 +91,7 @@ public abstract class Cell {
         this.type = type;
         this.focussable = focussable;
         this.focusType = FocusType.NONE;
+        this.alive = true;
 
         double[] properties = Util.calculateProperties(this.point, this.gameState);
         this.currentArea = this.initArea = properties[Util.INDEX_AREA];
@@ -97,10 +104,6 @@ public abstract class Cell {
     }
 
     protected final void setType(Type type) {
-        if (this.type == Type.DEAD) {
-            return;
-        }
-
         this.type = type;
         this.onTypeChanged();
     }
@@ -151,7 +154,7 @@ public abstract class Cell {
     }
 
     public enum Type {
-        HEALTHY, INFECTED, DEAD, DEFENSE
+        HEALTHY, INFECTED, DEFENSE
     }
 
     public void addCellLifeListener(CellLifeCycleListener listener) {

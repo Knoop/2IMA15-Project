@@ -83,6 +83,7 @@ public class DelaunayTriangle implements Comparable{
                     if(t != null){
                         inserted = inserted || t.insert(p);
                     }
+                    if(inserted) break;
                 }
             }
         }

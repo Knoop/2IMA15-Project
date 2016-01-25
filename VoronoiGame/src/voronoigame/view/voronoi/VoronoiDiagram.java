@@ -26,6 +26,12 @@ public interface VoronoiDiagram
     public Collection<Point> getSites();
     
     /**
+     * Gets all neighbours of a site in the voronoi diagram
+     * @return 
+     */
+    public Collection<Point> getSiteNeighbours(Point site);
+    
+    /**
      * Gets all vertices in the voronoi diagram.
      * @return 
      */

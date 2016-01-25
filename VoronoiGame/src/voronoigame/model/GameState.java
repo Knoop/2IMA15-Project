@@ -218,7 +218,7 @@ public class GameState extends Observable
         Set<Cell> cells = new HashSet<>();
         for(Cell cell : this.infectedCells)
         {
-            if (cell.type == Cell.Type.DEAD)
+            if (!cell.isAlive())
             {
                 continue;
             }
