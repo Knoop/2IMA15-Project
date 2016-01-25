@@ -235,21 +235,13 @@ public class VoronoiPainter implements Painter
 
         int x = (g.getClipBounds().width / 2) - (rWidth / 2) - rX;
         int y = ((int)r2D.getHeight() / 2) + 10;
-        
+
         //Determine score color
-        int scoreRange = maximumScore - minimumScore;
-        int binSize = scoreRange / SCORE_BINS.length;
-        Color scoreColor = SCORE_BINS[0];
-        for (int i = 1; i < SCORE_BINS.length; i++)
-        {
-            int checkScore = maximumScore - (binSize * i);
-            if (score < checkScore)
-            {
-                scoreColor = SCORE_BINS[i];
-                continue;
-            }
-            break;
-        }
+        double scoreRatio = 1 - (((double)score - (double)minimumScore) / ((double)maximumScore - (double)minimumScore));
+        Color scoreColor = scoreRatio <= 0.5 ?
+                Util.colorRange(SCORE_BINS[0], SCORE_BINS[1],scoreRatio * 2) :
+                Util.colorRange(SCORE_BINS[1], SCORE_BINS[2],scoreRatio * 2 - 1);
+
 
         g.setFont(font);
         g.setColor(scoreColor);
