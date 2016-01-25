@@ -16,7 +16,6 @@ import voronoigame.model.GameState;
  */
 public class VoronoiPanel extends JPanel {
 
-    public static final int SITE_RADIUS = 4;
     private final VoronoiPainter painter;
     private GameState gameState;
     

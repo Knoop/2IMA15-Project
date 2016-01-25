@@ -25,6 +25,11 @@ public abstract class Cell {
     public static final double MAX_COMPRESSION_FACTOR = 1.5;
     public static final double MAX_EXPANSION_FACTOR = 3;
     
+    /**
+     * The radius of the nucleus of a cell
+     */
+    public static final int NUCLEUS_RADIUS = 4;
+    
     private boolean focussable;
     private FocusType focusType;
 
