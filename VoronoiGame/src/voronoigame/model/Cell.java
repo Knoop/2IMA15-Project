@@ -23,7 +23,12 @@ public abstract class Cell {
     protected boolean alive;
 
     public static final double MAX_SCALE_FACTOR = 2;
-    
+
+    /**
+     * The radius of the nucleus of a cell
+     */
+    public static final int NUCLEUS_RADIUS = 4;
+
     private boolean focussable;
     private FocusType focusType;
 

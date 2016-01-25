@@ -9,7 +9,6 @@ import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.util.logging.Level;
 import voronoigame.model.Cell;
 import voronoigame.model.MoveableCell;
 import voronoigame.Util;
@@ -52,7 +51,7 @@ public class GameController implements MouseListener, MouseMotionListener {
         for (Point site : this.gameState.getDiagram().getSites()) {
             Point cursorLocation = me.getPoint();
             Cell cell = this.gameState.getCell(site);
-            if (Util.isInCircle(cursorLocation, site, VoronoiPanel.SITE_RADIUS)
+            if (Util.isInCircle(cursorLocation, site, Cell.NUCLEUS_RADIUS)
                     && cell instanceof MoveableCell) {
                 this.cursorState.setFocus(cell, FocusType.HOVER);
                 return;
