@@ -21,7 +21,6 @@ import voronoigame.Util;
 import voronoigame.model.Cell;
 import voronoigame.model.FocusType;
 import voronoigame.model.GameState;
-import voronoigame.model.StationaryCell;
 import voronoigame.model.delaunay.Edge;
 
 /**
@@ -50,49 +49,58 @@ public class VoronoiPainter implements Painter
     /**
      * Regular cell colors are the following:
      * <ol start=0>
-     * <li>CELL 0x93ed94</li>
-     * <li>CORE 0x67e669</li>
+     * <li>CELL #2ddc2f</li>
+     * <li>CORE #1ba21c</li>
+     * <li>STRESS (expanded) #92ed93</li>
+     * <li>STRESS (compressed) #188f19</li>
+     * <li>DEAD #072a07</li>
      * </ol>
      */
     public static final Color[] COLOR_REGULAR =
     {
-        new Color(0x2ddc2f), new Color(0x20c222), new Color(0x194C19)
+        new Color(0x2ddc2f), // CELL 
+        new Color(0x1ba21c), // CORE
+        new Color(0x92ed93), // STRESS_EXPANDED
+        new Color(0x188f19), // STRESS_COMPRESSED
+        new Color(0x072a07), // DEAD
     };
 
     /**
      * Infected cell colors are the following:
      * <ol start=0>
-     * <li>CELL 0x93ed94</li>
-     * <li>CORE 0xcc0000</li>
+     * <li>CELL #d32523</li>
+     * <li>CORE #911918</li>
+     * <li>STRESS (expanded) #ea8382</li>
+     * <li>STRESS (compressed) #901918</li>
+     * <li>DEAD #2b0707</li>
      * </ol>
      */
     public static final Color[] COLOR_INFECTED =
     {
-        new Color(0xd32523), new Color(0xb11f1d), new Color(0x4C1919)
+        new Color(0xd32523), // CELL
+        new Color(0x911918), // CORE
+        new Color(0xea8382), // STRESS_EXPANDED
+        new Color(0x901918), // STRESS_COMPRESSED
+        new Color(0x2b0707), // DEAD
     };
 
     /**
      * White cell colors are the following:
      * <ol start=0>
-     * <li>CELL 0x93ed94</li>
-     * <li>CORE 0xe6e6e6</li>
+     * <li>CELL #eeeeee</li>
+     * <li>CORE #c8c8c8</li>
+     * <li>STRESS (expanded) #b3b3b3</li>
+     * <li>STRESS (compressed) #515151</li>
+     * <li>DEAD #161616</li>
      * </ol>
      */
     public static final Color[] COLOR_WHITE_CELL =
     {
-        new Color(0xffffff), new Color(0xd9d9d9), new Color(0x333333)
-    };
-
-    /**
-     * Cells that undergo stress will approach the following colors:
-     * <ol start=0>
-     * <li>CELL 0x888888</li>
-     * <li>CORE 0x6f6f6f</li>
-     * </ol>
-     */
-    public static final Color[] COLOR_STRESS =
-    {
-        new Color(0x888888), new Color(0x6f6f6f)
+        new Color(0xeeeeee), // CELL
+        new Color(0xc8c8c8), // CORE
+        new Color(0xb3b3b3), // STRESS_EXPANDED
+        new Color(0x515151), // STRESS_COMPRESSED
+        new Color(0x161616), // DEAD
     };
 
     private static final Stroke EDGE_STROKE = new BasicStroke(1);
@@ -103,60 +111,67 @@ public class VoronoiPainter implements Painter
     }
 
     /**
+     * Get the color range for the given cell.
+     * @param cell
+     * @return 
+     */
+    private static Color[] getRange(Cell cell){
+        switch(cell.getType()){
+            case HEALTHY:
+                return COLOR_REGULAR;
+            case INFECTED:
+                return COLOR_INFECTED;
+            case DEFENSE:
+                return COLOR_WHITE_CELL;
+            default:
+                throw new AssertionError(cell.getType().name());
+        }
+    }
+
+    /**
+     * Determines the color of the nucleus of the cell
+     * @param cell
+     * @return 
+     */
+    private static Color getColorForNucleus(Cell cell) {
+        return getTypedColor(getRange(cell), PaintType.CORE);
+    }
+    
+    /**
      * Determines the color that must be given to a cell.
      *
      * @param cell The cell for which to determine the color
-     * @param paintType The painting type that must be applied. This determines
-     * which base color must be used.
      * @return The calculated color for the given cell based on the required
      * paint type.
      */
-    public static Color getColorforCell(Cell cell, PaintType paintType)
-    {
-        Color returnColor = getTypedColor(COLOR_WHITE_CELL, paintType);
-        if (cell.getClass() == StationaryCell.class)
-        {
-            StationaryCell stationaryCell = (StationaryCell) cell;
-            switch (stationaryCell.getType())
-            {
-                case INFECTED:
-                    return getTypedColor(COLOR_INFECTED, paintType);
-                default:
-                    if (!cell.isAlive())
-                    {
-                        return getTypedColor(COLOR_REGULAR, paintType);
-                    }
-                    
-                    double maxScaleFactor = cell.getApplicableScaleFactor();
-                    
-                    Color color = getTypedColor(COLOR_REGULAR, paintType);
-                    double currentRatio = cell.getCurrentAreaRatio();
-                    currentRatio = currentRatio < maxScaleFactor ? currentRatio : maxScaleFactor;
-
-                    double colorChangeFactor = (currentRatio - 1) / (maxScaleFactor - 1);
-
-                    int r = color.getRed();
-                    int g = color.getGreen();
-                    int b = color.getBlue();
-
-                    int rDiffMax = getTypedColor(COLOR_STRESS, paintType).getRed() - r;
-                    int gDiffMax = getTypedColor(COLOR_STRESS, paintType).getGreen() - g;
-                    int bDiffMax = getTypedColor(COLOR_STRESS, paintType).getBlue() - b;
-
-                    r += (int) ((double) rDiffMax * colorChangeFactor);
-                    g += (int) ((double) gDiffMax * colorChangeFactor);
-                    b += (int) ((double) bDiffMax * colorChangeFactor);
-
-                    returnColor = new Color(r, g, b);
-            }
-        }
+    public static Color getColorForCell(Cell cell) {
+        Color[] range = getRange(cell);
+        Color returnColor = !cell.isAlive() ? 
+                getTypedColor(range, PaintType.DEAD) : 
+                getCellColorWithStress(range, cell.isCompressed(), cell.getScaleRatio());
 
         if (cell.getFocusType() == FocusType.HOVER || cell.getFocusType() == FocusType.DRAG)
-        {
             returnColor = returnColor.brighter();
-        }
 
         return returnColor;
+    }
+
+    /**
+     * Determines the color that should be used to display the given amount of
+     * compression/expansion, depending on the provided color range.
+     * @param range The range of colors that must be used
+     * @param compressed flag indicating whether the factor indicates
+     * compression {@code true} or expansion {@code false}
+     * @param factor The factor with which the cell is stressed. This value must
+     * be between 0 and 1, where 0 is no stress and 1 equals the maximum amount
+     * of expanding or compressing stress. 
+     * @return The color that should be used to indicate the given amount of
+     * stress on a cell that uses the given color range.
+     */
+    private static Color getCellColorWithStress(Color[] range, boolean compressed, double factor){
+        Color base = getTypedColor(range, PaintType.CELL);
+        Color stress = getTypedColor(range, compressed ? PaintType.STESS_COMPRESSED : PaintType.STRESS_EXPANDED);
+        return Util.colorRange(base, stress, factor);
     }
 
     @Override
@@ -180,17 +195,10 @@ public class VoronoiPainter implements Painter
 
                 Cell cell = gameState.getCell(site);
 
-                if (!cell.isAlive())
-                {
-                    g2.setColor(VoronoiPainter.getColorforCell(cell, PaintType.DEAD));
-                    g2.fillPolygon(polygon);
-                    continue;
-                }
-
-                g2.setColor(VoronoiPainter.getColorforCell(cell, PaintType.CELL));
+                g2.setColor(VoronoiPainter.getColorForCell(cell));
                 g2.fillPolygon(polygon);
 
-                g2.setColor(VoronoiPainter.getColorforCell(cell, PaintType.CORE));
+                g2.setColor(VoronoiPainter.getColorForNucleus(cell));
                 g2.fillOval(site.x - Cell.NUCLEUS_RADIUS, site.y - Cell.NUCLEUS_RADIUS, Cell.NUCLEUS_RADIUS * 2, Cell.NUCLEUS_RADIUS * 2);
             }
 
@@ -227,30 +235,20 @@ public class VoronoiPainter implements Painter
 
         int x = (g.getClipBounds().width / 2) - (rWidth / 2) - rX;
         int y = ((int)r2D.getHeight() / 2) + 10;
-        
+
         //Determine score color
-        int scoreRange = maximumScore - minimumScore;
-        int binSize = scoreRange / SCORE_BINS.length;
-        Color scoreColor = SCORE_BINS[0];
-        for (int i = 1; i < SCORE_BINS.length; i++)
-        {
-            int checkScore = maximumScore - (binSize * i);
-            if (score < checkScore)
-            {
-                scoreColor = SCORE_BINS[i];
-                continue;
-            }
-            break;
-        }
+        double scoreRatio = 1 - (((double)score - (double)minimumScore) / ((double)maximumScore - (double)minimumScore));
+        Color scoreColor = scoreRatio <= 0.5 ?
+                Util.colorRange(SCORE_BINS[0], SCORE_BINS[1],scoreRatio * 2) :
+                Util.colorRange(SCORE_BINS[1], SCORE_BINS[2],scoreRatio * 2 - 1);
+
 
         g.setFont(font);
         g.setColor(scoreColor);
         g.drawString(scoreString, x, y);
     }
 
-    public enum PaintType
-    {
-
-        CELL, CORE, DEAD
+    public enum PaintType {
+        CELL, CORE, STRESS_EXPANDED, STESS_COMPRESSED, DEAD, 
     }
 }

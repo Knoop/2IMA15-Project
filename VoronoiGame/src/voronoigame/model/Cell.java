@@ -22,7 +22,7 @@ public abstract class Cell {
     protected Type type;
     protected boolean alive;
 
-    public static final double MAX_COMPRESSION_FACTOR = 1.5;
+    public static final double MAX_COMPRESSION_FACTOR = 1/1.5;
     public static final double MAX_EXPANSION_FACTOR = 3;
     
     /**
@@ -45,21 +45,19 @@ public abstract class Cell {
     {
         return alive;
     }
-    
-    public double getApplicableScaleFactor() {
-        return this.getCurrentArea() < this.getInitArea() ? MAX_COMPRESSION_FACTOR : MAX_EXPANSION_FACTOR;
-    }
-    
+
     public void updateProperties() {
         double[] properties = Util.calculateProperties(this.point, this.gameState);
         this.currentArea = properties[Util.INDEX_AREA];
         this.currentCircumference = properties[Util.INDEX_CIRCUMFERENCE];
-
-        if (this.getCurrentAreaRatio() >= getApplicableScaleFactor()) {
+        double ratio = this.getCurrentAreaRatio();
+        
+        // Scaled out of proportion
+        if (this.getCurrentAreaRatio() > MAX_EXPANSION_FACTOR || this.getCurrentAreaRatio() < MAX_COMPRESSION_FACTOR)
             this.kill();
-        } else {
+        else
             this.notifyCellPropertyChanged();
-        }
+        
     }
 
     private void kill() {
@@ -87,9 +85,22 @@ public abstract class Cell {
     }
 
     public double getCurrentAreaRatio() {
-        double maxArea = Math.max(this.getCurrentArea(), this.getInitArea());
-        double minArea = Math.min(this.getCurrentArea(), this.getInitArea());
-        return maxArea / minArea;
+        return this.getCurrentArea() / this.getInitArea();
+    }
+    
+    /**
+     * Returns the ratio by which the cells dimension have scaled, regardless of whether this is by expansion or compression. 
+     * @return The ratio by which the cell has scaled where 0 means not at all and 1 means as large as it may.
+     */
+    public double getScaleRatio(){
+        
+        double ratio = this.getCurrentAreaRatio();
+        if(ratio < 1)
+            return ( 1 - ratio ) / MAX_COMPRESSION_FACTOR;
+        else
+            return (ratio - 1) / (MAX_EXPANSION_FACTOR - 1);
+        
+        
     }
 
     protected Cell(Point point, Type type, GameState gameState, boolean focussable) {
@@ -159,6 +170,15 @@ public abstract class Cell {
      */
     protected void onTypeChanged() {
         this.notifyCellTypeChanged();
+    }
+
+    /**
+     * Indicates whether the cell has been compressed. 
+     * @return true if the size of this cell is smaller than it's original size,
+     * false otherwise.
+     */
+    public boolean isCompressed() {
+        return this.getCurrentAreaRatio() < 1;
     }
 
     public enum Type {

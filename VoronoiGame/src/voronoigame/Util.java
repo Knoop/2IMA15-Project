@@ -5,6 +5,7 @@
  */
 package voronoigame;
 
+import java.awt.Color;
 import java.awt.Point;
 import java.io.File;
 import java.util.Collection;
@@ -163,5 +164,24 @@ public class Util
         }
 
         return closest;
+    }
+    
+    /**
+     * Calculates a color between the two given colors based on the ratio.
+     * @param a The color which should be returned if ratio equals 0
+     * @param b The color which should be returned if ratio equals 1
+     * @param ratio A value between 0 and 1 that indicates how much of colors a
+     * and b must be used. Values greater than 1 or smaller than 0 are reduced
+     * to the corresponding edges such that the used ratio is always at least 0
+     * and at most 1.
+     * @return A color that is between a and b determined by the given ratio.
+     */
+    public static Color colorRange(Color a, Color b, double ratio){
+        
+        ratio = Math.max(0, Math.min(1, ratio));
+        return new Color(
+                (int)(b.getRed() * ratio + a.getRed() * (1d - ratio)),
+                (int)(b.getGreen() * ratio + a.getGreen() * (1d - ratio)),
+                (int)(b.getBlue() * ratio + a.getBlue() * (1d - ratio)));
     }
 }
